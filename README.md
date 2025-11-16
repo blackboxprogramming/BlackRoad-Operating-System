@@ -39,17 +39,25 @@ BlackRoad OS is a fully functional web-based operating system interface that bri
 
 ### Quick Start
 
-Simply open `index.html` in any modern web browser to launch BlackRoad OS.
+> 🔑 **Canonical UI entry point:** `backend/static/index.html`
+
+The desktop interface is bundled with the FastAPI backend so it can load data
+from the API without breaking features. Use the backend server (locally or in
+Railway/GoDaddy) to serve the UI instead of opening the HTML file directly.
 
 ```bash
 # Clone the repository
 git clone https://github.com/blackboxprogramming/BlackRoad-Operating-System.git
-
-# Navigate to the directory
 cd BlackRoad-Operating-System
 
-# Open in your browser
-open index.html
+# Start the FastAPI backend (serves backend/static/index.html)
+cd backend
+python -m venv .venv && source .venv/bin/activate  # optional but recommended
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+
+# Visit the desktop UI
+# -> http://localhost:8000/ serves backend/static/index.html
 ```
 
 ### GitHub Pages / GoDaddy Deployment
@@ -63,6 +71,16 @@ To publish manually without the workflow:
 1. Copy the contents of `backend/static/` and any required root assets into a temporary folder (e.g., `dist/`).
 2. Upload that folder to your Pages or GoDaddy hosting destination.
 3. Keep the backend running on Railway so the static UI can communicate with the live services.
+For cloud deployments (Railway, GoDaddy, etc.), make sure that
+`backend/static/index.html` is the file exposed at `/` so the UI can talk to the
+API routes that live under `/api/*`.
+
+### GitHub Pages Deployment
+
+The GitHub Pages workflow publishes the canonical frontend from
+`backend/static/`. If you customize the UI, edit
+`backend/static/index.html` (and any supporting assets in that directory) so
+the validation and deploy jobs keep pointing at the same file.
 
 ## Architecture
 

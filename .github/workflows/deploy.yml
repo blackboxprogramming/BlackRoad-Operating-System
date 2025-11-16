@@ -37,10 +37,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload artifact
+      - name: Upload canonical frontend
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
+          path: 'backend/static'
 
       - name: Deploy to GitHub Pages
         id: deployment
