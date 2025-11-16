@@ -13,7 +13,7 @@ from app.redis_client import close_redis
 from app.routers import (
     auth, email, social, video, files, blockchain, ai_chat, devices, miner,
     digitalocean, github, huggingface, vscode, games, browser, dashboard,
-    railway, vercel, stripe, twilio, slack, discord, sentry, api_health
+    railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -27,6 +27,7 @@ openapi_tags = [
     {"name": "discord", "description": "Discord community integrations"},
     {"name": "sentry", "description": "Sentry monitoring hooks"},
     {"name": "health", "description": "BlackRoad OS service health"},
+    {"name": "agents", "description": "BlackRoad Agent Library - 208 AI agents across 10 categories"},
 ]
 
 
@@ -141,6 +142,9 @@ app.include_router(sentry.router)
 # API health monitoring
 app.include_router(api_health.router)
 
+# Agent Library
+app.include_router(agents.router)
+
 
 # Static file serving for the BlackRoad OS front-end
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
@@ -219,7 +223,8 @@ async def api_info():
             "slack": "/api/slack",
             "discord": "/api/discord",
             "sentry": "/api/sentry",
-            "health": "/api/health"
+            "health": "/api/health",
+            "agents": "/api/agents"
         },
         "documentation": {
             "swagger": "/api/docs",
