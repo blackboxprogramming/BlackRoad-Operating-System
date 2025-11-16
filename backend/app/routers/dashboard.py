@@ -10,7 +10,7 @@ Provides a comprehensive overview of all integrated services:
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, cast, Integer
 from typing import Dict, List, Any
 from datetime import datetime, timedelta
 import os
@@ -435,7 +435,7 @@ async def get_user_stats(db: AsyncSession, user: User) -> Dict[str, Any]:
 
     # Social stats
     posts_result = await db.execute(
-        select(func.count(Post.id)).filter(Post.author_id == user.id)
+        select(func.count(Post.id)).filter(Post.user_id == user.id)
     )
     posts_total = posts_result.scalar() or 0
 
@@ -449,7 +449,7 @@ async def get_user_stats(db: AsyncSession, user: User) -> Dict[str, Any]:
 
     # Videos stats
     videos_result = await db.execute(
-        select(func.count(Video.id), func.sum(Video.views)).filter(Video.uploader_id == user.id)
+        select(func.count(Video.id), func.sum(Video.views_count)).filter(Video.user_id == user.id)
     )
     videos_data = videos_result.first()
     videos_total = videos_data[0] or 0
@@ -472,7 +472,7 @@ async def get_user_stats(db: AsyncSession, user: User) -> Dict[str, Any]:
 
     # Devices stats
     devices_result = await db.execute(
-        select(func.count(Device.id), func.sum(func.cast(Device.is_online, func.Integer)))
+        select(func.count(Device.id), func.sum(cast(Device.is_online, Integer)))
         .filter(Device.owner_id == user.id)
     )
     devices_data = devices_result.first()
