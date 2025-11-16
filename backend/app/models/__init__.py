@@ -5,6 +5,7 @@ from app.models.social import Post, Comment, Like, Follow
 from app.models.video import Video, VideoView, VideoLike
 from app.models.file import File, Folder
 from app.models.blockchain import Block, Transaction, Wallet
+from app.models.device import Device
 from app.models.ai_chat import Conversation, Message
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
     "Block",
     "Transaction",
     "Wallet",
+    "Device",
     "Conversation",
     "Message",
 ]
