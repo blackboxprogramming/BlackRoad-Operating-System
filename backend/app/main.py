@@ -10,7 +10,10 @@ import os
 from app.config import settings
 from app.database import async_engine, Base
 from app.redis_client import close_redis
-from app.routers import auth, email, social, video, files, blockchain, ai_chat, devices, miner
+from app.routers import (
+    auth, email, social, video, files, blockchain, ai_chat, devices, miner,
+    digitalocean, github, huggingface, vscode, games, browser, dashboard
+)
 from app.services.crypto import rotate_plaintext_wallet_keys
 
 
@@ -104,6 +107,13 @@ app.include_router(blockchain.router)
 app.include_router(ai_chat.router)
 app.include_router(devices.router)
 app.include_router(miner.router)
+app.include_router(digitalocean.router)
+app.include_router(github.router)
+app.include_router(huggingface.router)
+app.include_router(vscode.router)
+app.include_router(games.router)
+app.include_router(browser.router)
+app.include_router(dashboard.router)
 
 
 # Static file serving for the BlackRoad OS front-end
@@ -168,7 +178,14 @@ async def api_info():
             "blockchain": "/api/blockchain",
             "ai_chat": "/api/ai-chat",
             "devices": "/api/devices",
-            "miner": "/api/miner"
+            "miner": "/api/miner",
+            "digitalocean": "/api/digitalocean",
+            "github": "/api/github",
+            "huggingface": "/api/huggingface",
+            "vscode": "/api/vscode",
+            "games": "/api/games",
+            "browser": "/api/browser",
+            "dashboard": "/api/dashboard"
         },
         "documentation": {
             "swagger": "/api/docs",
