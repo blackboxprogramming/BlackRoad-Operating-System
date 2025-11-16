@@ -6,6 +6,7 @@ from app.models.video import Video, VideoView, VideoLike
 from app.models.file import File, Folder
 from app.models.device import Device, DeviceMetric, DeviceLog
 from app.models.blockchain import Block, Transaction, Wallet
+from app.models.device import Device
 from app.models.ai_chat import Conversation, Message
 from app.models.device import Device, DeviceMetric, DeviceLog
 
@@ -28,6 +29,7 @@ __all__ = [
     "Block",
     "Transaction",
     "Wallet",
+    "Device",
     "Conversation",
     "Message",
     "Device",

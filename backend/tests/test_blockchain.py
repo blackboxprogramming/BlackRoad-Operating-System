@@ -109,3 +109,29 @@ async def test_create_transaction_rejects_negative_amount(
     )
 
     assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_create_transaction_succeeds_with_encrypted_keys(
+    client: AsyncClient,
+    auth_headers,
+    recipient_user
+):
+    """Transactions should succeed when wallet keys are encrypted"""
+    tx_data = {
+        "to_address": recipient_user["wallet_address"],
+        "amount": 10,
+        "message": "Encrypted transfer",
+    }
+
+    response = await client.post(
+        "/api/blockchain/transactions",
+        json=tx_data,
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 201
+    data = response.json()
+    assert data["from_address"] != data["to_address"]
+    assert data["to_address"] == recipient_user["wallet_address"]
+    assert data["amount"] == tx_data["amount"]

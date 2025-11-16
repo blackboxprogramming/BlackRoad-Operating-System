@@ -1,6 +1,11 @@
 """Authentication tests"""
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import select
+
+from app.models.user import User
+from app.models.blockchain import Wallet
+from app.services.crypto import wallet_crypto
 
 
 @pytest.mark.asyncio
@@ -21,6 +26,37 @@ async def test_register_user(client: AsyncClient):
     assert data["email"] == "newuser@example.com"
     assert "wallet_address" in data
     assert data["balance"] == 100.0  # Starting bonus
+
+
+@pytest.mark.asyncio
+async def test_wallet_keys_are_encrypted(client: AsyncClient, db_session):
+    """Ensure new wallets store encrypted private keys for both tables"""
+    user_data = {
+        "username": "securewallet",
+        "email": "secure@example.com",
+        "password": "password123",
+        "full_name": "Secure User",
+    }
+
+    response = await client.post("/api/auth/register", json=user_data)
+    assert response.status_code == 201
+
+    user_result = await db_session.execute(
+        select(User).where(User.username == user_data["username"])
+    )
+    user = user_result.scalar_one()
+
+    wallet_result = await db_session.execute(
+        select(Wallet).where(Wallet.user_id == user.id)
+    )
+    wallet = wallet_result.scalar_one()
+
+    decrypted_user_key = wallet_crypto.decrypt(user.wallet_private_key)
+    decrypted_wallet_key = wallet_crypto.decrypt(wallet.private_key)
+
+    assert decrypted_user_key == decrypted_wallet_key
+    assert user.wallet_private_key != decrypted_user_key
+    assert wallet.private_key != decrypted_wallet_key
 
 
 @pytest.mark.asyncio
