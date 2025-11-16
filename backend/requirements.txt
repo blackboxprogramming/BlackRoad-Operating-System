@@ -8,6 +8,7 @@ sqlalchemy==2.0.23
 alembic==1.12.1
 psycopg2-binary==2.9.9
 asyncpg==0.29.0
+aiosqlite==0.19.0
 
 # Authentication & Security
 python-jose[cryptography]==3.3.0
@@ -24,7 +25,7 @@ boto3==1.29.7
 botocore==1.32.7
 
 # Email
-python-email-validator==2.1.0
+email-validator==2.1.0.post1
 emails==0.6.0
 jinja2==3.1.2
 
@@ -54,8 +55,8 @@ httpx==0.25.2
 # Monitoring
 prometheus-client==0.19.0
 
-# CORS
-python-cors==1.0.0
+# CORS (handled by Starlette/FastAPI)
+# Dependency removed because package does not exist on PyPI.
 
 # New API Integrations (Railway, Vercel, Stripe, Twilio, Slack, Discord, Sentry)
 # Note: Most integrations use httpx (already included above)

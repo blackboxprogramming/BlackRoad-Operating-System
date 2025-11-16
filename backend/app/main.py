@@ -18,6 +18,18 @@ from app.routers import (
 from app.services.crypto import rotate_plaintext_wallet_keys
 
 
+openapi_tags = [
+    {"name": "railway", "description": "Railway deployment management"},
+    {"name": "vercel", "description": "Vercel project automation"},
+    {"name": "stripe", "description": "Stripe billing integrations"},
+    {"name": "twilio", "description": "Twilio messaging"},
+    {"name": "slack", "description": "Slack workspace automation"},
+    {"name": "discord", "description": "Discord community integrations"},
+    {"name": "sentry", "description": "Sentry monitoring hooks"},
+    {"name": "health", "description": "BlackRoad OS service health"},
+]
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan events"""
@@ -55,7 +67,8 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url="/api/docs",
     redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json"
+    openapi_url="/api/openapi.json",
+    openapi_tags=openapi_tags,
 )
 
 # CORS middleware

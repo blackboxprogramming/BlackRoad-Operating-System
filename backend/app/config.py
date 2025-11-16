@@ -13,18 +13,20 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
 
     # Database
-    DATABASE_URL: str
-    DATABASE_ASYNC_URL: str
+    # Provide sensible defaults so local development and tests can run
+    # without requiring environment configuration.
+    DATABASE_URL: str = "sqlite:///./test.db"
+    DATABASE_ASYNC_URL: str = "sqlite+aiosqlite:///./test.db"
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # Security
-    SECRET_KEY: str
+    SECRET_KEY: str = "local-dev-secret-key"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
-    WALLET_MASTER_KEY: str
+    WALLET_MASTER_KEY: str = "local-wallet-master-key-32chars-0000"
 
     # CORS
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:8000"
