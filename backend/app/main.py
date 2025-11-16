@@ -1,14 +1,16 @@
 """Main FastAPI application"""
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import time
+import os
 
 from app.config import settings
 from app.database import async_engine, Base
 from app.redis_client import close_redis
-from app.routers import auth, email, social, video, files, blockchain, ai_chat
+from app.routers import auth, email, social, video, files, blockchain, ai_chat, devices, miner
 
 
 @asynccontextmanager
@@ -92,19 +94,44 @@ app.include_router(video.router)
 app.include_router(files.router)
 app.include_router(blockchain.router)
 app.include_router(ai_chat.router)
+app.include_router(devices.router)
+app.include_router(miner.router)
 
 
-# Root endpoint
-@app.get("/")
-async def root():
-    """Root endpoint"""
-    return {
-        "name": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "environment": settings.ENVIRONMENT,
-        "docs": "/api/docs",
-        "status": "operational"
-    }
+# Static file serving for the BlackRoad OS front-end
+static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+if os.path.exists(static_dir):
+    # Mount static files (JS, CSS, images)
+    app.mount("/static", StaticFiles(directory=static_dir, html=True), name="static")
+
+    # Serve index.html at root
+    @app.get("/")
+    async def serve_frontend():
+        """Serve the BlackRoad OS desktop interface"""
+        index_path = os.path.join(static_dir, "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
+        return {
+            "name": settings.APP_NAME,
+            "version": settings.APP_VERSION,
+            "environment": settings.ENVIRONMENT,
+            "docs": "/api/docs",
+            "status": "operational",
+            "note": "Front-end not found. API is operational."
+        }
+else:
+    # Fallback if static directory doesn't exist
+    @app.get("/")
+    async def root():
+        """Root endpoint"""
+        return {
+            "name": settings.APP_NAME,
+            "version": settings.APP_VERSION,
+            "environment": settings.ENVIRONMENT,
+            "docs": "/api/docs",
+            "status": "operational",
+            "note": "API-only mode. Front-end not deployed."
+        }
 
 
 # Health check
@@ -131,7 +158,9 @@ async def api_info():
             "videos": "/api/videos",
             "files": "/api/files",
             "blockchain": "/api/blockchain",
-            "ai_chat": "/api/ai-chat"
+            "ai_chat": "/api/ai-chat",
+            "devices": "/api/devices",
+            "miner": "/api/miner"
         },
         "documentation": {
             "swagger": "/api/docs",
