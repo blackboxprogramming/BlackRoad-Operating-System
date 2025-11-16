@@ -80,6 +80,7 @@ docker run -d -p 5432:5432 -e POSTGRES_USER=blackroad -e POSTGRES_PASSWORD=passw
 docker run -d -p 6379:6379 redis:7-alpine
 
 # Run the application (serves backend/static/index.html at /)
+# Run the application (PORT defaults to 8000 if unset)
 python run.py
 ```
 

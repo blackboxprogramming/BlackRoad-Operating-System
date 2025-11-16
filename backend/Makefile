@@ -1,5 +1,7 @@
 # BlackRoad OS Backend Makefile
 
+PORT ?= 8000
+
 .PHONY: help install dev run test clean docker-build docker-up docker-down
 
 help:
@@ -23,7 +25,7 @@ dev:
 	python run.py
 
 run:
-	uvicorn app.main:app --host 0.0.0.0 --port 8000
+	uvicorn app.main:app --host 0.0.0.0 --port $(PORT)
 
 test:
 	pytest -v

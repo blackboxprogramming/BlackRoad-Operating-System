@@ -284,7 +284,7 @@ async def serve_frontend():
    ```bash
    cd backend
    docker-compose up -d  # Start PostgreSQL + Redis
-   python run.py         # Start FastAPI server on :8000
+   python run.py         # Start FastAPI server (defaults to :8000 unless PORT is set)
    ```
 
 2. **Access UI:**
