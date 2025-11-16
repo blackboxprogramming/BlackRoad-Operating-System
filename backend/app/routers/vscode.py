@@ -59,7 +59,7 @@ async def list_code_files(
                 "name": f.name,
                 "path": f.path,
                 "size": f.size,
-                "mime_type": f.mime_type,
+                "mime_type": f.file_type or None,
                 "folder_id": f.folder_id,
                 "created_at": f.created_at.isoformat(),
                 "updated_at": f.updated_at.isoformat(),
@@ -96,7 +96,7 @@ async def get_file_content(
         "content": "// File content would be loaded here\n// from S3 or file system",
         "metadata": {
             "size": file.size,
-            "mime_type": file.mime_type,
+            "mime_type": file.file_type or None,
             "created_at": file.created_at.isoformat(),
             "updated_at": file.updated_at.isoformat()
         }
