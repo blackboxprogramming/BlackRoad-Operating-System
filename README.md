@@ -52,14 +52,17 @@ cd BlackRoad-Operating-System
 open index.html
 ```
 
-### GitHub Pages Deployment
+### GitHub Pages / GoDaddy Deployment
 
-This project can be easily deployed to GitHub Pages:
+Only the static UI should be served from GitHub Pages or GoDaddy. The backend API and services continue to run on Railway so they remain isolated from the static hosting tier.
 
-1. Go to your repository settings
-2. Navigate to "Pages" section
-3. Select the branch you want to deploy
-4. Your site will be available at `https://[username].github.io/BlackRoad-Operating-System/`
+The default `Deploy to GitHub Pages` workflow now bundles the canonical front-end (everything under `backend/static` plus root-level assets such as `index.html`) into a temporary `dist/` directory before uploading it. This ensures that Pages/GoDaddy only receives the static bundle, while the backend code stays out of the artifact and continues to deploy independently to Railway.
+
+To publish manually without the workflow:
+
+1. Copy the contents of `backend/static/` and any required root assets into a temporary folder (e.g., `dist/`).
+2. Upload that folder to your Pages or GoDaddy hosting destination.
+3. Keep the backend running on Railway so the static UI can communicate with the live services.
 
 ## Architecture
 
