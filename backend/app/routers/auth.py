@@ -1,8 +1,8 @@
 """Authentication routes"""
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, status, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from typing import Optional
 
 from app.database import get_db
 from app.models.user import User
@@ -20,6 +20,29 @@ from app.services.crypto import wallet_crypto, WalletKeyEncryptionError
 from datetime import datetime
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
+
+# Backwards compatibility for modules importing get_current_user from this router
+get_current_user = get_current_active_user
+
+
+class SimpleOAuth2PasswordRequestForm:
+    """Minimal form parser compatible with OAuth2 password flow"""
+
+    def __init__(
+        self,
+        grant_type: Optional[str] = Form(default=None),
+        username: str = Form(...),
+        password: str = Form(...),
+        scope: str = Form(default=""),
+        client_id: Optional[str] = Form(default=None),
+        client_secret: Optional[str] = Form(default=None)
+    ):
+        self.grant_type = grant_type
+        self.username = username
+        self.password = password
+        self.scopes = scope.split()
+        self.client_id = client_id
+        self.client_secret = client_secret
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
@@ -84,7 +107,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    form_data: SimpleOAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db)
 ):
     """Login and get access token"""
