@@ -10,6 +10,7 @@ from app.database import get_db
 from app.models.user import User
 from app.models.video import Video, VideoView, VideoLike
 from app.auth import get_current_active_user
+from app.utils import utc_now
 
 router = APIRouter(prefix="/api/videos", tags=["Videos"])
 
@@ -117,7 +118,7 @@ async def upload_video(
         category=video_data.category,
         tags=video_data.tags,
         is_public=True,
-        published_at=datetime.utcnow()
+        published_at=utc_now()
     )
 
     db.add(video)

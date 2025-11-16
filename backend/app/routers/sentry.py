@@ -13,6 +13,8 @@ import httpx
 import os
 import logging
 
+from app.utils import utc_now
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/sentry", tags=["sentry"])
@@ -376,5 +378,5 @@ async def sentry_health_check():
     return {
         "service": "sentry",
         "status": "operational" if SENTRY_AUTH_TOKEN else "not_configured",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": utc_now().isoformat()
     }

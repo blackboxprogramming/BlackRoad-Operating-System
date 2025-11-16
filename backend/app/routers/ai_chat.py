@@ -10,6 +10,7 @@ from app.database import get_db
 from app.models.user import User
 from app.models.ai_chat import Conversation, Message, MessageRole
 from app.auth import get_current_active_user
+from app.utils import utc_now
 
 router = APIRouter(prefix="/api/ai-chat", tags=["AI Chat"])
 
@@ -188,7 +189,7 @@ async def send_message(
 
     # Update conversation
     conversation.message_count += 2
-    conversation.updated_at = datetime.utcnow()
+    conversation.updated_at = utc_now()
 
     if not conversation.title or conversation.title == "New Conversation":
         # Auto-generate title from first message

@@ -1,5 +1,5 @@
 """Miner integration tests"""
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from httpx import AsyncClient
@@ -44,7 +44,7 @@ async def test_miner_stats_respects_wallet(
     """Ensure /api/miner/stats reports only the authenticated user's blocks."""
     wallet_address = test_user["wallet_address"]
     user_id = test_user["id"]
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     await _create_block(
         db_session,
@@ -91,7 +91,7 @@ async def test_miner_blocks_endpoint_returns_only_user_blocks(
     """Ensure /api/miner/blocks only returns the authenticated user's blocks."""
     wallet_address = test_user["wallet_address"]
     user_id = test_user["id"]
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     await _create_block(
         db_session,

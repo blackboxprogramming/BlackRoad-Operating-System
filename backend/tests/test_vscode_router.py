@@ -1,5 +1,5 @@
 """Tests for VS Code integration endpoints"""
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 import pytest
@@ -11,7 +11,7 @@ from app.models import File
 
 async def _create_file(db: AsyncSession, user_id: int, name: str, file_type: Optional[str]) -> File:
     """Helper to create a file record for tests."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     file = File(
         user_id=user_id,
         name=name,

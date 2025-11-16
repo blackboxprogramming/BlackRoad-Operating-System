@@ -8,10 +8,11 @@ Stripe is a payment processing platform for online businesses.
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional, Dict, Any
-from datetime import datetime
 import httpx
 import os
 import logging
+
+from app.utils import utc_now
 
 logger = logging.getLogger(__name__)
 
@@ -324,5 +325,5 @@ async def stripe_health_check():
     return {
         "service": "stripe",
         "status": "operational" if STRIPE_SECRET_KEY else "not_configured",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": utc_now().isoformat()
     }

@@ -4,6 +4,7 @@ from typing import Optional
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, JSON, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from app.database import Base
+from app.utils import utc_now
 
 
 class Device(Base):
@@ -59,8 +60,8 @@ class Device(Base):
     owner = relationship("User", back_populates="devices")
 
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
 
     # Relations
     metrics = relationship("DeviceMetric", back_populates="device", cascade="all, delete-orphan")
@@ -76,7 +77,7 @@ class DeviceMetric(Base):
     device_id = Column(Integer, ForeignKey("devices.id", ondelete="CASCADE"), nullable=False)
 
     # Metric data
-    timestamp = Column(DateTime, default=datetime.utcnow, index=True)
+    timestamp = Column(DateTime, default=utc_now, index=True)
     cpu_usage = Column(Float)
     ram_usage = Column(Float)
     disk_usage = Column(Float)
@@ -100,7 +101,7 @@ class DeviceLog(Base):
     device_id = Column(Integer, ForeignKey("devices.id", ondelete="CASCADE"), nullable=False)
 
     # Log data
-    timestamp = Column(DateTime, default=datetime.utcnow, index=True)
+    timestamp = Column(DateTime, default=utc_now, index=True)
     level = Column(String(20), nullable=False)  # info, warning, error, critical
     category = Column(String(50))  # system, network, service, hardware
     message = Column(Text, nullable=False)

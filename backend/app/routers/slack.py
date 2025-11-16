@@ -7,10 +7,11 @@ Provides endpoints for sending messages, managing channels, and interacting with
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
-from datetime import datetime
 import httpx
 import os
 import logging
+
+from app.utils import utc_now
 
 logger = logging.getLogger(__name__)
 
@@ -277,5 +278,5 @@ async def slack_health_check():
         "service": "slack",
         "status": "operational" if SLACK_BOT_TOKEN else "not_configured",
         "webhook_status": "operational" if SLACK_WEBHOOK_URL else "not_configured",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": utc_now().isoformat()
     }

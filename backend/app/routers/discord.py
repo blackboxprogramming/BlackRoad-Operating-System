@@ -12,6 +12,8 @@ import httpx
 import os
 import logging
 
+from app.utils import utc_now
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/discord", tags=["discord"])
@@ -304,5 +306,5 @@ async def discord_health_check():
         "service": "discord",
         "status": "operational" if DISCORD_BOT_TOKEN else "not_configured",
         "webhook_status": "operational" if DISCORD_WEBHOOK_URL else "not_configured",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": utc_now().isoformat()
     }

@@ -12,11 +12,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import List, Optional
-from datetime import datetime
 
 from ..database import get_db
 from ..auth import get_current_user
 from ..models import User, File, Folder
+from ..utils import utc_now
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/vscode", tags=["vscode"])
@@ -120,7 +120,7 @@ async def update_file_content(
         raise HTTPException(status_code=404, detail="File not found")
 
     # In a real implementation, save to S3 or file system
-    file.updated_at = datetime.utcnow()
+    file.updated_at = utc_now()
     file.size = len(content.encode('utf-8'))
 
     await db.commit()

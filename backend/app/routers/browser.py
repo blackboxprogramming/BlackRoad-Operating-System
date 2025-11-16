@@ -12,7 +12,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import List, Optional
-from datetime import datetime
 import httpx
 from urllib.parse import urlparse, quote
 import hashlib
@@ -21,6 +20,7 @@ from ..database import get_db
 from ..auth import get_current_user
 from ..models import User
 from pydantic import BaseModel, HttpUrl
+from ..utils import utc_now
 
 router = APIRouter(prefix="/api/browser", tags=["browser"])
 
@@ -142,7 +142,7 @@ async def add_bookmark(
         "title": bookmark.title,
         "url": bookmark.url,
         "folder": bookmark.folder,
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": utc_now().isoformat()
     }
 
     return {
@@ -208,10 +208,10 @@ async def add_history_entry(
 ):
     """Add a history entry"""
     new_entry = {
-        "id": hashlib.md5(f"{entry.url}{datetime.utcnow()}".encode()).hexdigest()[:8],
+        "id": hashlib.md5(f"{entry.url}{utc_now()}".encode()).hexdigest()[:8],
         "url": entry.url,
         "title": entry.title,
-        "visited_at": datetime.utcnow().isoformat()
+        "visited_at": utc_now().isoformat()
     }
 
     return {
@@ -232,7 +232,7 @@ async def clear_history(
 @router.get("/search")
 async def web_search(
     q: str = Query(..., min_length=1, description="Search query"),
-    engine: str = Query("duckduckgo", regex="^(duckduckgo|google|bing)$"),
+    engine: str = Query("duckduckgo", pattern="^(duckduckgo|google|bing)$"),
     current_user: User = Depends(get_current_user)
 ):
     """
@@ -397,7 +397,7 @@ async def open_new_tab(
     """Open a new tab"""
     return {
         "tab": {
-            "id": hashlib.md5(f"{url}{datetime.utcnow()}".encode()).hexdigest()[:8],
+            "id": hashlib.md5(f"{url}{utc_now()}".encode()).hexdigest()[:8],
             "url": url,
             "title": "Loading...",
             "active": True

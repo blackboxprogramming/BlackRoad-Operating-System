@@ -17,7 +17,7 @@ from app.auth import (
 )
 from app.services.blockchain import BlockchainService
 from app.services.crypto import wallet_crypto, WalletKeyEncryptionError
-from datetime import datetime
+from app.utils import utc_now
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
@@ -82,7 +82,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         wallet_address=wallet_address,
         wallet_private_key=encrypted_private_key,
         balance=100.0,  # Starting bonus
-        created_at=datetime.utcnow()
+        created_at=utc_now()
     )
 
     db.add(user)
@@ -131,7 +131,7 @@ async def login(
         )
 
     # Update last login
-    user.last_login = datetime.utcnow()
+    user.last_login = utc_now()
     await db.commit()
 
     # Create tokens

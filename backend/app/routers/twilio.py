@@ -14,6 +14,8 @@ import base64
 import os
 import logging
 
+from app.utils import utc_now
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/twilio", tags=["twilio"])
@@ -255,5 +257,5 @@ async def twilio_health_check():
     return {
         "service": "twilio",
         "status": "operational" if (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN) else "not_configured",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": utc_now().isoformat()
     }

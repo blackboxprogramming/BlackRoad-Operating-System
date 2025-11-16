@@ -1,7 +1,6 @@
 """Blockchain service"""
 import hashlib
 import json
-from datetime import datetime
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
@@ -9,6 +8,7 @@ from app.models.blockchain import Block, Transaction, Wallet
 from app.models.user import User
 from app.config import settings
 from app.services.crypto import wallet_crypto, WalletKeyDecryptionError
+from app.utils import utc_now
 import secrets
 
 
@@ -31,7 +31,7 @@ class BlockchainService:
         if existing:
             return existing
 
-        timestamp = datetime.utcnow()
+        timestamp = utc_now()
         genesis_hash = BlockchainService.calculate_hash(0, str(timestamp), "0", [], 0)
 
         genesis_block = Block(
@@ -69,7 +69,7 @@ class BlockchainService:
             latest_block = await BlockchainService.create_genesis_block(db)
 
         new_index = latest_block.index + 1
-        timestamp = datetime.utcnow()
+        timestamp = utc_now()
         previous_hash = latest_block.hash
         difficulty = settings.BLOCKCHAIN_DIFFICULTY
 
@@ -117,7 +117,7 @@ class BlockchainService:
             tx.block_index = new_block.index
             tx.is_confirmed = True
             tx.confirmations = 1
-            tx.confirmed_at = datetime.utcnow()
+            tx.confirmed_at = utc_now()
 
         # Reward miner
         user.balance += settings.MINING_REWARD
@@ -152,7 +152,7 @@ class BlockchainService:
             ) from exc
 
         # Generate transaction hash
-        tx_data = f"{from_address}{to_address}{amount}{datetime.utcnow()}"
+        tx_data = f"{from_address}{to_address}{amount}{utc_now()}"
         transaction_hash = hashlib.sha256(tx_data.encode()).hexdigest()
 
         # Sign transaction (simplified)

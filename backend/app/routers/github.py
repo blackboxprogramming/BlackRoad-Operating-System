@@ -186,7 +186,7 @@ async def list_commits(
 async def list_pull_requests(
     owner: str,
     repo: str,
-    state: str = Query("open", regex="^(open|closed|all)$"),
+    state: str = Query("open", pattern="^(open|closed|all)$"),
     page: int = Query(1, ge=1),
     per_page: int = Query(30, ge=1, le=100),
     current_user: User = Depends(get_current_user)
@@ -220,7 +220,7 @@ async def list_pull_requests(
 async def list_issues(
     owner: str,
     repo: str,
-    state: str = Query("open", regex="^(open|closed|all)$"),
+    state: str = Query("open", pattern="^(open|closed|all)$"),
     page: int = Query(1, ge=1),
     per_page: int = Query(30, ge=1, le=100),
     current_user: User = Depends(get_current_user)

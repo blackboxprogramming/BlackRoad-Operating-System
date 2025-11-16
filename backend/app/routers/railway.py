@@ -13,6 +13,8 @@ import httpx
 import os
 import logging
 
+from app.utils import utc_now
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/railway", tags=["railway"])
@@ -389,5 +391,5 @@ async def railway_health_check():
     return {
         "service": "railway",
         "status": "operational" if RAILWAY_TOKEN else "not_configured",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": utc_now().isoformat()
     }

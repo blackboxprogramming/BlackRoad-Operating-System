@@ -13,6 +13,7 @@ from app.database import get_db
 from app.models.blockchain import Block, Wallet
 from app.models.user import User
 from app.routers.auth import get_current_user
+from app.utils import utc_now
 
 router = APIRouter(prefix="/api/miner", tags=["miner"])
 
@@ -97,7 +98,7 @@ async def get_miner_status(
     """Get current miner status and performance metrics."""
     uptime_seconds = 0
     if miner_state.started_at:
-        uptime_seconds = int((datetime.utcnow() - miner_state.started_at).total_seconds())
+        uptime_seconds = int((utc_now() - miner_state.started_at).total_seconds())
 
     # Simulate some variance in hashrate
     current_hashrate = miner_state.hashrate_mhs
@@ -242,7 +243,7 @@ async def control_miner(
             raise HTTPException(status_code=400, detail="Miner is already running")
 
         miner_state.is_mining = True
-        miner_state.started_at = datetime.utcnow()
+        miner_state.started_at = utc_now()
         miner_state.hashrate_mhs = random.uniform(38.0, 45.0)  # Simulate hashrate
 
         if control.pool_url:
@@ -268,7 +269,7 @@ async def control_miner(
         miner_state.is_mining = False
         await asyncio.sleep(1)
         miner_state.is_mining = True
-        miner_state.started_at = datetime.utcnow()
+        miner_state.started_at = utc_now()
         miner_state.hashrate_mhs = random.uniform(38.0, 45.0)
 
         background_tasks.add_task(simulate_mining)
@@ -314,5 +315,5 @@ async def get_pool_info(
         "pool_fee": "1%",
         "min_payout": 10.0,
         "payment_interval_hours": 24,
-        "last_block_found": (datetime.utcnow() - timedelta(minutes=random.randint(5, 120))).isoformat(),
+        "last_block_found": (utc_now() - timedelta(minutes=random.randint(5, 120))).isoformat(),
     }

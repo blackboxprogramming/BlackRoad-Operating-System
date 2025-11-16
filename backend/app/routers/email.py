@@ -10,6 +10,7 @@ from app.database import get_db
 from app.models.user import User
 from app.models.email import Email, EmailFolder, EmailFolderType
 from app.auth import get_current_active_user
+from app.utils import utc_now
 
 router = APIRouter(prefix="/api/email", tags=["Email"])
 
@@ -154,7 +155,7 @@ async def send_email(
         bcc=",".join(email_data.bcc) if email_data.bcc else None,
         is_read=False,
         is_draft=False,
-        sent_at=datetime.utcnow()
+        sent_at=utc_now()
     )
 
     db.add(email)
@@ -193,7 +194,7 @@ async def get_email(
     # Mark as read if recipient is viewing
     if email.recipient_id == current_user.id and not email.is_read:
         email.is_read = True
-        email.read_at = datetime.utcnow()
+        email.read_at = utc_now()
         await db.commit()
 
     return email

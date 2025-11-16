@@ -13,6 +13,8 @@ import asyncio
 import os
 import logging
 
+from app.utils import utc_now
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/health", tags=["health"])
@@ -47,7 +49,7 @@ async def check_api_status(name: str, check_func) -> Dict[str, Any]:
             "name": name,
             "status": "connected" if result.get("connected") else "not_configured",
             "message": result.get("message", ""),
-            "last_checked": datetime.utcnow().isoformat(),
+            "last_checked": utc_now().isoformat(),
             "configuration": {
                 k: v for k, v in result.items()
                 if k.endswith("_configured") or k == "connected"
@@ -60,7 +62,7 @@ async def check_api_status(name: str, check_func) -> Dict[str, Any]:
             "name": name,
             "status": "error",
             "message": f"Health check failed: {str(e)}",
-            "last_checked": datetime.utcnow().isoformat(),
+            "last_checked": utc_now().isoformat(),
             "configuration": {},
             "error": str(e)
         }
@@ -154,7 +156,7 @@ async def check_all_apis():
 
     return SystemHealthStatus(
         status=overall_status,
-        timestamp=datetime.utcnow().isoformat(),
+        timestamp=utc_now().isoformat(),
         total_apis=total_apis,
         connected_apis=connected_count,
         not_configured_apis=not_configured_count,

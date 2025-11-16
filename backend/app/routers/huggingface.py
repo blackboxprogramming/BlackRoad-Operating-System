@@ -37,7 +37,7 @@ class InferenceRequest(BaseModel):
 async def list_models(
     search: Optional[str] = Query(None),
     filter_task: Optional[str] = Query(None, alias="task"),
-    sort: str = Query("downloads", regex="^(downloads|likes|trending)$"),
+    sort: str = Query("downloads", pattern="^(downloads|likes|trending)$"),
     limit: int = Query(20, ge=1, le=100),
     current_user: User = Depends(get_current_user)
 ):
@@ -146,7 +146,7 @@ async def run_inference(
 @router.get("/datasets")
 async def list_datasets(
     search: Optional[str] = Query(None),
-    sort: str = Query("downloads", regex="^(downloads|likes|trending)$"),
+    sort: str = Query("downloads", pattern="^(downloads|likes|trending)$"),
     limit: int = Query(20, ge=1, le=100),
     current_user: User = Depends(get_current_user)
 ):
@@ -194,7 +194,7 @@ async def get_dataset_info(
 @router.get("/spaces")
 async def list_spaces(
     search: Optional[str] = Query(None),
-    sort: str = Query("likes", regex="^(likes|trending)$"),
+    sort: str = Query("likes", pattern="^(likes|trending)$"),
     limit: int = Query(20, ge=1, le=100),
     current_user: User = Depends(get_current_user)
 ):

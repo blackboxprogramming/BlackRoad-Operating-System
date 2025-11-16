@@ -12,6 +12,8 @@ import httpx
 from enum import Enum
 import logging
 
+from app.utils import utc_now
+
 logger = logging.getLogger(__name__)
 
 
@@ -93,23 +95,23 @@ class APIClient:
             if response.status_code < 500:
                 self.status = APIStatus.CONNECTED
                 self.error_message = None
-                self.last_check = datetime.utcnow()
+                self.last_check = utc_now()
                 return True
             else:
                 self.status = APIStatus.ERROR
                 self.error_message = f"Server error: {response.status_code}"
-                self.last_check = datetime.utcnow()
+                self.last_check = utc_now()
                 return False
 
         except httpx.TimeoutException:
             self.status = APIStatus.ERROR
             self.error_message = "Connection timeout"
-            self.last_check = datetime.utcnow()
+            self.last_check = utc_now()
             return False
         except Exception as e:
             self.status = APIStatus.ERROR
             self.error_message = str(e)
-            self.last_check = datetime.utcnow()
+            self.last_check = utc_now()
             logger.error(f"Health check failed for {self.name}: {e}")
             return False
 

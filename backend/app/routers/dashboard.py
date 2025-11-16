@@ -19,6 +19,7 @@ from ..database import get_db
 from ..auth import get_current_user
 from ..models import User, Device, Email, Post, Video, File, Conversation, Block, Transaction
 from pydantic import BaseModel
+from ..utils import utc_now
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
@@ -201,7 +202,7 @@ async def get_dashboard_overview(
         },
         "services": services,
         "system_health": system_health,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": utc_now().isoformat()
     }
 
 
@@ -356,7 +357,7 @@ async def get_recent_activity(
             "icon": "📧",
             "action": "Received new email",
             "description": "Meeting reminder from Sarah",
-            "timestamp": (datetime.utcnow() - timedelta(minutes=5)).isoformat()
+            "timestamp": (utc_now() - timedelta(minutes=5)).isoformat()
         },
         {
             "id": 2,
@@ -364,7 +365,7 @@ async def get_recent_activity(
             "icon": "⛓️",
             "action": "Transaction completed",
             "description": "Sent 10 RoadCoins to wallet abc123",
-            "timestamp": (datetime.utcnow() - timedelta(minutes=15)).isoformat()
+            "timestamp": (utc_now() - timedelta(minutes=15)).isoformat()
         },
         {
             "id": 3,
@@ -372,7 +373,7 @@ async def get_recent_activity(
             "icon": "⛏️",
             "action": "Block mined",
             "description": "Mined block #1234, earned 50 RoadCoins",
-            "timestamp": (datetime.utcnow() - timedelta(hours=1)).isoformat()
+            "timestamp": (utc_now() - timedelta(hours=1)).isoformat()
         },
         {
             "id": 4,
@@ -380,7 +381,7 @@ async def get_recent_activity(
             "icon": "🥧",
             "action": "Device connected",
             "description": "Raspberry Pi 4 - Living Room came online",
-            "timestamp": (datetime.utcnow() - timedelta(hours=2)).isoformat()
+            "timestamp": (utc_now() - timedelta(hours=2)).isoformat()
         },
         {
             "id": 5,
@@ -388,7 +389,7 @@ async def get_recent_activity(
             "icon": "🌐",
             "action": "New like",
             "description": "Mike liked your post",
-            "timestamp": (datetime.utcnow() - timedelta(hours=3)).isoformat()
+            "timestamp": (utc_now() - timedelta(hours=3)).isoformat()
         }
     ]
 

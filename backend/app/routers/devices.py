@@ -10,6 +10,7 @@ from app.database import get_db
 from app.models.device import Device, DeviceMetric, DeviceLog
 from app.models.user import User
 from app.routers.auth import get_current_user
+from app.utils import utc_now
 
 router = APIRouter(prefix="/api/devices", tags=["devices"])
 
@@ -239,7 +240,7 @@ async def update_device(
     if device_data.description is not None:
         device.description = device_data.description
 
-    device.updated_at = datetime.utcnow()
+    device.updated_at = utc_now()
 
     await db.commit()
     await db.refresh(device)
@@ -265,7 +266,7 @@ async def device_heartbeat(
     # Update device status
     device.is_online = True
     device.status = "online"
-    device.last_seen = datetime.utcnow()
+    device.last_seen = utc_now()
 
     # Update system info if provided
     if heartbeat_data.ip_address:
@@ -308,7 +309,7 @@ async def device_heartbeat(
     # Save metric snapshot
     metric = DeviceMetric(
         device_id=device.id,
-        timestamp=datetime.utcnow(),
+        timestamp=utc_now(),
         cpu_usage=heartbeat_data.cpu_usage_percent,
         ram_usage=heartbeat_data.ram_usage_percent,
         disk_usage=heartbeat_data.disk_usage_percent,
@@ -392,7 +393,7 @@ async def ssh_connect(
         "device_id": device_id,
         "ip_address": device.ip_address,
         "hostname": device.hostname,
-        "connection_token": f"ssh_token_{device_id}_{datetime.utcnow().timestamp()}",
+        "connection_token": f"ssh_token_{device_id}_{utc_now().timestamp()}",
         "status": "connected",
         "message": f"SSH connection established to {device.hostname or device.ip_address}"
     }
@@ -448,7 +449,7 @@ async def ssh_execute_command(
         "command": command_data.command,
         "output": output,
         "exit_code": 0,
-        "executed_at": datetime.utcnow().isoformat()
+        "executed_at": utc_now().isoformat()
     }
 
 
@@ -511,7 +512,7 @@ async def deploy_to_device(
         "deploy_path": deploy_config.deploy_path,
         "steps": deployment_steps,
         "status": "success",
-        "deployed_at": datetime.utcnow().isoformat(),
+        "deployed_at": utc_now().isoformat(),
         "message": "Deployment completed successfully"
     }
 

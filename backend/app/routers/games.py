@@ -19,6 +19,7 @@ import random
 from ..database import get_db
 from ..auth import get_current_user
 from ..models import User
+from ..utils import utc_now
 
 router = APIRouter(prefix="/api/games", tags=["games"])
 
@@ -62,7 +63,7 @@ async def list_cities(
                 "money": 45000,
                 "level": 5,
                 "created_at": "2024-01-01T00:00:00Z",
-                "updated_at": datetime.utcnow().isoformat()
+                "updated_at": utc_now().isoformat()
             }
         ]
     }

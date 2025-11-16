@@ -11,6 +11,7 @@ from app.database import get_db
 from app.models.user import User
 from app.models.file import File, Folder
 from app.auth import get_current_active_user
+from app.utils import utc_now
 
 router = APIRouter(prefix="/api/files", tags=["Files"])
 
@@ -217,7 +218,7 @@ async def get_file(
         )
 
     # Update last accessed
-    file.last_accessed = datetime.utcnow()
+    file.last_accessed = utc_now()
     await db.commit()
 
     return file

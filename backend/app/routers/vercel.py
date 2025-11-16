@@ -13,6 +13,8 @@ import httpx
 import os
 import logging
 
+from app.utils import utc_now
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/vercel", tags=["vercel"])
@@ -420,5 +422,5 @@ async def vercel_health_check():
     return {
         "service": "vercel",
         "status": "operational" if VERCEL_TOKEN else "not_configured",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": utc_now().isoformat()
     }
