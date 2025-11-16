@@ -7,6 +7,13 @@ class BlackRoadApps {
     constructor() {
         this.api = window.BlackRoadAPI;
         this.refreshIntervals = {};
+        this.aiChatState = {
+            conversations: [],
+            activeConversationId: null,
+            messages: [],
+            loadingMessages: false,
+            sendingMessage: false,
+        };
     }
 
     /**
@@ -578,29 +585,253 @@ class BlackRoadApps {
         if (!content) return;
 
         content.innerHTML = `
-            <div class="ai-chat-container">
-                <div class="chat-messages" id="ai-chat-messages">
-                    <div class="text-muted">AI Assistant ready! How can I help you?</div>
+            <div class="ai-chat-container" style="display: flex; gap: 15px; height: 100%;">
+                <div class="chat-sidebar" style="width: 220px; border-right: 1px solid #ddd; display: flex; flex-direction: column;">
+                    <div class="chat-sidebar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="margin: 0; font-size: 14px;">Conversations</h3>
+                        <button class="btn btn-secondary" style="font-size: 11px; padding: 3px 8px;" onclick="window.BlackRoadApps.createAIConversation()">+ New</button>
+                    </div>
+                    <div id="ai-chat-conversations" class="chat-conversations" style="flex: 1; overflow-y: auto; font-size: 11px; padding-right: 5px;">
+                        <div class="text-muted">Loading conversations...</div>
+                    </div>
                 </div>
-                <div class="chat-input">
-                    <input type="text" id="ai-chat-input" placeholder="Type your message..." />
-                    <button class="btn btn-primary" onclick="window.BlackRoadApps.sendAIMessage()">Send</button>
+                <div class="chat-main" style="flex: 1; display: flex; flex-direction: column;">
+                    <div class="chat-messages" id="ai-chat-messages" style="flex: 1; overflow-y: auto; background: #f7f7f7; border: 1px solid #ddd; border-radius: 4px; padding: 10px; font-size: 12px;">
+                        <div class="text-muted">Loading conversations...</div>
+                    </div>
+                    <div class="chat-input" style="display: flex; gap: 10px; margin-top: 10px;">
+                        <input type="text" id="ai-chat-input" placeholder="Type your message..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" />
+                        <button class="btn btn-primary" id="ai-chat-send-btn" onclick="window.BlackRoadApps.sendAIMessage()">Send</button>
+                    </div>
                 </div>
             </div>
         `;
+
+        await this.fetchAIConversations({ selectFirst: true });
+        if (this.aiChatState.activeConversationId) {
+            await this.fetchAIMessages(this.aiChatState.activeConversationId);
+        } else {
+            this.updateAIChatMessagesUI();
+        }
+    }
+
+    async fetchAIConversations({ selectFirst = false } = {}) {
+        const container = document.getElementById('ai-chat-conversations');
+        if (container && !this.aiChatState.conversations.length) {
+            container.innerHTML = '<div class="text-muted">Loading conversations...</div>';
+        }
+
+        try {
+            const conversations = await this.api.getConversations();
+            this.aiChatState.conversations = conversations;
+
+            if (selectFirst && conversations.length && !this.aiChatState.activeConversationId) {
+                this.aiChatState.activeConversationId = conversations[0].id;
+            }
+
+            if (this.aiChatState.activeConversationId) {
+                const exists = conversations.some(conv => conv.id === this.aiChatState.activeConversationId);
+                if (!exists) {
+                    this.aiChatState.activeConversationId = conversations[0]?.id || null;
+                }
+            }
+
+            this.updateAIChatConversationsUI();
+        } catch (error) {
+            console.error('Failed to load AI chat conversations:', error);
+            if (container) {
+                container.innerHTML = `<div style="color: #d9534f;">${this.escapeHtml(error.message || 'Unable to load conversations')}</div>`;
+            }
+        }
+    }
+
+    updateAIChatConversationsUI() {
+        const container = document.getElementById('ai-chat-conversations');
+        if (!container) return;
+
+        const { conversations, activeConversationId } = this.aiChatState;
+
+        if (!conversations.length) {
+            container.innerHTML = '<div class="text-muted">No conversations yet. Create one to start chatting.</div>';
+            return;
+        }
+
+        container.innerHTML = conversations.map(convo => `
+            <div class="chat-conversation ${convo.id === activeConversationId ? 'active' : ''}"
+                onclick="window.BlackRoadApps.selectAIConversation(${convo.id})"
+                style="padding: 8px; border-radius: 4px; margin-bottom: 4px; cursor: pointer; ${convo.id === activeConversationId ? 'background: #0d6efd; color: #fff;' : 'background: #f0f0f0;'}">
+                <div style="font-weight: 600;">${this.escapeHtml(convo.title || 'Untitled')}</div>
+                <div style="font-size: 10px; opacity: 0.8;">${convo.message_count || 0} messages</div>
+            </div>
+        `).join('');
+    }
+
+    async selectAIConversation(conversationId) {
+        if (this.aiChatState.activeConversationId === conversationId && !this.aiChatState.loadingMessages) {
+            return;
+        }
+
+        this.aiChatState.activeConversationId = conversationId;
+        this.updateAIChatConversationsUI();
+        await this.fetchAIMessages(conversationId);
+    }
+
+    async createAIConversation() {
+        try {
+            const conversation = await this.api.createConversation('New Conversation');
+            this.aiChatState.conversations = [conversation, ...this.aiChatState.conversations];
+            this.aiChatState.activeConversationId = conversation.id;
+            this.aiChatState.messages = [];
+            this.updateAIChatConversationsUI();
+            this.updateAIChatMessagesUI();
+            const input = document.getElementById('ai-chat-input');
+            if (input) input.focus();
+            return conversation;
+        } catch (error) {
+            console.error('Failed to create AI conversation:', error);
+            const container = document.getElementById('ai-chat-conversations');
+            if (container) {
+                container.insertAdjacentHTML('afterbegin', `<div style="color: #d9534f; margin-bottom: 6px;">${this.escapeHtml(error.message || 'Unable to create conversation')}</div>`);
+            }
+            return null;
+        }
+    }
+
+    async fetchAIMessages(conversationId) {
+        const messagesContainer = document.getElementById('ai-chat-messages');
+        if (messagesContainer) {
+            messagesContainer.innerHTML = '<div class="text-muted">Loading messages...</div>';
+        }
+
+        if (!conversationId) {
+            this.aiChatState.messages = [];
+            this.updateAIChatMessagesUI();
+            return;
+        }
+
+        this.aiChatState.loadingMessages = true;
+
+        try {
+            const messages = await this.api.getMessages(conversationId);
+            this.aiChatState.messages = messages;
+            this.updateAIChatMessagesUI();
+        } catch (error) {
+            console.error('Failed to load AI chat messages:', error);
+            if (messagesContainer) {
+                messagesContainer.innerHTML = `<div style="color: #d9534f;">${this.escapeHtml(error.message || 'Unable to load messages')}</div>`;
+            }
+        } finally {
+            this.aiChatState.loadingMessages = false;
+        }
+    }
+
+    updateAIChatMessagesUI() {
+        const container = document.getElementById('ai-chat-messages');
+        if (!container) return;
+
+        const { activeConversationId, messages } = this.aiChatState;
+
+        if (!activeConversationId) {
+            container.innerHTML = '<div class="text-muted">Select a conversation or create a new one to start chatting.</div>';
+            return;
+        }
+
+        if (!messages.length) {
+            container.innerHTML = '<div class="text-muted">No messages yet. Say hello!</div>';
+            return;
+        }
+
+        container.innerHTML = messages.map(message => `
+            <div class="chat-message" style="margin-bottom: 12px; display: flex; flex-direction: column; align-items: ${message.role === 'assistant' ? 'flex-start' : 'flex-end'};">
+                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #666;">
+                    ${message.role === 'assistant' ? 'AI Assistant' : 'You'}
+                </div>
+                <div style="background: ${message.role === 'assistant' ? '#ffffff' : '#d1ecf1'}; border: 1px solid #ddd; padding: 8px 10px; border-radius: 8px; max-width: 80%; white-space: pre-wrap;">
+                    ${this.escapeHtml(message.content)}
+                </div>
+            </div>
+        `).join('');
+
+        this.scrollAIChatToBottom();
+    }
+
+    scrollAIChatToBottom() {
+        const container = document.getElementById('ai-chat-messages');
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
     }
 
     async sendAIMessage() {
         const input = document.getElementById('ai-chat-input');
-        const message = input.value.trim();
-        if (!message) return;
+        const sendBtn = document.getElementById('ai-chat-send-btn');
+        if (!input) return;
 
-        console.log('Send AI message:', message);
-        // TODO: Implement AI chat
-        input.value = '';
+        const message = input.value.trim();
+        if (!message || this.aiChatState.sendingMessage) return;
+
+        this.aiChatState.sendingMessage = true;
+        if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+        }
+
+        let conversationId = this.aiChatState.activeConversationId;
+
+        try {
+            if (!conversationId) {
+                const conversation = await this.createAIConversation();
+                conversationId = conversation?.id;
+            }
+
+            if (!conversationId) {
+                throw new Error('Unable to start a new conversation');
+            }
+
+            // Optimistic user message
+            this.aiChatState.messages = [
+                ...this.aiChatState.messages,
+                {
+                    id: `temp-${Date.now()}`,
+                    role: 'user',
+                    content: message,
+                    created_at: new Date().toISOString()
+                }
+            ];
+            this.updateAIChatMessagesUI();
+            input.value = '';
+
+            await this.api.sendMessage(conversationId, message);
+            await this.fetchAIMessages(conversationId);
+            await this.fetchAIConversations();
+        } catch (error) {
+            console.error('Failed to send AI chat message:', error);
+            const messagesContainer = document.getElementById('ai-chat-messages');
+            if (messagesContainer) {
+                messagesContainer.insertAdjacentHTML('beforeend', `<div style="color: #d9534f; margin-top: 8px;">${this.escapeHtml(error.message || 'Failed to send message')}</div>`);
+            }
+        } finally {
+            this.aiChatState.sendingMessage = false;
+            if (sendBtn) {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send';
+            }
+        }
     }
 
     // ===== UTILITY FUNCTIONS =====
+
+    escapeHtml(value) {
+        if (typeof value !== 'string') return '';
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;',
+        };
+        return value.replace(/[&<>"']/g, (char) => map[char]);
+    }
 
     formatTime(timestamp) {
         const date = new Date(timestamp);
