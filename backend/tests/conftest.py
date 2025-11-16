@@ -1,16 +1,21 @@
 """Pytest configuration and fixtures"""
-import pytest
 import asyncio
+import os
 from typing import AsyncGenerator
-from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+
+import pytest
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.main import app
 from app.database import get_db, Base
 from app.config import settings
 
 # Test database URL
-TEST_DATABASE_URL = "postgresql+asyncpg://blackroad:password@localhost:5432/blackroad_test"
+TEST_DATABASE_URL = os.getenv(
+    "TEST_DATABASE_URL",
+    "sqlite+aiosqlite:///./test.db"
+)
 
 # Create test engine
 test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
@@ -46,7 +51,9 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 
     app.dependency_overrides[get_db] = override_get_db
 
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
 
     app.dependency_overrides.clear()

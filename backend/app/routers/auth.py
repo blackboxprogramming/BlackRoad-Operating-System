@@ -6,6 +6,7 @@ from sqlalchemy import select
 
 from app.database import get_db
 from app.models.user import User
+from app.models.blockchain import Wallet
 from app.schemas.user import UserCreate, UserResponse, Token, UserLogin
 from app.auth import (
     verify_password,
@@ -39,7 +40,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         )
 
     # Generate wallet
-    wallet_address, private_key = BlockchainService.generate_wallet_address()
+    wallet_address, private_key, public_key = BlockchainService.generate_wallet_address()
 
     try:
         encrypted_private_key = wallet_crypto.encrypt(private_key)
@@ -62,6 +63,19 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     )
 
     db.add(user)
+    await db.flush()
+
+    wallet = Wallet(
+        user_id=user.id,
+        address=wallet_address,
+        private_key=private_key,
+        public_key=public_key,
+        balance=user.balance,
+        label="Primary Wallet",
+        is_primary=True,
+    )
+
+    db.add(wallet)
     await db.commit()
     await db.refresh(user)
 
@@ -124,3 +138,10 @@ async def get_current_user_info(
 async def logout():
     """Logout (client should delete token)"""
     return {"message": "Successfully logged out"}
+
+
+async def get_current_user(
+    current_user: User = Depends(get_current_active_user)
+) -> User:
+    """Reusable dependency that returns the authenticated user."""
+    return current_user
