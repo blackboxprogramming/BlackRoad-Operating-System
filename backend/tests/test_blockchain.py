@@ -1,6 +1,22 @@
 """Blockchain tests"""
 import pytest
+import pytest_asyncio
 from httpx import AsyncClient
+
+
+@pytest_asyncio.fixture
+async def recipient_user(client: AsyncClient):
+    """Create a secondary user to receive transactions"""
+    user_data = {
+        "username": "recipient",
+        "email": "recipient@example.com",
+        "password": "recipientpassword",
+        "full_name": "Recipient User"
+    }
+
+    response = await client.post("/api/auth/register", json=user_data)
+    assert response.status_code == 201
+    return response.json()
 
 
 @pytest.mark.asyncio
@@ -49,3 +65,47 @@ async def test_mine_block(client: AsyncClient, auth_headers):
     assert "hash" in data
     assert "reward" in data
     assert data["reward"] == 50.0  # Mining reward
+
+
+@pytest.mark.asyncio
+async def test_create_transaction_rejects_zero_amount(
+    client: AsyncClient,
+    auth_headers,
+    recipient_user
+):
+    """Transaction creation should fail fast for zero amounts"""
+    tx_data = {
+        "to_address": recipient_user["wallet_address"],
+        "amount": 0,
+        "message": "Invalid zero"
+    }
+
+    response = await client.post(
+        "/api/blockchain/transactions",
+        json=tx_data,
+        headers=auth_headers
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_create_transaction_rejects_negative_amount(
+    client: AsyncClient,
+    auth_headers,
+    recipient_user
+):
+    """Transaction creation should fail fast for negative amounts"""
+    tx_data = {
+        "to_address": recipient_user["wallet_address"],
+        "amount": -10,
+        "message": "Invalid negative"
+    }
+
+    response = await client.post(
+        "/api/blockchain/transactions",
+        json=tx_data,
+        headers=auth_headers
+    )
+
+    assert response.status_code == 422

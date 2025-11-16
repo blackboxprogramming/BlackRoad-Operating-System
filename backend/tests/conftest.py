@@ -1,5 +1,6 @@
 """Pytest configuration and fixtures"""
 import pytest
+import pytest_asyncio
 import asyncio
 from typing import AsyncGenerator
 from httpx import AsyncClient
@@ -25,7 +26,7 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """Create test database session"""
     async with test_engine.begin() as conn:
@@ -38,7 +39,7 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """Create test client"""
     async def override_get_db():
@@ -52,7 +53,7 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     app.dependency_overrides.clear()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def test_user(client: AsyncClient):
     """Create a test user"""
     user_data = {
@@ -67,7 +68,7 @@ async def test_user(client: AsyncClient):
     return response.json()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def auth_headers(client: AsyncClient, test_user):
     """Get authentication headers"""
     login_data = {

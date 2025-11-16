@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, desc, func
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 from app.database import get_db
@@ -15,9 +15,12 @@ from app.services.blockchain import BlockchainService
 router = APIRouter(prefix="/api/blockchain", tags=["Blockchain"])
 
 
+MIN_TRANSACTION_AMOUNT = 0.0001
+
+
 class TransactionCreate(BaseModel):
     to_address: str
-    amount: float
+    amount: float = Field(gt=0, description="Amount to transfer; must be positive")
     message: Optional[str] = None
 
 
@@ -92,6 +95,18 @@ async def create_transaction(
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new transaction"""
+    if tx_data.amount <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Transaction amount must be greater than zero"
+        )
+
+    if tx_data.amount < MIN_TRANSACTION_AMOUNT:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Transactions must be at least {MIN_TRANSACTION_AMOUNT} tokens"
+        )
+
     # Check balance
     if current_user.balance < tx_data.amount:
         raise HTTPException(
@@ -121,6 +136,11 @@ async def create_transaction(
     )
 
     # Update balances (simplified - in production would be done on block confirmation)
+    if tx_data.amount <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Transaction amount must be greater than zero"
+        )
     current_user.balance -= tx_data.amount
     recipient.balance += tx_data.amount
 
