@@ -15,6 +15,7 @@ from app.auth import (
     get_current_active_user
 )
 from app.services.blockchain import BlockchainService
+from app.services.crypto import wallet_crypto, WalletKeyEncryptionError
 from datetime import datetime
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
@@ -40,6 +41,14 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     # Generate wallet
     wallet_address, private_key = BlockchainService.generate_wallet_address()
 
+    try:
+        encrypted_private_key = wallet_crypto.encrypt(private_key)
+    except WalletKeyEncryptionError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unable to encrypt wallet key"
+        )
+
     # Create user
     user = User(
         username=user_data.username,
@@ -47,7 +56,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         full_name=user_data.full_name,
         hashed_password=get_password_hash(user_data.password),
         wallet_address=wallet_address,
-        wallet_private_key=private_key,  # In production, encrypt this!
+        wallet_private_key=encrypted_private_key,
         balance=100.0,  # Starting bonus
         created_at=datetime.utcnow()
     )

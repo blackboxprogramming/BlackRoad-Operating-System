@@ -11,6 +11,7 @@ from app.models.user import User
 from app.models.blockchain import Block, Transaction, Wallet
 from app.auth import get_current_active_user
 from app.services.blockchain import BlockchainService
+from app.services.crypto import WalletKeyDecryptionError
 
 router = APIRouter(prefix="/api/blockchain", tags=["Blockchain"])
 
@@ -112,13 +113,19 @@ async def create_transaction(
         )
 
     # Create transaction
-    transaction = await BlockchainService.create_transaction(
-        db=db,
-        from_address=current_user.wallet_address,
-        to_address=tx_data.to_address,
-        amount=tx_data.amount,
-        private_key=current_user.wallet_private_key
-    )
+    try:
+        transaction = await BlockchainService.create_transaction(
+            db=db,
+            from_address=current_user.wallet_address,
+            to_address=tx_data.to_address,
+            amount=tx_data.amount,
+            encrypted_private_key=current_user.wallet_private_key
+        )
+    except WalletKeyDecryptionError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Wallet key could not be decrypted"
+        )
 
     # Update balances (simplified - in production would be done on block confirmation)
     current_user.balance -= tx_data.amount

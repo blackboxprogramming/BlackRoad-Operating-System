@@ -11,6 +11,7 @@ from app.config import settings
 from app.database import async_engine, Base
 from app.redis_client import close_redis
 from app.routers import auth, email, social, video, files, blockchain, ai_chat, devices, miner
+from app.services.crypto import rotate_plaintext_wallet_keys
 
 
 @asynccontextmanager
@@ -25,6 +26,13 @@ async def lifespan(app: FastAPI):
 
     print("Database tables created successfully")
     print(f"Server running on {settings.ENVIRONMENT} mode")
+
+    # Re-encrypt any legacy plaintext wallet keys before serving requests
+    updated_users, updated_wallets = await rotate_plaintext_wallet_keys()
+    if updated_users or updated_wallets:
+        print(
+            f"Re-encrypted {updated_users} user keys and {updated_wallets} wallet keys"
+        )
 
     yield
 

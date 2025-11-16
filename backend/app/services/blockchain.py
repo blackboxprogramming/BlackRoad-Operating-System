@@ -8,6 +8,7 @@ from sqlalchemy import select, desc
 from app.models.blockchain import Block, Transaction, Wallet
 from app.models.user import User
 from app.config import settings
+from app.services.crypto import wallet_crypto, WalletKeyDecryptionError
 import secrets
 
 
@@ -140,9 +141,16 @@ class BlockchainService:
         from_address: str,
         to_address: str,
         amount: float,
-        private_key: str
+        encrypted_private_key: str
     ) -> Transaction:
         """Create a new transaction"""
+        try:
+            private_key = wallet_crypto.decrypt(encrypted_private_key)
+        except WalletKeyDecryptionError as exc:
+            raise WalletKeyDecryptionError(
+                "Unable to decrypt wallet key for transaction"
+            ) from exc
+
         # Generate transaction hash
         tx_data = f"{from_address}{to_address}{amount}{datetime.utcnow()}"
         transaction_hash = hashlib.sha256(tx_data.encode()).hexdigest()
