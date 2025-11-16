@@ -23,6 +23,9 @@ A comprehensive FastAPI backend for the BlackRoad Operating System, a Windows 95
 
 ## Quick Start
 
+> The desktop UI is bundled in `backend/static/index.html` and is served by the
+> FastAPI app at `http://localhost:8000/`.
+
 ### Prerequisites
 - Python 3.11+
 - Docker and Docker Compose
@@ -76,9 +79,15 @@ nano .env
 docker run -d -p 5432:5432 -e POSTGRES_USER=blackroad -e POSTGRES_PASSWORD=password -e POSTGRES_DB=blackroad_db postgres:15-alpine
 docker run -d -p 6379:6379 redis:7-alpine
 
-# Run the application
+# Run the application (serves backend/static/index.html at /)
 python run.py
 ```
+
+After either setup option finishes booting, browse to
+`http://localhost:8000/` to load the Windows 95 desktop that lives in
+`backend/static/index.html`. The API is available at `/api/*` from the same
+server, so no extra reverse proxying is required for local or hosted (Railway,
+GoDaddy, etc.) deployments.
 
 ### Configuration
 

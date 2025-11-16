@@ -11,6 +11,8 @@ jobs:
   validate:
     name: Validate HTML & JavaScript
     runs-on: ubuntu-latest
+    env:
+      UI_ENTRY: backend/static/index.html
 
     steps:
       - name: Checkout repository
@@ -25,6 +27,7 @@ jobs:
         run: |
           echo "🔍 Validating HTML structure..."
           python3 << 'EOF'
+          import os
           import sys
           import re
 
@@ -87,21 +90,25 @@ jobs:
                   print("\n✅ All validation checks passed!")
                   return True
 
-          # Validate index.html
-          valid = validate_html('index.html')
+          # Validate canonical UI entrypoint
+          target = os.environ.get('UI_ENTRY', 'backend/static/index.html')
+          valid = validate_html(target)
           sys.exit(0 if valid else 1)
           EOF
 
       - name: Check JavaScript syntax
         run: |
           echo "🔍 Checking JavaScript syntax..."
-          if [ -f "index.html" ]; then
+          if [ -f "$UI_ENTRY" ]; then
             # Extract and check JavaScript
             python3 << 'EOF'
+          import os
           import re
           import sys
 
-          with open('index.html', 'r') as f:
+          target = os.environ.get('UI_ENTRY', 'backend/static/index.html')
+
+          with open(target, 'r') as f:
               content = f.read()
 
           # Extract JavaScript code
@@ -146,26 +153,26 @@ jobs:
               sys.exit(0)
           EOF
           else
-            echo "ℹ️  No index.html found - skipping JS validation"
+            echo "ℹ️  No UI entrypoint found - skipping JS validation"
           fi
 
       - name: Check for common security issues
         run: |
           echo "🔒 Checking for security issues..."
-          if [ -f "index.html" ]; then
+          if [ -f "$UI_ENTRY" ]; then
             # Check for inline event handlers with user input (basic XSS check)
-            if grep -i "eval(" index.html; then
+            if grep -i "eval(" "$UI_ENTRY"; then
               echo "⚠️  Warning: Found eval() - potential security risk"
               # Not failing for this, just warning
             fi
 
-            if grep -i "innerHTML.*user" index.html; then
+            if grep -i "innerHTML.*user" "$UI_ENTRY"; then
               echo "⚠️  Warning: Found innerHTML with user input - potential XSS risk"
             fi
 
             echo "✅ Basic security checks completed"
           else
-            echo "ℹ️  No index.html found - skipping security checks"
+            echo "ℹ️  No UI entrypoint found - skipping security checks"
           fi
 
       - name: Validate README

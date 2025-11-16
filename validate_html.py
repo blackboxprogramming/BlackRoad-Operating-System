@@ -2,6 +2,9 @@
 """HTML validator for BlackRoad OS"""
 import re
 import sys
+from pathlib import Path
+
+DEFAULT_INDEX = Path("backend/static/index.html")
 
 def validate_html(filename):
     errors = []
@@ -77,6 +80,6 @@ def validate_html(filename):
     return len(errors) == 0
 
 if __name__ == '__main__':
-    filename = sys.argv[1] if len(sys.argv) > 1 else 'index.html'
+    filename = sys.argv[1] if len(sys.argv) > 1 else str(DEFAULT_INDEX)
     valid = validate_html(filename)
     sys.exit(0 if valid else 1)
