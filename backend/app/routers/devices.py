@@ -343,3 +343,300 @@ async def delete_device(
     await db.commit()
 
     return None
+
+
+# ============================================================================
+# SSH & REMOTE MANAGEMENT
+# ============================================================================
+
+class SSHCommand(BaseModel):
+    """Schema for executing SSH commands."""
+    command: str
+    timeout: Optional[int] = 30
+
+
+class DeploymentConfig(BaseModel):
+    """Schema for deploying code to device."""
+    repository: str
+    branch: str = "main"
+    deploy_path: str = "/home/pi/apps"
+    environment_vars: Optional[dict] = {}
+
+
+@router.post("/{device_id}/ssh/connect")
+async def ssh_connect(
+    device_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Establish SSH connection to device (returns connection token)."""
+    result = await db.execute(
+        select(Device).filter(
+            Device.device_id == device_id, Device.owner_id == current_user.id
+        )
+    )
+    device = result.scalar_one_or_none()
+
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    if not device.is_online:
+        raise HTTPException(status_code=400, detail="Device is offline")
+
+    if not device.ip_address:
+        raise HTTPException(status_code=400, detail="Device IP address not available")
+
+    # In production, establish actual SSH connection
+    # For now, return a mock connection token
+    return {
+        "device_id": device_id,
+        "ip_address": device.ip_address,
+        "hostname": device.hostname,
+        "connection_token": f"ssh_token_{device_id}_{datetime.utcnow().timestamp()}",
+        "status": "connected",
+        "message": f"SSH connection established to {device.hostname or device.ip_address}"
+    }
+
+
+@router.post("/{device_id}/ssh/execute")
+async def ssh_execute_command(
+    device_id: str,
+    command_data: SSHCommand,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Execute SSH command on device."""
+    result = await db.execute(
+        select(Device).filter(
+            Device.device_id == device_id, Device.owner_id == current_user.id
+        )
+    )
+    device = result.scalar_one_or_none()
+
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    if not device.is_online:
+        raise HTTPException(status_code=400, detail="Device is offline")
+
+    # In production, execute actual SSH command
+    # For now, return mock response
+    mock_outputs = {
+        "uptime": "up 15 days, 3:24",
+        "ls": "app.py  config.json  data/  logs/  requirements.txt",
+        "whoami": "pi",
+        "pwd": "/home/pi",
+        "df -h": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        29G   12G   16G  44% /",
+        "free -h": "              total        used        free      shared  buff/cache   available\nMem:           3.8Gi       1.2Gi       1.5Gi        45Mi       1.1Gi       2.4Gi",
+    }
+
+    output = mock_outputs.get(command_data.command, f"Executing: {command_data.command}\nCommand output would appear here...")
+
+    # Log the command execution
+    log = DeviceLog(
+        device_id=device.id,
+        level="info",
+        source="ssh_command",
+        message=f"Executed command: {command_data.command}",
+        details={"command": command_data.command, "output": output}
+    )
+    db.add(log)
+    await db.commit()
+
+    return {
+        "device_id": device_id,
+        "command": command_data.command,
+        "output": output,
+        "exit_code": 0,
+        "executed_at": datetime.utcnow().isoformat()
+    }
+
+
+@router.post("/{device_id}/deploy")
+async def deploy_to_device(
+    device_id: str,
+    deploy_config: DeploymentConfig,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Deploy code from git repository to device."""
+    result = await db.execute(
+        select(Device).filter(
+            Device.device_id == device_id, Device.owner_id == current_user.id
+        )
+    )
+    device = result.scalar_one_or_none()
+
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    if not device.is_online:
+        raise HTTPException(status_code=400, detail="Device is offline")
+
+    # In production, execute deployment steps via SSH:
+    # 1. Clone/pull repository
+    # 2. Install dependencies
+    # 3. Set environment variables
+    # 4. Restart services
+    # For now, return mock deployment status
+
+    deployment_steps = [
+        {"step": 1, "action": "Connecting to device", "status": "completed"},
+        {"step": 2, "action": f"Cloning {deploy_config.repository}", "status": "completed"},
+        {"step": 3, "action": f"Checking out branch {deploy_config.branch}", "status": "completed"},
+        {"step": 4, "action": "Installing dependencies", "status": "completed"},
+        {"step": 5, "action": "Setting environment variables", "status": "completed"},
+        {"step": 6, "action": "Restarting services", "status": "completed"},
+    ]
+
+    # Log the deployment
+    log = DeviceLog(
+        device_id=device.id,
+        level="info",
+        source="deployment",
+        message=f"Deployed {deploy_config.repository} ({deploy_config.branch})",
+        details={
+            "repository": deploy_config.repository,
+            "branch": deploy_config.branch,
+            "deploy_path": deploy_config.deploy_path
+        }
+    )
+    db.add(log)
+    await db.commit()
+
+    return {
+        "device_id": device_id,
+        "repository": deploy_config.repository,
+        "branch": deploy_config.branch,
+        "deploy_path": deploy_config.deploy_path,
+        "steps": deployment_steps,
+        "status": "success",
+        "deployed_at": datetime.utcnow().isoformat(),
+        "message": "Deployment completed successfully"
+    }
+
+
+@router.get("/{device_id}/logs")
+async def get_device_logs(
+    device_id: str,
+    level: Optional[str] = None,
+    limit: int = 100,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get device logs."""
+    # First verify device ownership
+    device_result = await db.execute(
+        select(Device).filter(
+            Device.device_id == device_id, Device.owner_id == current_user.id
+        )
+    )
+    device = device_result.scalar_one_or_none()
+
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    # Get logs
+    query = select(DeviceLog).filter(DeviceLog.device_id == device.id)
+
+    if level:
+        query = query.filter(DeviceLog.level == level)
+
+    query = query.order_by(DeviceLog.timestamp.desc()).limit(limit)
+
+    result = await db.execute(query)
+    logs = result.scalars().all()
+
+    return {
+        "device_id": device_id,
+        "logs": [
+            {
+                "id": log.id,
+                "level": log.level,
+                "source": log.source,
+                "message": log.message,
+                "details": log.details,
+                "timestamp": log.timestamp.isoformat()
+            }
+            for log in logs
+        ],
+        "total": len(logs)
+    }
+
+
+@router.get("/{device_id}/services")
+async def get_device_services(
+    device_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get running services on device."""
+    result = await db.execute(
+        select(Device).filter(
+            Device.device_id == device_id, Device.owner_id == current_user.id
+        )
+    )
+    device = result.scalar_one_or_none()
+
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    # In production, query actual services via SSH
+    # For now, return mock services
+    return {
+        "device_id": device_id,
+        "services": [
+            {"name": "nginx", "status": "running", "uptime": "15 days"},
+            {"name": "postgresql", "status": "running", "uptime": "15 days"},
+            {"name": "redis", "status": "running", "uptime": "15 days"},
+            {"name": "docker", "status": "running", "uptime": "15 days"},
+        ]
+    }
+
+
+@router.post("/{device_id}/services/{service_name}/{action}")
+async def control_service(
+    device_id: str,
+    service_name: str,
+    action: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Control a service on device (start, stop, restart)."""
+    if action not in ["start", "stop", "restart", "status"]:
+        raise HTTPException(status_code=400, detail="Invalid action. Must be: start, stop, restart, or status")
+
+    result = await db.execute(
+        select(Device).filter(
+            Device.device_id == device_id, Device.owner_id == current_user.id
+        )
+    )
+    device = result.scalar_one_or_none()
+
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    if not device.is_online:
+        raise HTTPException(status_code=400, detail="Device is offline")
+
+    # In production, execute service control via SSH
+    # For now, return mock response
+
+    # Log the action
+    log = DeviceLog(
+        device_id=device.id,
+        level="info",
+        source="service_control",
+        message=f"Service {service_name}: {action}",
+        details={"service": service_name, "action": action}
+    )
+    db.add(log)
+    await db.commit()
+
+    return {
+        "device_id": device_id,
+        "service": service_name,
+        "action": action,
+        "status": "success",
+        "message": f"Service {service_name} {action} successful"
+    }
