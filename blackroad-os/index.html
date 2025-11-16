@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackRoad OS — Corporate Portal</title>
+
+    <!-- CSS Stack -->
+    <link rel="stylesheet" href="assets/reset.css">
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="stylesheet" href="assets/os.css">
+    <link rel="stylesheet" href="assets/apps.css">
+</head>
+<body data-theme="tealOS">
+
+    <!-- Desktop Surface -->
+    <div id="desktop" class="desktop">
+        <!-- Desktop icons will be injected here by app.js -->
+        <div id="desktop-icons" class="desktop-icons"></div>
+
+        <!-- Windows container -->
+        <div id="windows-container" class="windows-container"></div>
+    </div>
+
+    <!-- Taskbar -->
+    <div id="taskbar" class="taskbar">
+        <div class="taskbar-left">
+            <button class="start-button" id="start-button">
+                <span class="logo">◆</span>
+                <span>BlackRoad</span>
+            </button>
+            <div id="taskbar-windows" class="taskbar-windows"></div>
+        </div>
+
+        <div class="taskbar-center">
+            <div class="system-clock" id="system-clock">--:--</div>
+        </div>
+
+        <div class="taskbar-right">
+            <button class="system-tray-icon" id="notifications-tray" title="Notifications">
+                <span class="icon">🔔</span>
+                <span class="badge" id="notification-badge" style="display:none;">0</span>
+            </button>
+            <button class="system-tray-icon" id="theme-toggle" title="Toggle Theme">
+                <span class="icon">🌙</span>
+            </button>
+            <button class="system-tray-icon" id="settings-tray" title="Settings">
+                <span class="icon">⚙</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Start Menu (hidden by default) -->
+    <div id="start-menu" class="start-menu" style="display:none;">
+        <div class="start-menu-header">
+            <h3>BlackRoad OS</h3>
+            <p class="version">v0.1.0-alpha</p>
+        </div>
+        <div class="start-menu-apps" id="start-menu-apps">
+            <!-- Populated by registry -->
+        </div>
+        <div class="start-menu-footer">
+            <button id="shutdown-btn" class="btn-text">Shutdown</button>
+        </div>
+    </div>
+
+    <!-- Global notification container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Command Palette (future feature) -->
+    <div id="command-palette" class="command-palette" style="display:none;">
+        <input type="text" placeholder="Type a command..." id="command-input">
+        <div id="command-results"></div>
+    </div>
+
+    <!-- JavaScript Stack -->
+    <!-- Load in dependency order -->
+    <script src="js/mock_data.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/os.js"></script>
+    <script src="js/theme.js"></script>
+
+    <!-- Apps -->
+    <script src="js/apps/prism.js"></script>
+    <script src="js/apps/miners.js"></script>
+    <script src="js/apps/pi_ops.js"></script>
+    <script src="js/apps/runbooks.js"></script>
+    <script src="js/apps/compliance.js"></script>
+    <script src="js/apps/finance.js"></script>
+    <script src="js/apps/identity.js"></script>
+    <script src="js/apps/research.js"></script>
+    <script src="js/apps/engineering.js"></script>
+    <script src="js/apps/settings.js"></script>
+    <script src="js/apps/notifications.js"></script>
+    <script src="js/apps/corporate.js"></script>
+
+    <!-- Registry and Bootloader (load last) -->
+    <script src="js/registry.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
