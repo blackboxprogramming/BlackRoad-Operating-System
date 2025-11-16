@@ -79,14 +79,26 @@ class ApiClient {
      */
     async request(method, endpoint, data = null, options = {}) {
         const url = `${this.baseUrl}${endpoint}`;
-        const config = {
-            method,
-            headers: this.getHeaders(options.includeAuth !== false),
-            ...options,
+        const {
+            includeAuth = true,
+            headers: customHeaders = {},
+            rawBody = false,
+            ...fetchOptions
+        } = options;
+
+        const headers = {
+            ...this.getHeaders(includeAuth),
+            ...customHeaders,
         };
 
-        if (data) {
-            config.body = JSON.stringify(data);
+        const config = {
+            method,
+            headers,
+            ...fetchOptions,
+        };
+
+        if (data !== null && data !== undefined) {
+            config.body = rawBody ? data : JSON.stringify(data);
         }
 
         try {
@@ -157,10 +169,17 @@ class ApiClient {
     }
 
     async login(username, password) {
-        const response = await this.post('/api/auth/login', {
-            username,
-            password
-        }, { includeAuth: false });
+        const formData = new URLSearchParams();
+        formData.append('username', username);
+        formData.append('password', password);
+
+        const response = await this.request('POST', '/api/auth/login', formData, {
+            includeAuth: false,
+            rawBody: true,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
 
         if (response.access_token) {
             this.setToken(response.access_token);
