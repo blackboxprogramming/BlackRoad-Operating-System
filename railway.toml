@@ -1,0 +1,25 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "backend/Dockerfile"
+
+[deploy]
+numReplicas = 1
+sleepApplication = false
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+startCommand = "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+
+[[services]]
+name = "blackroad-backend"
+
+[services.healthcheck]
+path = "/health"
+timeout = 10
+
+[[services.env]]
+name = "ENVIRONMENT"
+value = "production"
+
+[[services.env]]
+name = "DEBUG"
+value = "False"

@@ -12,7 +12,8 @@ from app.database import async_engine, Base
 from app.redis_client import close_redis
 from app.routers import (
     auth, email, social, video, files, blockchain, ai_chat, devices, miner,
-    digitalocean, github, huggingface, vscode, games, browser, dashboard
+    digitalocean, github, huggingface, vscode, games, browser, dashboard,
+    railway, vercel, stripe, twilio, slack, discord, sentry, api_health
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -115,6 +116,18 @@ app.include_router(games.router)
 app.include_router(browser.router)
 app.include_router(dashboard.router)
 
+# New API integrations
+app.include_router(railway.router)
+app.include_router(vercel.router)
+app.include_router(stripe.router)
+app.include_router(twilio.router)
+app.include_router(slack.router)
+app.include_router(discord.router)
+app.include_router(sentry.router)
+
+# API health monitoring
+app.include_router(api_health.router)
+
 
 # Static file serving for the BlackRoad OS front-end
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
@@ -185,7 +198,15 @@ async def api_info():
             "vscode": "/api/vscode",
             "games": "/api/games",
             "browser": "/api/browser",
-            "dashboard": "/api/dashboard"
+            "dashboard": "/api/dashboard",
+            "railway": "/api/railway",
+            "vercel": "/api/vercel",
+            "stripe": "/api/stripe",
+            "twilio": "/api/twilio",
+            "slack": "/api/slack",
+            "discord": "/api/discord",
+            "sentry": "/api/sentry",
+            "health": "/api/health"
         },
         "documentation": {
             "swagger": "/api/docs",
