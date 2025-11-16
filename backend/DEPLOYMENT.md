@@ -56,9 +56,10 @@ docker run -d -p 6379:6379 redis:7-alpine
 
 ### 4. Run Application
 ```bash
-python run.py
+# PORT defaults to 8000 if not set
+python run.py                          # respects the PORT env variable
 # Or using uvicorn directly:
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port ${PORT:-8000}
 ```
 
 Access the API:

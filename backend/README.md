@@ -76,7 +76,7 @@ nano .env
 docker run -d -p 5432:5432 -e POSTGRES_USER=blackroad -e POSTGRES_PASSWORD=password -e POSTGRES_DB=blackroad_db postgres:15-alpine
 docker run -d -p 6379:6379 redis:7-alpine
 
-# Run the application
+# Run the application (PORT defaults to 8000 if unset)
 python run.py
 ```
 
