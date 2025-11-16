@@ -26,6 +26,28 @@ SECRET_KEY=your-secret-key
 ALLOWED_ORIGINS=https://yourdomain.com
 ```
 
+> 💡 **Railway-first secrets**: copy `backend/.env.example` to `.env` for local
+> runs, but store the real values inside your Railway project. The template is
+> kept in sync with `app.config.Settings` by the
+> [`scripts/railway/validate_env_template.py`](../scripts/railway/validate_env_template.py)
+> audit script, which also runs automatically in CI.
+
+### Railway Secrets Checklist
+
+1. Install the Railway CLI and authenticate: `curl -fsSL https://railway.app/install.sh | sh`
+2. Link the project locally: `railway link <project-id>`
+3. Use the template to populate secrets:
+   ```bash
+   while IFS='=' read -r key value; do
+     if [[ -n "$key" && $key != \#* ]]; then
+       railway variables set "$key" "$value"
+     fi
+   done < backend/.env.example
+   ```
+4. Override placeholder values using the Railway dashboard or `railway variables set`.
+5. Verify everything with `railway variables list` or by running the GitHub
+   Action **Railway Secrets & Automation Audit** from the Actions tab.
+
 ## Local Development
 
 ### 1. Setup Virtual Environment

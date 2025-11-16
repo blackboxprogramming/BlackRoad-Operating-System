@@ -82,6 +82,20 @@ The GitHub Pages workflow publishes the canonical frontend from
 `backend/static/index.html` (and any supporting assets in that directory) so
 the validation and deploy jobs keep pointing at the same file.
 
+### Railway Secrets & Automation
+
+- **Vercel-free deploys** – the backend ships with a Railway-native workflow
+  (`Deploy to Railway`) so you can ignore Vercel entirely.
+- **Single source of truth** – `backend/.env.example` enumerates every runtime
+  variable and uses obvious placeholders so you can paste the file into the
+  Railway variables dashboard without leaking credentials.
+- **CI enforcement** – the GitHub Action `Railway Secrets & Automation Audit`
+  runs `scripts/railway/validate_env_template.py` on every PR + nightly to make
+  sure the template, `railway.toml`, and `railway.json` never drift from the
+  FastAPI settings.
+- **Manual check** – run `python scripts/railway/validate_env_template.py`
+  locally to get the same assurance before pushing.
+
 ## Architecture
 
 ### Single-Page Application
