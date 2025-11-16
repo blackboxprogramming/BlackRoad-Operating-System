@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BlackRoad OS - Corporate Portal and Enterprise Operating System">
+    <meta name="author" content="BlackRoad Corporation">
     <title>BlackRoad OS — Corporate Portal</title>
 
-    <!-- CSS Stack -->
+    <!-- CSS Stack (load in dependency order) -->
     <link rel="stylesheet" href="assets/reset.css">
     <link rel="stylesheet" href="assets/styles.css">
     <link rel="stylesheet" href="assets/os.css">
@@ -14,73 +16,73 @@
 <body data-theme="tealOS">
 
     <!-- Desktop Surface -->
-    <div id="desktop" class="desktop">
-        <!-- Desktop icons will be injected here by app.js -->
-        <div id="desktop-icons" class="desktop-icons"></div>
+    <main id="desktop" class="desktop" role="main" aria-label="Desktop">
+        <!-- Desktop Icons Container -->
+        <div id="desktop-icons" class="desktop-icons" role="group" aria-label="Desktop applications"></div>
 
-        <!-- Windows container -->
-        <div id="windows-container" class="windows-container"></div>
-    </div>
+        <!-- Windows Container -->
+        <div id="windows-container" class="windows-container" role="region" aria-label="Application windows"></div>
+    </main>
 
     <!-- Taskbar -->
-    <div id="taskbar" class="taskbar">
+    <footer id="taskbar" class="taskbar" role="navigation" aria-label="Taskbar">
         <div class="taskbar-left">
-            <button class="start-button" id="start-button">
-                <span class="logo">◆</span>
+            <button class="start-button" id="start-button" aria-label="Open start menu" aria-haspopup="menu" aria-expanded="false">
+                <span class="logo" aria-hidden="true">◆</span>
                 <span>BlackRoad</span>
             </button>
-            <div id="taskbar-windows" class="taskbar-windows"></div>
+            <div id="taskbar-windows" class="taskbar-windows" role="group" aria-label="Open windows"></div>
         </div>
 
         <div class="taskbar-center">
-            <div class="system-clock" id="system-clock">--:--</div>
+            <time class="system-clock" id="system-clock" aria-live="off">--:--</time>
         </div>
 
-        <div class="taskbar-right">
-            <button class="system-tray-icon" id="notifications-tray" title="Notifications">
-                <span class="icon">🔔</span>
-                <span class="badge" id="notification-badge" style="display:none;">0</span>
+        <div class="taskbar-right" role="group" aria-label="System tray">
+            <button class="system-tray-icon" id="notifications-tray" aria-label="Notifications">
+                <span class="icon" aria-hidden="true">🔔</span>
+                <span class="badge" id="notification-badge" style="display:none;" aria-label="Unread notifications">0</span>
             </button>
-            <button class="system-tray-icon" id="theme-toggle" title="Toggle Theme">
-                <span class="icon">🌙</span>
+            <button class="system-tray-icon" id="theme-toggle" aria-label="Toggle theme">
+                <span class="icon" aria-hidden="true">🌙</span>
             </button>
-            <button class="system-tray-icon" id="settings-tray" title="Settings">
-                <span class="icon">⚙</span>
+            <button class="system-tray-icon" id="settings-tray" aria-label="Settings">
+                <span class="icon" aria-hidden="true">⚙</span>
             </button>
         </div>
-    </div>
+    </footer>
 
     <!-- Start Menu (hidden by default) -->
-    <div id="start-menu" class="start-menu" style="display:none;">
+    <nav id="start-menu" class="start-menu" style="display:none;" role="menu" aria-label="Start menu">
         <div class="start-menu-header">
             <h3>BlackRoad OS</h3>
-            <p class="version">v0.1.0-alpha</p>
+            <p class="version" aria-label="Version">v0.1.1</p>
         </div>
-        <div class="start-menu-apps" id="start-menu-apps">
-            <!-- Populated by registry -->
+        <div class="start-menu-apps" id="start-menu-apps" role="group" aria-label="Applications">
+            <!-- Populated by bootloader (app.js) -->
         </div>
         <div class="start-menu-footer">
-            <button id="shutdown-btn" class="btn-text">Shutdown</button>
+            <button id="shutdown-btn" class="btn-text" aria-label="Shutdown system">Shutdown</button>
         </div>
-    </div>
+    </nav>
 
-    <!-- Global notification container -->
-    <div id="notification-container" class="notification-container"></div>
+    <!-- Global Notification Container -->
+    <aside id="notification-container" class="notification-container" aria-live="polite" role="region" aria-label="Notifications"></aside>
 
-    <!-- Command Palette (future feature) -->
-    <div id="command-palette" class="command-palette" style="display:none;">
-        <input type="text" placeholder="Type a command..." id="command-input">
-        <div id="command-results"></div>
-    </div>
+    <!-- Command Palette (future feature - v0.2.0) -->
+    <dialog id="command-palette" class="command-palette" style="display:none;" role="dialog" aria-label="Command palette">
+        <input type="text" placeholder="Type a command..." id="command-input" aria-label="Command search">
+        <div id="command-results" role="listbox" aria-label="Command results"></div>
+    </dialog>
 
     <!-- JavaScript Stack -->
-    <!-- Load in dependency order -->
+    <!-- Load in dependency order: data → components → OS core → theme → apps → registry → bootloader -->
     <script src="js/mock_data.js"></script>
     <script src="js/components.js"></script>
     <script src="js/os.js"></script>
     <script src="js/theme.js"></script>
 
-    <!-- Apps -->
+    <!-- Applications -->
     <script src="js/apps/prism.js"></script>
     <script src="js/apps/miners.js"></script>
     <script src="js/apps/pi_ops.js"></script>

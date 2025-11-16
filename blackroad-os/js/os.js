@@ -1,18 +1,43 @@
 /**
  * BlackRoad OS - Window Manager & Event Bus
- * Core operating system functionality
- * Handles window creation, dragging, z-index, minimization, and global events
- * TODO: Add window resizing support
- * TODO: Add window snapping/tiling
+ * Core operating system functionality for window management and global events
+ *
+ * Features:
+ * - Window lifecycle management (create, focus, minimize, restore, close)
+ * - Drag-and-drop window positioning
+ * - Z-index management with overflow protection
+ * - Event bus for app communication
+ * - Notification system
+ * - Keyboard navigation and shortcuts
+ *
+ * Architecture:
+ * - Uses Map for O(1) window lookups
+ * - Event-driven design for loose coupling
+ * - Accessible-first with ARIA attributes
+ *
+ * TODO v0.2.0: Add window resizing support
+ * TODO v0.2.0: Add window maximize functionality
+ * TODO v0.3.0: Add window snapping/tiling
+ * TODO v0.3.0: Add window position persistence (localStorage)
  */
 
 class BlackRoadOS {
     constructor() {
-        this.windows = new Map(); // windowId -> window data
+        this.windows = new Map(); // windowId -> { id, element, title, icon, minimized }
         this.zIndexCounter = 100;
+        this.zIndexMax = 9999; // Prevent overflow
         this.eventBus = new EventEmitter();
         this.windowsContainer = null;
         this.taskbarWindows = null;
+
+        // App lifecycle hooks registry
+        this.lifecycleHooks = {
+            onWindowCreated: [],
+            onWindowFocused: [],
+            onWindowMinimized: [],
+            onWindowRestored: [],
+            onWindowClosed: []
+        };
 
         this.init();
     }
@@ -26,11 +51,14 @@ class BlackRoadOS {
 
         // Emit boot event
         this.eventBus.emit('os:boot', { timestamp: new Date().toISOString() });
-        console.log('BlackRoad OS initialized');
+        console.log('✅ BlackRoad OS initialized');
     }
 
+    /**
+     * Setup global keyboard shortcuts and event listeners
+     */
     setupGlobalListeners() {
-        // Close window on Escape (if focused)
+        // Close focused window on Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 const focusedWindow = this.getFocusedWindow();
@@ -44,24 +72,81 @@ class BlackRoadOS {
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === 'k') {
                 e.preventDefault();
-                // TODO: Open command palette
-                console.log('Command palette - coming soon');
+                // TODO v0.2.0: Implement command palette
+                // Should show searchable list of all apps, commands, and recent windows
+                console.log('⌨️ Command palette - coming in v0.2.0');
+            }
+        });
+
+        // Click on desktop to unfocus all windows
+        document.getElementById('desktop')?.addEventListener('click', (e) => {
+            if (e.target.id === 'desktop' || e.target.classList.contains('desktop-icons')) {
+                this.unfocusAllWindows();
             }
         });
     }
 
     /**
-     * Create a new window
-     * @param {Object} options - { id, title, icon, content, width, height, x, y }
+     * Register a lifecycle hook
+     * @param {string} hookName - onWindowCreated, onWindowFocused, etc.
+     * @param {Function} callback - Function to call when event occurs
+     */
+    registerLifecycleHook(hookName, callback) {
+        if (this.lifecycleHooks[hookName]) {
+            this.lifecycleHooks[hookName].push(callback);
+        } else {
+            console.warn(`Unknown lifecycle hook: ${hookName}`);
+        }
+    }
+
+    /**
+     * Call all registered lifecycle hooks for an event
+     * @param {string} hookName - The hook name
+     * @param {Object} data - Data to pass to callbacks
+     */
+    callLifecycleHooks(hookName, data) {
+        if (this.lifecycleHooks[hookName]) {
+            this.lifecycleHooks[hookName].forEach(callback => {
+                try {
+                    callback(data);
+                } catch (error) {
+                    console.error(`Error in lifecycle hook ${hookName}:`, error);
+                }
+            });
+        }
+    }
+
+    /**
+     * Create a new window or focus existing one
+     * @param {Object} options - Window configuration
+     * @param {string} options.id - Unique window identifier (recommended to match app ID)
+     * @param {string} options.title - Window title
+     * @param {string} options.icon - Icon emoji or HTML
+     * @param {HTMLElement|string} options.content - Window content
+     * @param {string} options.width - CSS width (default: '800px')
+     * @param {string} options.height - CSS height (default: '600px')
+     * @param {number} options.x - X position in pixels (optional, will center if not provided)
+     * @param {number} options.y - Y position in pixels (optional, will center if not provided)
+     * @param {HTMLElement} options.toolbar - Optional toolbar element
+     * @param {HTMLElement} options.statusBar - Optional status bar element
+     * @param {boolean} options.noPadding - Remove padding from content area
      * @returns {string} windowId
      */
     createWindow(options) {
         const windowId = options.id || `window_${Date.now()}`;
 
-        // Check if window already exists
+        // Window deduplication: if window already exists, focus it instead of creating duplicate
         if (this.windows.has(windowId)) {
-            // Focus existing window
-            this.focusWindow(windowId);
+            console.log(`🔄 Window "${windowId}" already exists - focusing existing instance`);
+            const windowData = this.windows.get(windowId);
+
+            // If minimized, restore it
+            if (windowData.minimized) {
+                this.restoreWindow(windowId);
+            } else {
+                this.focusWindow(windowId);
+            }
+
             return windowId;
         }
 
@@ -69,76 +154,27 @@ class BlackRoadOS {
         const windowEl = document.createElement('div');
         windowEl.className = 'os-window opening';
         windowEl.id = windowId;
+        windowEl.setAttribute('role', 'dialog');
+        windowEl.setAttribute('aria-label', options.title || 'Untitled Window');
         windowEl.style.width = options.width || '800px';
         windowEl.style.height = options.height || '600px';
 
-        // Center window by default, or use provided coordinates
+        // Position window: use provided coords or center with cascade offset
         if (options.x !== undefined && options.y !== undefined) {
             windowEl.style.left = `${options.x}px`;
             windowEl.style.top = `${options.y}px`;
         } else {
-            // Center with slight random offset to avoid stacking
+            // Center with cascade offset to avoid perfect stacking
             const offsetX = (this.windows.size * 30) % 100;
             const offsetY = (this.windows.size * 30) % 100;
             windowEl.style.left = `calc(50% - ${parseInt(options.width || 800) / 2}px + ${offsetX}px)`;
             windowEl.style.top = `calc(50% - ${parseInt(options.height || 600) / 2}px + ${offsetY}px)`;
         }
 
-        windowEl.style.zIndex = this.zIndexCounter++;
+        windowEl.style.zIndex = this.getNextZIndex();
 
         // Create titlebar
-        const titlebar = document.createElement('div');
-        titlebar.className = 'window-titlebar';
-
-        const titlebarLeft = document.createElement('div');
-        titlebarLeft.className = 'window-titlebar-left';
-
-        if (options.icon) {
-            const icon = document.createElement('div');
-            icon.className = 'window-icon';
-            icon.innerHTML = options.icon;
-            titlebarLeft.appendChild(icon);
-        }
-
-        const title = document.createElement('div');
-        title.className = 'window-title';
-        title.textContent = options.title || 'Untitled Window';
-        titlebarLeft.appendChild(title);
-
-        titlebar.appendChild(titlebarLeft);
-
-        // Window controls
-        const controls = document.createElement('div');
-        controls.className = 'window-controls';
-
-        const minimizeBtn = document.createElement('button');
-        minimizeBtn.className = 'window-control-btn minimize';
-        minimizeBtn.innerHTML = '−';
-        minimizeBtn.title = 'Minimize';
-        minimizeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.minimizeWindow(windowId);
-        });
-
-        const maximizeBtn = document.createElement('button');
-        maximizeBtn.className = 'window-control-btn maximize';
-        maximizeBtn.innerHTML = '□';
-        maximizeBtn.title = 'Maximize (coming soon)';
-
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'window-control-btn close';
-        closeBtn.innerHTML = '×';
-        closeBtn.title = 'Close';
-        closeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.closeWindow(windowId);
-        });
-
-        controls.appendChild(minimizeBtn);
-        controls.appendChild(maximizeBtn);
-        controls.appendChild(closeBtn);
-
-        titlebar.appendChild(controls);
+        const titlebar = this.createTitlebar(windowId, options);
         windowEl.appendChild(titlebar);
 
         // Toolbar (if provided)
@@ -185,19 +221,102 @@ class BlackRoadOS {
         // Focus window
         this.focusWindow(windowId);
 
-        // Emit event
+        // Emit events
         this.eventBus.emit('window:created', { windowId, title: options.title });
+        this.callLifecycleHooks('onWindowCreated', { windowId, title: options.title });
 
-        // Remove opening animation class after animation
+        // Remove opening animation class after animation completes
         setTimeout(() => {
             windowEl.classList.remove('opening');
         }, 200);
+
+        console.log(`✨ Created window: "${options.title}" (${windowId})`);
 
         return windowId;
     }
 
     /**
-     * Make window draggable
+     * Create window titlebar with controls
+     * @param {string} windowId - Window identifier
+     * @param {Object} options - Window options
+     * @returns {HTMLElement} Titlebar element
+     */
+    createTitlebar(windowId, options) {
+        const titlebar = document.createElement('div');
+        titlebar.className = 'window-titlebar';
+
+        const titlebarLeft = document.createElement('div');
+        titlebarLeft.className = 'window-titlebar-left';
+
+        if (options.icon) {
+            const icon = document.createElement('div');
+            icon.className = 'window-icon';
+            icon.setAttribute('aria-hidden', 'true');
+            icon.innerHTML = options.icon;
+            titlebarLeft.appendChild(icon);
+        }
+
+        const title = document.createElement('div');
+        title.className = 'window-title';
+        title.textContent = options.title || 'Untitled Window';
+        titlebarLeft.appendChild(title);
+
+        titlebar.appendChild(titlebarLeft);
+
+        // Window controls
+        const controls = document.createElement('div');
+        controls.className = 'window-controls';
+        controls.setAttribute('role', 'group');
+        controls.setAttribute('aria-label', 'Window controls');
+
+        // Minimize button
+        const minimizeBtn = document.createElement('button');
+        minimizeBtn.className = 'window-control-btn minimize';
+        minimizeBtn.innerHTML = '−';
+        minimizeBtn.setAttribute('aria-label', 'Minimize window');
+        minimizeBtn.title = 'Minimize';
+        minimizeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.minimizeWindow(windowId);
+        });
+
+        // Maximize button (stub for v0.2.0)
+        const maximizeBtn = document.createElement('button');
+        maximizeBtn.className = 'window-control-btn maximize';
+        maximizeBtn.innerHTML = '□';
+        maximizeBtn.setAttribute('aria-label', 'Maximize window (coming soon)');
+        maximizeBtn.title = 'Maximize (coming in v0.2.0)';
+        maximizeBtn.disabled = true; // Disabled until implemented
+        maximizeBtn.style.opacity = '0.5';
+        // TODO v0.2.0: Implement maximize functionality
+        // Should toggle between normal and fullscreen (minus taskbar)
+        // Store original size/position for restore
+        // Add 'maximized' class and update button to restore icon
+
+        // Close button
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'window-control-btn close';
+        closeBtn.innerHTML = '×';
+        closeBtn.setAttribute('aria-label', 'Close window');
+        closeBtn.title = 'Close';
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.closeWindow(windowId);
+        });
+
+        controls.appendChild(minimizeBtn);
+        controls.appendChild(maximizeBtn);
+        controls.appendChild(closeBtn);
+
+        titlebar.appendChild(controls);
+
+        return titlebar;
+    }
+
+    /**
+     * Make window draggable via titlebar
+     * @param {HTMLElement} windowEl - Window element
+     * @param {HTMLElement} handle - Drag handle (titlebar)
      */
     makeDraggable(windowEl, handle) {
         let isDragging = false;
@@ -207,8 +326,8 @@ class BlackRoadOS {
         let initialY;
 
         handle.addEventListener('mousedown', (e) => {
-            // Don't drag if clicking on buttons
-            if (e.target.classList.contains('window-control-btn')) {
+            // Don't drag if clicking on buttons or other interactive elements
+            if (e.target.classList.contains('window-control-btn') || e.target.tagName === 'BUTTON') {
                 return;
             }
 
@@ -216,7 +335,11 @@ class BlackRoadOS {
             initialX = e.clientX - windowEl.offsetLeft;
             initialY = e.clientY - windowEl.offsetTop;
 
+            // Focus window when drag starts
             this.focusWindow(windowEl.id);
+
+            // Change cursor
+            handle.style.cursor = 'grabbing';
         });
 
         document.addEventListener('mousemove', (e) => {
@@ -227,42 +350,91 @@ class BlackRoadOS {
             currentX = e.clientX - initialX;
             currentY = e.clientY - initialY;
 
-            // Prevent dragging off-screen (mostly)
-            currentX = Math.max(0, Math.min(currentX, window.innerWidth - 100));
-            currentY = Math.max(0, Math.min(currentY, window.innerHeight - 150));
+            // Prevent dragging completely off-screen
+            // Keep at least 100px of window visible
+            const minVisible = 100;
+            currentX = Math.max(-windowEl.offsetWidth + minVisible, Math.min(currentX, window.innerWidth - minVisible));
+            currentY = Math.max(0, Math.min(currentY, window.innerHeight - 100));
 
             windowEl.style.left = `${currentX}px`;
             windowEl.style.top = `${currentY}px`;
         });
 
         document.addEventListener('mouseup', () => {
-            isDragging = false;
+            if (isDragging) {
+                isDragging = false;
+                handle.style.cursor = 'move';
+            }
+        });
+    }
+
+    /**
+     * Get next z-index with overflow protection
+     * @returns {number} Next z-index value
+     */
+    getNextZIndex() {
+        if (this.zIndexCounter >= this.zIndexMax) {
+            // Reset z-index when we hit max, re-layer all windows
+            console.log('🔄 Z-index overflow protection: resetting window layers');
+            this.reindexWindows();
+        }
+        return this.zIndexCounter++;
+    }
+
+    /**
+     * Reindex all windows to prevent z-index overflow
+     * Maintains relative stacking order
+     */
+    reindexWindows() {
+        const sortedWindows = Array.from(this.windows.values())
+            .sort((a, b) => parseInt(a.element.style.zIndex) - parseInt(b.element.style.zIndex));
+
+        this.zIndexCounter = 100;
+        sortedWindows.forEach(windowData => {
+            windowData.element.style.zIndex = this.zIndexCounter++;
         });
     }
 
     /**
      * Focus a window (bring to front)
+     * @param {string} windowId - Window identifier
      */
     focusWindow(windowId) {
         const windowData = this.windows.get(windowId);
-        if (!windowData) return;
+        if (!windowData) {
+            console.warn(`Cannot focus - window not found: ${windowId}`);
+            return;
+        }
 
-        // Update z-index
-        windowData.element.style.zIndex = this.zIndexCounter++;
+        // Update z-index to bring to front
+        windowData.element.style.zIndex = this.getNextZIndex();
 
-        // Update visual states
+        // Update visual states (only one window should be focused)
         this.windows.forEach((w, id) => {
             w.element.classList.toggle('focused', id === windowId);
         });
 
-        // Update taskbar
+        // Update taskbar button states
         this.updateTaskbar();
 
+        // Emit events
         this.eventBus.emit('window:focused', { windowId });
+        this.callLifecycleHooks('onWindowFocused', { windowId });
+    }
+
+    /**
+     * Unfocus all windows
+     */
+    unfocusAllWindows() {
+        this.windows.forEach(windowData => {
+            windowData.element.classList.remove('focused');
+        });
+        this.updateTaskbar();
     }
 
     /**
      * Minimize a window
+     * @param {string} windowId - Window identifier
      */
     minimizeWindow(windowId) {
         const windowData = this.windows.get(windowId);
@@ -272,11 +444,15 @@ class BlackRoadOS {
         windowData.element.classList.add('minimized');
 
         this.updateTaskbar();
+
+        // Emit events
         this.eventBus.emit('window:minimized', { windowId });
+        this.callLifecycleHooks('onWindowMinimized', { windowId });
     }
 
     /**
      * Restore a minimized window
+     * @param {string} windowId - Window identifier
      */
     restoreWindow(windowId) {
         const windowData = this.windows.get(windowId);
@@ -285,16 +461,27 @@ class BlackRoadOS {
         windowData.minimized = false;
         windowData.element.classList.remove('minimized');
 
+        // Focus when restoring
         this.focusWindow(windowId);
+
+        // Emit events
         this.eventBus.emit('window:restored', { windowId });
+        this.callLifecycleHooks('onWindowRestored', { windowId });
     }
 
     /**
      * Close a window
+     * @param {string} windowId - Window identifier
      */
     closeWindow(windowId) {
         const windowData = this.windows.get(windowId);
         if (!windowData) return;
+
+        const windowTitle = windowData.title;
+
+        // Emit events before removal (so apps can clean up)
+        this.eventBus.emit('window:closed', { windowId, title: windowTitle });
+        this.callLifecycleHooks('onWindowClosed', { windowId, title: windowTitle });
 
         // Remove from DOM
         windowData.element.remove();
@@ -302,14 +489,15 @@ class BlackRoadOS {
         // Remove from windows map
         this.windows.delete(windowId);
 
-        // Update taskbar
+        // Update taskbar (will remove button)
         this.updateTaskbar();
 
-        this.eventBus.emit('window:closed', { windowId });
+        console.log(`❌ Closed window: "${windowTitle}" (${windowId})`);
     }
 
     /**
      * Add window to taskbar
+     * @param {string} windowId - Window identifier
      */
     addToTaskbar(windowId) {
         const windowData = this.windows.get(windowId);
@@ -319,12 +507,14 @@ class BlackRoadOS {
         btn.className = 'taskbar-window-button';
         btn.id = `taskbar-${windowId}`;
         btn.textContent = windowData.title;
+        btn.setAttribute('aria-label', `${windowData.title} window`);
+        btn.setAttribute('role', 'button');
 
         btn.addEventListener('click', () => {
             if (windowData.minimized) {
                 this.restoreWindow(windowId);
             } else {
-                // If already focused, minimize
+                // If already focused, minimize; otherwise focus
                 if (windowData.element.classList.contains('focused')) {
                     this.minimizeWindow(windowId);
                 } else {
@@ -333,25 +523,32 @@ class BlackRoadOS {
             }
         });
 
+        // Keyboard navigation for taskbar buttons
+        btn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                btn.click();
+            }
+        });
+
         this.taskbarWindows.appendChild(btn);
     }
 
     /**
-     * Update taskbar buttons state
+     * Update taskbar button states to match window states
      */
     updateTaskbar() {
         this.windows.forEach((windowData, windowId) => {
             const btn = document.getElementById(`taskbar-${windowId}`);
             if (btn) {
+                // Update active state
                 btn.classList.toggle('active', windowData.element.classList.contains('focused'));
-                if (windowData.minimized) {
-                    btn.style.opacity = '0.6';
-                } else {
-                    btn.style.opacity = '1';
-                }
-            } else {
-                // Button doesn't exist, might have been removed
-                this.taskbarWindows.querySelector(`#taskbar-${windowId}`)?.remove();
+
+                // Update visual opacity for minimized windows
+                btn.style.opacity = windowData.minimized ? '0.6' : '1';
+
+                // Update ARIA state
+                btn.setAttribute('aria-pressed', windowData.element.classList.contains('focused') ? 'true' : 'false');
             }
         });
 
@@ -366,6 +563,7 @@ class BlackRoadOS {
 
     /**
      * Get currently focused window
+     * @returns {Object|null} Window data or null if no window is focused
      */
     getFocusedWindow() {
         for (let [id, data] of this.windows) {
@@ -377,13 +575,37 @@ class BlackRoadOS {
     }
 
     /**
-     * Show a notification
+     * Get window by ID
+     * @param {string} windowId - Window identifier
+     * @returns {Object|null} Window data or null
+     */
+    getWindow(windowId) {
+        return this.windows.get(windowId) || null;
+    }
+
+    /**
+     * Get all open windows
+     * @returns {Array} Array of window data objects
+     */
+    getAllWindows() {
+        return Array.from(this.windows.values());
+    }
+
+    /**
+     * Show a toast notification
+     * @param {Object} options - Notification options
+     * @param {string} options.type - Notification type (success, error, warning, info)
+     * @param {string} options.title - Notification title
+     * @param {string} options.message - Notification message
+     * @param {number} options.duration - Duration in ms (0 = persistent, default: 5000)
      */
     showNotification(options) {
         const container = document.getElementById('notification-container');
 
         const notification = document.createElement('div');
         notification.className = `notification ${options.type || 'info'}`;
+        notification.setAttribute('role', 'alert');
+        notification.setAttribute('aria-live', 'polite');
 
         const header = document.createElement('div');
         header.className = 'notification-header';
@@ -395,6 +617,7 @@ class BlackRoadOS {
         const closeBtn = document.createElement('button');
         closeBtn.className = 'notification-close';
         closeBtn.innerHTML = '×';
+        closeBtn.setAttribute('aria-label', 'Close notification');
         closeBtn.addEventListener('click', () => {
             notification.remove();
         });
@@ -412,7 +635,7 @@ class BlackRoadOS {
         container.appendChild(notification);
 
         // Auto-remove after duration
-        const duration = options.duration || 5000;
+        const duration = options.duration !== undefined ? options.duration : 5000;
         if (duration > 0) {
             setTimeout(() => {
                 notification.remove();
@@ -421,16 +644,38 @@ class BlackRoadOS {
 
         this.eventBus.emit('notification:shown', options);
     }
+
+    /**
+     * Get system diagnostics
+     * @returns {Object} System diagnostics data
+     */
+    getDiagnostics() {
+        return {
+            windowCount: this.windows.size,
+            focusedWindowId: this.getFocusedWindow()?.id || null,
+            zIndexCounter: this.zIndexCounter,
+            eventBusListeners: Object.keys(this.eventBus.events).reduce((acc, key) => {
+                acc[key] = this.eventBus.events[key].length;
+                return acc;
+            }, {})
+        };
+    }
 }
 
 /**
- * Simple Event Emitter
+ * Simple Event Emitter for pub/sub communication
+ * Enables loose coupling between OS and apps
  */
 class EventEmitter {
     constructor() {
         this.events = {};
     }
 
+    /**
+     * Register an event listener
+     * @param {string} event - Event name
+     * @param {Function} callback - Callback function
+     */
     on(event, callback) {
         if (!this.events[event]) {
             this.events[event] = [];
@@ -438,14 +683,42 @@ class EventEmitter {
         this.events[event].push(callback);
     }
 
+    /**
+     * Emit an event to all listeners
+     * @param {string} event - Event name
+     * @param {*} data - Data to pass to listeners
+     */
     emit(event, data) {
         if (!this.events[event]) return;
-        this.events[event].forEach(callback => callback(data));
+        this.events[event].forEach(callback => {
+            try {
+                callback(data);
+            } catch (error) {
+                console.error(`Error in event listener for "${event}":`, error);
+            }
+        });
     }
 
+    /**
+     * Remove an event listener
+     * @param {string} event - Event name
+     * @param {Function} callback - Callback to remove
+     */
     off(event, callback) {
         if (!this.events[event]) return;
         this.events[event] = this.events[event].filter(cb => cb !== callback);
+    }
+
+    /**
+     * Remove all listeners for an event
+     * @param {string} event - Event name
+     */
+    removeAllListeners(event) {
+        if (event) {
+            delete this.events[event];
+        } else {
+            this.events = {};
+        }
     }
 }
 
