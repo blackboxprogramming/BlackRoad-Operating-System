@@ -372,7 +372,7 @@ class ApiClient {
 
     async sendMessage(conversationId, message) {
         return this.post(`/api/ai-chat/conversations/${conversationId}/messages`, {
-            message
+            content: message
         });
     }
 
