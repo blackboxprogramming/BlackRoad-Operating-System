@@ -138,22 +138,37 @@ async def get_miner_stats(
     )
     wallet = wallet_result.scalar_one_or_none()
 
+    if not wallet:
+        return MinerStats(
+            blocks_mined=0,
+            roadcoins_earned=0.0,
+            current_hashrate_mhs=miner_state.hashrate_mhs if miner_state.is_mining else 0.0,
+            average_hashrate_mhs=0.0,
+            total_shares=miner_state.shares_submitted,
+            accepted_shares=miner_state.shares_accepted,
+            rejected_shares=miner_state.shares_submitted - miner_state.shares_accepted,
+            last_block_time=None,
+            mining_since=miner_state.started_at,
+        )
+
+    miner_filter = Block.miner_address == wallet.address
+
     # Count blocks mined by this user
     blocks_count_result = await db.execute(
-        select(func.count(Block.id)).filter(Block.miner == wallet.address if wallet else None)
+        select(func.count(Block.id)).filter(miner_filter)
     )
     blocks_mined = blocks_count_result.scalar() or 0
 
     # Sum rewards earned
     rewards_result = await db.execute(
-        select(func.sum(Block.reward)).filter(Block.miner == wallet.address if wallet else None)
+        select(func.sum(Block.reward)).filter(miner_filter)
     )
     roadcoins_earned = rewards_result.scalar() or 0.0
 
     # Get last block mined
     last_block_result = await db.execute(
         select(Block)
-        .filter(Block.miner == wallet.address if wallet else None)
+        .filter(miner_filter)
         .order_by(desc(Block.timestamp))
         .limit(1)
     )
@@ -197,7 +212,7 @@ async def get_recent_blocks(
     # Get recent blocks
     blocks_result = await db.execute(
         select(Block)
-        .filter(Block.miner == wallet.address)
+        .filter(Block.miner_address == wallet.address)
         .order_by(desc(Block.timestamp))
         .limit(limit)
     )

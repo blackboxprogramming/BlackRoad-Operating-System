@@ -127,12 +127,12 @@ class BlockchainService:
         return new_block
 
     @staticmethod
-    def generate_wallet_address() -> tuple[str, str]:
-        """Generate a new wallet address and private key"""
+    def generate_wallet_address() -> tuple[str, str, str]:
+        """Generate a new wallet address, private key and public key"""
         private_key = secrets.token_hex(32)
         public_key = hashlib.sha256(private_key.encode()).hexdigest()
         address = "RD" + hashlib.sha256(public_key.encode()).hexdigest()[:38]
-        return address, private_key
+        return address, private_key, public_key
 
     @staticmethod
     async def create_transaction(
