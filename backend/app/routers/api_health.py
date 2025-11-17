@@ -324,7 +324,7 @@ async def check_huggingface_status():
 
 async def check_digitalocean_status():
     """Check DigitalOcean API status"""
-    do_token = os.getenv("DIGITALOCEAN_TOKEN")
+    do_token = os.getenv("DIGITAL_OCEAN_API_KEY") or os.getenv("DIGITALOCEAN_TOKEN")
     if not do_token:
         return {
             "connected": False,
