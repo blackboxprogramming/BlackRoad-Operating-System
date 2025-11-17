@@ -14,7 +14,8 @@ from app.routers import (
     auth, email, social, video, files, blockchain, ai_chat, devices, miner,
     digitalocean, github, huggingface, vscode, games, browser, dashboard,
     railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
-    capture, identity_center, notifications_center, creator, compliance_ops, search
+    capture, identity_center, notifications_center, creator, compliance_ops,
+    search, cloudflare
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -29,6 +30,7 @@ openapi_tags = [
     {"name": "sentry", "description": "Sentry monitoring hooks"},
     {"name": "health", "description": "BlackRoad OS service health"},
     {"name": "agents", "description": "BlackRoad Agent Library - 208 AI agents across 10 categories"},
+    {"name": "cloudflare", "description": "Cloudflare zone, DNS, and Worker scaffolding"},
 ]
 
 
@@ -145,6 +147,7 @@ app.include_router(notifications_center.router)
 app.include_router(creator.router)
 app.include_router(compliance_ops.router)
 app.include_router(search.router)
+app.include_router(cloudflare.router)
 
 # API health monitoring
 app.include_router(api_health.router)
