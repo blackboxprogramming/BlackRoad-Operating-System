@@ -1,0 +1,57 @@
+# Universal domain registry configuration
+# Each entry describes how a domain or subdomain should be handled.
+# Supported providers: "godaddy", "cloudflare"
+# Supported modes:
+#   - forward: use registrar forwarding (HTTPS 301)
+#   - dns: set DNS records (CNAME or A)
+
+domains:
+  - name: "blackroad.systems"
+    type: "root"
+    provider: "godaddy"
+    mode: "forward"
+    forward_to: "https://os.blackroad.systems"
+    forwarding_type: 301
+
+  - name: "www.blackroad.systems"
+    type: "subdomain"
+    provider: "godaddy"
+    mode: "forward"
+    forward_to: "https://os.blackroad.systems"
+    forwarding_type: 301
+
+  - name: "os.blackroad.systems"
+    type: "subdomain"
+    provider: "godaddy"
+    mode: "dns"
+    record:
+      type: "CNAME"
+      value: "YOUR-PROD-RAILWAY-APP.up.railway.app"  # replace with your Railway host
+
+  - name: "blackroad.ai"
+    type: "root"
+    provider: "cloudflare"
+    mode: "dns"
+    record:
+      type: "CNAME"
+      value: "os.blackroad.systems"
+
+  - name: "roadwallet.com"
+    type: "root"
+    provider: "cloudflare"
+    mode: "dns"
+    record:
+      type: "CNAME"
+      value: "os.blackroad.systems"
+
+  - name: "aliceos.io"
+    type: "root"
+    provider: "cloudflare"
+    mode: "dns"
+    record:
+      type: "CNAME"
+      value: "os.blackroad.systems"
+
+# Add additional domains or subdomains here following the same pattern.
+# By default you can set mode: "dns" with a CNAME pointing to os.blackroad.systems,
+# or override as needed.
