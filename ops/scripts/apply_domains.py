@@ -3,6 +3,7 @@
 apply_domains.py
 
 Reads ops/domains.yaml and ensures that each domain’s DNS/forwarding
+Reads ops/domains.yaml and ensures that each domain's DNS/forwarding
 settings are correctly applied via GoDaddy and Cloudflare APIs.
 This script is designed to be idempotent: re-running it will not create
 duplicate records.
@@ -188,6 +189,7 @@ def update_cloudflare_dns_record(domain_entry):
     if not zone_id:
         return
 
+    # Determine the record name field expected by CF (full domain)
     record_name = full_name
 
     # List existing records to find match
@@ -202,6 +204,7 @@ def update_cloudflare_dns_record(domain_entry):
         results = []
 
     if results:
+        # update existing record if value differs
         record_id = results[0]["id"]
         current_value = results[0]["content"]
         if current_value == record_value:
@@ -216,6 +219,7 @@ def update_cloudflare_dns_record(domain_entry):
         except requests.HTTPError as e:
             print(f"Error updating Cloudflare record for {full_name}: {e}")
     else:
+        # create new record
         payload = {"type": record_type, "name": record_name, "content": record_value, "ttl": 300, "proxied": False}
         print(f"Creating Cloudflare record for {full_name}: {record_type} -> {record_value}")
         try:

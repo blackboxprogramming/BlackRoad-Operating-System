@@ -27,6 +27,7 @@ domains:
     record:
       type: "CNAME"
       value: "blackroad-operating-system-production.up.railway.app"
+      value: "YOUR-PROD-RAILWAY-APP.up.railway.app"  # replace with your Railway host
 
   - name: "blackroad.ai"
     type: "root"
@@ -51,3 +52,7 @@ domains:
     record:
       type: "CNAME"
       value: "os.blackroad.systems"
+
+# Add additional domains or subdomains here following the same pattern.
+# By default you can set mode: "dns" with a CNAME pointing to os.blackroad.systems,
+# or override as needed.
