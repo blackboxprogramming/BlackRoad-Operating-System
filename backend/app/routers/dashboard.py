@@ -42,8 +42,11 @@ async def get_dashboard_overview(
     """
 
     # Check which services are configured
+    digital_ocean_token = os.getenv("DIGITAL_OCEAN_API_KEY") or os.getenv(
+        "DIGITALOCEAN_TOKEN"
+    )
     services_config = {
-        "digitalocean": bool(os.getenv("DIGITALOCEAN_TOKEN")),
+        "digitalocean": bool(digital_ocean_token),
         "github": bool(os.getenv("GITHUB_TOKEN")),
         "huggingface": bool(os.getenv("HUGGINGFACE_TOKEN")),
         "openai": bool(os.getenv("OPENAI_API_KEY")),
@@ -282,7 +285,7 @@ async def list_all_services(
             "description": "Cloud infrastructure management",
             "category": "infrastructure",
             "icon": "🌊",
-            "configured": bool(os.getenv("DIGITALOCEAN_TOKEN"))
+            "configured": bool(digital_ocean_token)
         },
         {
             "id": "github",

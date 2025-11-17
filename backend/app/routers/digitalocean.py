@@ -24,7 +24,15 @@ router = APIRouter(prefix="/api/digitalocean", tags=["digitalocean"])
 
 # DigitalOcean API configuration
 DO_API_URL = "https://api.digitalocean.com/v2"
-DO_TOKEN = os.getenv("DIGITALOCEAN_TOKEN", "")
+
+
+def get_digital_ocean_token() -> str:
+    """Return the configured DigitalOcean API key, preferring the canonical name."""
+
+    return os.getenv("DIGITAL_OCEAN_API_KEY") or os.getenv("DIGITALOCEAN_TOKEN", "")
+
+
+DO_TOKEN = get_digital_ocean_token()
 
 
 class DropletCreate(BaseModel):
