@@ -189,7 +189,7 @@ class ImageGeneratorPromptAgent(BaseAgent):
                     'Lower CFG scale for more creativity',
                     'Higher steps for better quality',
                     'Use embeddings and LoRAs for specific styles'
-                }
+                ]
             },
             'quality_keywords': [
                 '8k resolution',

@@ -218,7 +218,7 @@ class MFAManagerAgent(BaseAgent):
                 'Monitor MFA bypass attempts',
                 'Regular MFA compliance audits',
                 'User training on MFA importance'
-            },
+            ],
             'best_practices': [
                 'Require MFA for all administrative accounts',
                 'Use TOTP or hardware tokens over SMS',

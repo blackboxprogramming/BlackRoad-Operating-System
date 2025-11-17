@@ -77,7 +77,7 @@ class PressReleaseWriterAgent(BaseAgent):
 
 City, State — {key_details.get('date', 'January 15, 2025')} — {company_name}, {key_details.get('company_description', 'a leading technology company')}, today announced {key_details.get('announcement', 'a major initiative')} that {key_details.get('impact', 'will transform the industry')}.
 
-{key_details.get('lead_paragraph', f'This groundbreaking {announcement_type} represents a significant milestone for {company_name} and demonstrates the company\'s commitment to innovation and excellence. The announcement comes at a time when the industry is experiencing rapid growth and transformation.')}
+{key_details.get('lead_paragraph', f"This groundbreaking {announcement_type} represents a significant milestone for {company_name} and demonstrates the company's commitment to innovation and excellence. The announcement comes at a time when the industry is experiencing rapid growth and transformation.")}
 
 "{quotes[0].get('text', 'We are thrilled to make this announcement') if quotes else 'This is an exciting development for our company'}," said {quotes[0].get('attribution', 'CEO') if quotes else 'the company spokesperson'}. "{quotes[0].get('text_continued', 'This demonstrates our commitment to delivering exceptional value to our customers and stakeholders.') if quotes else ''}"
 
@@ -88,9 +88,9 @@ Key highlights include:
 • {key_details.get('highlight_3', 'Significant market impact')}
 • {key_details.get('highlight_4', 'Long-term strategic value')}
 
-{key_details.get('detail_paragraph', f'The {announcement_type} builds on {company_name}\'s strong foundation of innovation and customer-focused solutions. With this announcement, the company continues to position itself as an industry leader, delivering cutting-edge solutions that address real-world challenges.')}
+{key_details.get('detail_paragraph', f"The {announcement_type} builds on {company_name}'s strong foundation of innovation and customer-focused solutions. With this announcement, the company continues to position itself as an industry leader, delivering cutting-edge solutions that address real-world challenges.")}
 
-"{quotes[1].get('text', 'This represents a major step forward') if len(quotes) > 1 else 'We believe this will have a lasting positive impact'}," added {quotes[1].get('attribution', 'Chief Product Officer') if len(quotes) > 1 else 'another company executive'}. "{quotes[1].get('text_continued', 'Our team has worked tirelessly to bring this to fruition, and we\'re excited to share it with the market.') if len(quotes) > 1 else ''}"
+"{quotes[1].get('text', 'This represents a major step forward') if len(quotes) > 1 else 'We believe this will have a lasting positive impact'}," added {quotes[1].get('attribution', 'Chief Product Officer') if len(quotes) > 1 else 'another company executive'}. "{quotes[1].get('text_continued', "Our team has worked tirelessly to bring this to fruition, and we're excited to share it with the market.") if len(quotes) > 1 else ''}"
 
 {key_details.get('availability', f'The {announcement_type} will be available beginning {key_details.get("launch_date", "Q1 2025")}.')} For more information, visit {key_details.get('website', 'www.company.com')} or contact the media relations team at the information provided below.
 

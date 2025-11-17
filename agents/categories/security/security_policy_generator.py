@@ -306,7 +306,7 @@ class SecurityPolicyGeneratorAgent(BaseAgent):
                 'Set up automated policy review reminders',
                 'Create policy exception process',
                 'Establish policy governance committee'
-            },
+            ],
             'supporting_documents': {
                 'templates': [
                     'Risk Assessment Template',
