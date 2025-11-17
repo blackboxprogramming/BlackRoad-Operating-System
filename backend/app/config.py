@@ -29,7 +29,8 @@ class Settings(BaseSettings):
     WALLET_MASTER_KEY: str = "local-wallet-master-key-32chars-0000"
 
     # CORS
-    ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:8000"
+    # Include production domains by default to ensure Railway deployments work
+    ALLOWED_ORIGINS: str = "https://blackroad.systems,https://www.blackroad.systems,https://os.blackroad.systems,https://blackroad-operating-system-production.up.railway.app,http://localhost:3000,http://localhost:8000"
 
     @property
     def allowed_origins_list(self) -> List[str]:
