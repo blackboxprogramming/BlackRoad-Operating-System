@@ -123,6 +123,10 @@ php -S localhost:8000
 
 Then visit: `http://localhost:8000`
 
+### Lucidia Shell Prototype (v0.1)
+
+For a minimal Lucidia-focused experience, open `lucidia-shell.html` in the same directory. It includes a retro desktop, window manager, Operator Core, and Lucidia Terminal with commands for listing/switching environments, listing/opening apps, and listing/running stub flows.
+
 ---
 
 ## 🌐 Deploy Anywhere
