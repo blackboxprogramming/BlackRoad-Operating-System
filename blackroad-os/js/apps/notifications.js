@@ -22,29 +22,36 @@ window.NotificationsApp = function() {
                 message: 'All notifications marked as read',
                 duration: 2000
             });
-            // Refresh would go here
+            renderContent();
         }
     });
 
-    const clearAllBtn = Components.Button('Clear All', {
-        type: 'danger',
-        onClick: () => {
-            if (confirm('Clear all notifications?')) {
-                window.OS.showNotification({
-                    type: 'info',
-                    title: 'Notifications Cleared',
-                    message: 'All notifications have been removed',
-                    duration: 2000
-                });
-            }
-        }
-    });
+    const focusSelect = document.createElement('select');
+    focusSelect.innerHTML = `<option value="normal">Normal</option><option value="deep">Deep Work</option><option value="offline">Offline</option>`;
+    focusSelect.onchange = () => {
+        const mode = focusSelect.value;
+        window.OS.eventBus.emit('notifications:focus', { mode });
+        window.OS.showNotification({
+            type: 'info',
+            title: 'Focus mode',
+            message: mode === 'deep' ? 'Only high-importance alerts will interrupt you' : mode === 'offline' ? 'Notifications will quietly queue' : 'All notifications enabled',
+            duration: 2000
+        });
+    };
+    focusSelect.setAttribute('aria-label', 'Focus mode');
 
     toolbar.appendChild(markAllReadBtn);
-    toolbar.appendChild(clearAllBtn);
+    toolbar.appendChild(focusSelect);
 
     // Create content
-    const content = createNotificationsContent();
+    const content = document.createElement('div');
+
+    const renderContent = () => {
+        content.innerHTML = '';
+        content.appendChild(createNotificationsContent());
+    };
+
+    renderContent();
 
     // Create window
     window.OS.createWindow({

@@ -126,6 +126,38 @@ const MockData = {
         { id: 'notif_004', type: 'success', title: 'Compliance Approved', message: 'Fee Schedule Update Email has been approved', timestamp: '2025-11-15 16:52:00', read: true }
     ],
 
+    // Chaos Inbox capture items
+    captureItems: [
+        { id: 1, type: 'note', raw_content: 'Call back Jamie re: brand refresh', source: 'mobile', tags: ['marketing'], status: 'inbox', created_at: '2025-11-12' },
+        { id: 2, type: 'link', raw_content: 'https://example.com/roadchain-deck', source: 'web_capture', tags: ['roadchain'], status: 'clustered', created_at: '2025-11-10' },
+        { id: 3, type: 'idea', raw_content: 'Course outline: GPU confidence bootcamp', source: 'manual', tags: ['education', 'hardware'], status: 'resurfaced', created_at: '2025-11-01' },
+        { id: 4, type: 'screenshot', raw_content: 'Screenshot: confusing AWS invoice UI', source: 'desktop', tags: ['compliance'], status: 'inbox', created_at: '2025-10-28' }
+    ],
+
+    captureClusters: [
+        { id: 1, name: 'Hardware & PiOps', description: 'Troubleshooting notes and hardware tasks', item_ids: [3, 4] },
+        { id: 2, name: 'Marketing & Brand', description: 'Content drafts and approvals', item_ids: [1, 2] }
+    ],
+
+    // Unified identity profile
+    identityProfile: {
+        name: 'BlackRoad Pilot',
+        legal_name: 'BlackRoad Pilot',
+        email: 'pilot@blackroad.io',
+        phone: '+1-555-123-4567',
+        address: '1 Infinite Road, Neo City',
+        timezone: 'UTC',
+        pronouns: 'they/them',
+        avatar_url: '',
+        external_ids: { github: 'pilot', discord: 'pilot#0001' }
+    },
+
+    // Creator workspace
+    creativeProjects: [
+        { id: 1, title: 'RoadStudio Lite Launch Video', type: 'video', status: 'in_production', description: '3 minute walkthrough for creators', links_to_assets: ['https://drive.example.com/video'], revenue_streams: { youtube: 200 }, notes: 'Need new b-roll of OS desktop' },
+        { id: 2, title: 'GPU Confidence Course', type: 'course', status: 'drafting', description: 'Micro-course to make GPUs less scary', links_to_assets: ['notion://gpu-course-outline'], revenue_streams: { preorders: 12 }, notes: 'Pair with PiOps demo' }
+    ],
+
     // Corporate Departments
     departments: [
         { id: 'dept_hr', name: 'Human Resources', icon: '👥', color: '#5AF' },

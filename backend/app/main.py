@@ -13,7 +13,8 @@ from app.redis_client import close_redis
 from app.routers import (
     auth, email, social, video, files, blockchain, ai_chat, devices, miner,
     digitalocean, github, huggingface, vscode, games, browser, dashboard,
-    railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents
+    railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
+    capture, identity_center, notifications_center, creator, compliance_ops, search
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -138,6 +139,12 @@ app.include_router(twilio.router)
 app.include_router(slack.router)
 app.include_router(discord.router)
 app.include_router(sentry.router)
+app.include_router(capture.router)
+app.include_router(identity_center.router)
+app.include_router(notifications_center.router)
+app.include_router(creator.router)
+app.include_router(compliance_ops.router)
+app.include_router(search.router)
 
 # API health monitoring
 app.include_router(api_health.router)

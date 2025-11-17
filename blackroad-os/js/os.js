@@ -29,6 +29,7 @@ class BlackRoadOS {
         this.eventBus = new EventEmitter();
         this.windowsContainer = null;
         this.taskbarWindows = null;
+        this.commandPalette = null;
 
         // App lifecycle hooks registry
         this.lifecycleHooks = {
@@ -72,9 +73,7 @@ class BlackRoadOS {
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === 'k') {
                 e.preventDefault();
-                // TODO v0.2.0: Implement command palette
-                // Should show searchable list of all apps, commands, and recent windows
-                console.log('⌨️ Command palette - coming in v0.2.0');
+                this.toggleCommandPalette();
             }
         });
 
@@ -589,6 +588,108 @@ class BlackRoadOS {
      */
     getAllWindows() {
         return Array.from(this.windows.values());
+    }
+
+    /**
+     * Toggle global command palette for unified search
+     */
+    toggleCommandPalette() {
+        if (!this.commandPalette) {
+            this.buildCommandPalette();
+        }
+        const isVisible = this.commandPalette.classList.contains('open');
+        if (isVisible) {
+            this.commandPalette.classList.remove('open');
+        } else {
+            this.commandPalette.classList.add('open');
+            const input = this.commandPalette.querySelector('input');
+            input.value = '';
+            input.focus();
+            this.populatePaletteResults('');
+        }
+    }
+
+    buildCommandPalette() {
+        this.commandPalette = document.createElement('div');
+        this.commandPalette.className = 'command-palette';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = 'Search apps, notes, and knowledge (Ctrl/Cmd + K)';
+        input.setAttribute('aria-label', 'Global search');
+        this.commandPalette.appendChild(input);
+
+        const results = document.createElement('div');
+        results.className = 'command-results';
+        this.commandPalette.appendChild(results);
+
+        input.addEventListener('input', (e) => this.populatePaletteResults(e.target.value));
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') this.toggleCommandPalette();
+        });
+
+        document.body.appendChild(this.commandPalette);
+        this.populatePaletteResults('');
+    }
+
+    populatePaletteResults(query) {
+        if (!this.commandPalette) return;
+        const resultsContainer = this.commandPalette.querySelector('.command-results');
+        resultsContainer.innerHTML = '';
+
+        const lower = query.toLowerCase();
+        const appMatches = Object.values(window.AppRegistry).filter(app =>
+            app.name.toLowerCase().includes(lower) || app.description.toLowerCase().includes(lower)
+        );
+
+        const captureMatches = (window.MockData?.captureItems || []).filter(item =>
+            !query || (item.raw_content || '').toLowerCase().includes(lower)
+        ).slice(0, 5);
+
+        const projectMatches = (window.MockData?.creativeProjects || []).filter(project =>
+            !query || project.title.toLowerCase().includes(lower)
+        ).slice(0, 5);
+
+        const renderGroup = (title, items, onClick) => {
+            if (!items.length) return;
+            const group = document.createElement('div');
+            group.className = 'command-group';
+            const heading = document.createElement('div');
+            heading.className = 'command-group-title';
+            heading.textContent = title;
+            group.appendChild(heading);
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'command-row';
+                row.textContent = item.label;
+                row.tabIndex = 0;
+                row.addEventListener('click', () => onClick(item));
+                row.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') onClick(item);
+                });
+                group.appendChild(row);
+            });
+            resultsContainer.appendChild(group);
+        };
+
+        renderGroup('Apps', appMatches.map(app => ({ label: `${app.icon} ${app.name}`, id: app.id })), (item) => {
+            window.launchApp(item.id);
+            this.toggleCommandPalette();
+        });
+
+        renderGroup('Chaos Inbox', captureMatches.map(c => ({ label: `🌀 ${c.raw_content || c.type}`, id: 'chaos-inbox' })), (item) => {
+            window.launchApp(item.id);
+            this.toggleCommandPalette();
+        });
+
+        renderGroup('Creator projects', projectMatches.map(p => ({ label: `🎨 ${p.title}`, id: 'creator-studio' })), (item) => {
+            window.launchApp(item.id);
+            this.toggleCommandPalette();
+        });
+
+        if (!resultsContainer.childElementCount) {
+            resultsContainer.textContent = 'No matches yet. Try searching for an app or project.';
+        }
     }
 
     /**
