@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.auth import get_current_active_user
 from app.database import get_db
@@ -19,10 +19,11 @@ class ComplianceEventResponse(BaseModel):
     action: str
     resource: str
     severity: str
-    metadata: dict | None = None
+    metadata: dict | None = Field(default=None, alias="event_metadata")
     timestamp: str | None = None
 
     class Config:
+        populate_by_name = True
         from_attributes = True
 
 
