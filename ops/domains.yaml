@@ -6,20 +6,26 @@
 #   - dns: set DNS records (CNAME or A)
 
 domains:
+  # Primary domain: blackroad.systems serves the main application
   - name: "blackroad.systems"
     type: "root"
     provider: "godaddy"
-    mode: "forward"
-    forward_to: "https://os.blackroad.systems"
-    forwarding_type: 301
+    mode: "dns"
+    record:
+      type: "CNAME"
+      value: "YOUR-PROD-RAILWAY-APP.up.railway.app"  # replace with your Railway host
+    notes: "Main flagship corporate site - serves BlackRoad OS application directly"
 
+  # www subdomain redirects to apex domain
   - name: "www.blackroad.systems"
     type: "subdomain"
     provider: "godaddy"
     mode: "forward"
-    forward_to: "https://os.blackroad.systems"
+    forward_to: "https://blackroad.systems"
     forwarding_type: 301
+    notes: "Redirects to canonical apex domain"
 
+  # os subdomain can be used as an alias
   - name: "os.blackroad.systems"
     type: "subdomain"
     provider: "godaddy"
@@ -27,6 +33,7 @@ domains:
     record:
       type: "CNAME"
       value: "YOUR-PROD-RAILWAY-APP.up.railway.app"  # replace with your Railway host
+    notes: "Alternative subdomain alias for the OS application"
 
   - name: "blackroad.ai"
     type: "root"
