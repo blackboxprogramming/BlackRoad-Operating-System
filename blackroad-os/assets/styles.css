@@ -37,6 +37,21 @@ body[data-theme="nightOS"] {
     --taskbar-bg: rgba(10, 0, 20, 0.98);
 }
 
+body[data-theme="contrastOS"] {
+    --primary: #FFD700;
+    --primary-dark: #C0A000;
+    --primary-light: #FFE85A;
+    --bg-desktop: #000;
+    --bg-surface: #111;
+    --bg-surface-hover: #191919;
+    --bg-window: #0c0c0c;
+    --text-primary: #fff;
+    --text-secondary: #e0e0e0;
+    --text-dim: #ccc;
+    --border-color: #FFD700;
+    --taskbar-bg: #000;
+}
+
 /* Desktop */
 .desktop {
     width: 100%;
@@ -414,6 +429,37 @@ body[data-theme="nightOS"] {
 .notification.info {
     border-left: 3px solid var(--info);
 }
+
+/* Command palette */
+.command-palette {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    background: var(--bg-window);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px var(--shadow);
+    padding: 12px;
+    border-radius: 12px;
+    display: none;
+    z-index: 11000;
+}
+
+.command-palette.open { display: block; }
+.command-palette input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.command-results { max-height: 320px; overflow: auto; display: flex; flex-direction: column; gap: 8px; }
+.command-group-title { font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.command-row { padding: 8px; border-radius: 8px; cursor: pointer; background: var(--bg-surface); }
+.command-row:hover, .command-row:focus { background: var(--bg-surface-hover); outline: 1px solid var(--primary); }
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {

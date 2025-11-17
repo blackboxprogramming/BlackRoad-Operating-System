@@ -12,6 +12,15 @@ A comprehensive FastAPI backend for the BlackRoad Operating System, a Windows 95
 - **File Storage** - File explorer with folder management and sharing
 - **RoadCoin Blockchain** - Cryptocurrency with mining, transactions, and wallet management
 - **AI Chat** - Conversational AI assistant with conversation history
+- **Chaos Inbox / Identity / Notifications / Creator / Compliance** - New v0.2 APIs for capture, profiles, alerts, creative projects, and audit visibility
+
+### New v0.2 endpoints
+- `/api/capture/*` — capture items, clustering, status and tagging
+- `/api/identity/profile` — canonical user profile for OS apps
+- `/api/notifications` — create/list/mark notifications
+- `/api/creator/projects` — manage creator projects and assets
+- `/api/compliance/events` — surface audit events
+- `/api/search?q=` — unified search scaffold
 
 ### Technology Stack
 - **FastAPI** - Modern, fast Python web framework

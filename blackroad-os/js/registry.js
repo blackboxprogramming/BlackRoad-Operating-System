@@ -127,6 +127,46 @@ const AppRegistry = {
         category: 'Corporate',
         entry: window.CorporateApp,
         defaultSize: { width: '800px', height: '600px' }
+    },
+
+    'chaos-inbox': {
+        id: 'chaos-inbox',
+        name: 'Chaos Inbox',
+        icon: '🌀',
+        description: 'All your scraps in one forgiving place',
+        category: 'Focus',
+        entry: window.ChaosInboxApp,
+        defaultSize: { width: '1100px', height: '720px' }
+    },
+
+    'identity-center': {
+        id: 'identity-center',
+        name: 'Identity Center',
+        icon: '🪪',
+        description: 'Your info once, used everywhere',
+        category: 'System',
+        entry: window.IdentityCenterApp,
+        defaultSize: { width: '800px', height: '650px' }
+    },
+
+    'creator-studio': {
+        id: 'creator-studio',
+        name: 'Creator Studio',
+        icon: '🎨',
+        description: 'Home base for creative work',
+        category: 'Creators',
+        entry: window.CreatorStudioApp,
+        defaultSize: { width: '1000px', height: '700px' }
+    },
+
+    'compliance-ops': {
+        id: 'compliance-ops',
+        name: 'Compliance & Ops',
+        icon: '🧭',
+        description: 'Transparent logs & workflows',
+        category: 'Compliance',
+        entry: window.ComplianceOpsApp,
+        defaultSize: { width: '900px', height: '650px' }
     }
 };
 

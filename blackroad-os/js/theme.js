@@ -27,7 +27,7 @@
 class ThemeManager {
     constructor() {
         this.currentTheme = 'tealOS';
-        this.availableThemes = ['tealOS', 'nightOS']; // Extensible list
+        this.availableThemes = ['tealOS', 'nightOS', 'contrastOS']; // Extensible list
         // TODO v0.2.0: Load available themes dynamically from CSS
         this.init();
     }
@@ -80,8 +80,10 @@ class ThemeManager {
      * TODO v0.2.0: Support more than 2 themes with dropdown or cycle logic
      */
     toggleTheme() {
-        // Simple toggle for now (2 themes)
-        this.currentTheme = this.currentTheme === 'tealOS' ? 'nightOS' : 'tealOS';
+        // Cycle through available themes
+        const currentIndex = this.availableThemes.indexOf(this.currentTheme);
+        const nextIndex = (currentIndex + 1) % this.availableThemes.length;
+        this.currentTheme = this.availableThemes[nextIndex];
 
         this.applyTheme(this.currentTheme);
         this.saveTheme();
@@ -143,13 +145,13 @@ class ThemeManager {
 
         const icon = toggleBtn.querySelector('.icon');
         if (icon) {
-            // Sun for dark theme (clicking will go to light)
-            // Moon for light theme (clicking will go to dark)
-            icon.textContent = this.currentTheme === 'tealOS' ? '🌙' : '☀️';
+            const iconMap = { tealOS: '🌙', nightOS: '☀️', contrastOS: '⚡️' };
+            icon.textContent = iconMap[this.currentTheme] || '🎨';
         }
 
         // Update aria-label for clarity
-        const nextTheme = this.currentTheme === 'tealOS' ? 'Night OS' : 'Teal OS';
+        const currentIndex = this.availableThemes.indexOf(this.currentTheme);
+        const nextTheme = this.availableThemes[(currentIndex + 1) % this.availableThemes.length] || 'Teal OS';
         toggleBtn.setAttribute('aria-label', `Switch to ${nextTheme}`);
     }
 

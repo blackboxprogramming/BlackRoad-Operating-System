@@ -515,3 +515,24 @@
 .tab-content {
     padding: 20px 0;
 }
+
+/* Chaos Inbox */
+.chaos-inbox .two-column-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+.chaos-meta { display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 12px; }
+.chaos-body { margin: 8px 0; color: var(--text-primary); }
+.chaos-tags { color: var(--text-secondary); font-size: 12px; }
+.chaos-filters { margin-bottom: 12px; }
+.chaos-clusters .pill { margin-right: 6px; display: inline-block; padding: 4px 6px; }
+
+/* Identity Center */
+.identity-center .identity-row { display: grid; grid-template-columns: 1fr 2fr; padding: 6px 0; }
+.identity-center .label { color: var(--text-secondary); }
+.identity-howto { padding-left: 18px; line-height: 1.5; }
+
+/* Creator Studio */
+.creator-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.creator-body p { margin: 0 0 8px 0; }
+.creator-assets ul { padding-left: 18px; }
+
+/* Compliance & Ops */
+.compliance-ops { display: flex; flex-direction: column; gap: 12px; }

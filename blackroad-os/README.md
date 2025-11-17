@@ -1,4 +1,4 @@
-# BlackRoad OS v0.1.1
+# BlackRoad OS v0.2
 
 **The Living Portal** — A complete front-end operating system for the BlackRoad ecosystem.
 
@@ -12,12 +12,14 @@
 
 BlackRoad OS is a **production-ready**, fully-accessible desktop operating system built entirely with vanilla JavaScript, HTML, and CSS. No frameworks, no build tools, no dependencies - just clean, maintainable code.
 
-**New in v0.1.1:**
-- ✨ **Accessibility-first** - Full keyboard navigation, ARIA attributes throughout
-- 🎯 **Lifecycle hooks** - Apps can listen to window events
-- 🔧 **Config layer** - Feature flags and API endpoint management
-- 📚 **Component library** - 15 polished, accessible UI primitives
-- 📖 **Comprehensive docs** - ARCHITECTURE.md + EXTENDING.md guides
+**New in v0.2:**
+- 🌀 **Chaos Inbox** for neurodivergent-friendly capture and clustering
+- 🪪 **Identity Center** to kill duplication across apps
+- 🔔 **Notification Center focus modes** to tame alert noise
+- 🎨 **Creator Studio** baseline workspace for creators
+- 🧭 **Compliance & Ops** surface for audits/workflows
+- ⌨️ **Global command palette** (Ctrl/Cmd + K) unified search
+- 🎨 **High contrast theme** added to theme cycle
 
 It provides a complete enterprise portal for managing all BlackRoad operations including:
 
