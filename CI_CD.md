@@ -288,4 +288,22 @@ With the automation in place and the guardrails configured:
 
 ---
 
+## Required status checks for main branch  
+
+The `main` branch is protected by a ruleset called `blackroad-os-main`. The following status checks must pass before merging into `main`:  
+
+- BlackRoad OS CI / Validate HTML & JavaScript  
+- Backend Tests & API Connectivity / Run Backend Tests  
+- Backend Tests & API Connectivity / Test API Connectivity  
+- Railway Secrets & Automation Audit / Validate Railway configuration  
+
+These checks ensure that frontend code, backend tests, API connectivity, and Railway configuration are all validated prior to merging into production. You can optionally add more checks later (e.g., Code Quality & Linting, Build Docker Image, Test Summary, Automation summary, Deploy to GitHub Pages / deploy, Deploy to Railway / Deploy to Railway) once they prove stable.  
+
+### Expected merge flow for `main`  
+
+1. Create a feature branch from `main`.  
+2. Open a pull request targeting `main`.  
+3. Wait for all required status checks to succeed.  
+4. Once checks are green and reviews are complete, merge the PR via squash, rebase, or merge commits.
+
 *For questions or issues, check the [GitHub Issues](https://github.com/blackboxprogramming/BlackRoad-Operating-System/issues) or contact the team.*
