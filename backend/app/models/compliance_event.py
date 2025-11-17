@@ -13,7 +13,7 @@ class ComplianceEvent(Base):
     actor = Column(String(255))
     action = Column(String(255))
     resource = Column(String(255))
-    metadata = Column(JSON, default=dict)
+    event_metadata = Column("metadata", JSON, default=dict)
     severity = Column(String(50), default="info")
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
 

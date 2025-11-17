@@ -96,6 +96,28 @@ the validation and deploy jobs keep pointing at the same file.
 - **Manual check** – run `python scripts/railway/validate_env_template.py`
   locally to get the same assurance before pushing.
 
+## Testing
+
+Backend tests run against an isolated SQLite database by default. A helper
+script bootstraps a virtual environment, installs dependencies, and executes
+pytest with sensible defaults for local development.
+
+```bash
+# From the repo root
+bash scripts/run_backend_tests.sh
+```
+
+The script exports `ENVIRONMENT=testing`, points `TEST_DATABASE_URL` to a local
+`test.db` SQLite file (override it to point at Postgres if needed), and sets
+`ALLOWED_ORIGINS` so CORS validation passes during the suite. To rerun tests
+inside the prepared environment manually:
+
+```bash
+cd backend
+source .venv-tests/bin/activate
+pytest -v --maxfail=1
+```
+
 ## Architecture
 
 ### Single-Page Application
