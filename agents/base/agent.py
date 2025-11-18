@@ -3,6 +3,10 @@ Base Agent Class
 
 The foundation for all BlackRoad agents. Provides common functionality,
 error handling, logging, and execution framework.
+
+Integrations:
+- LEITL Protocol: Multi-agent collaboration with live session management
+- Cognition Framework: Access to Cece's reasoning and architecture capabilities
 """
 
 import asyncio
@@ -109,6 +113,11 @@ class BaseAgent(ABC):
             'on_success': []
         }
 
+        # LEITL Protocol integration (optional)
+        self._leitl_enabled: bool = False
+        self._leitl_session_id: Optional[str] = None
+        self._leitl_protocol = None  # Will be set if LEITL is enabled
+
     @abstractmethod
     async def execute(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -171,6 +180,16 @@ class BaseAgent(ABC):
             f"(ID: {execution_id})"
         )
 
+        # Broadcast task started via LEITL (if enabled)
+        await self._leitl_broadcast(
+            "task.started",
+            {
+                "task_id": execution_id,
+                "agent": self.metadata.name,
+                "description": str(params.get("input", ""))[:200]
+            }
+        )
+
         try:
             # Validate params
             if not self.validate_params(params):
@@ -184,6 +203,10 @@ class BaseAgent(ABC):
 
             # Execute with retries
             self.status = AgentStatus.RUNNING
+
+            # Send heartbeat
+            await self._leitl_heartbeat(f"Executing {self.metadata.name}")
+
             result_data = await self._execute_with_retry(params)
 
             # Run success hooks
@@ -202,6 +225,17 @@ class BaseAgent(ABC):
             self.logger.info(
                 f"Agent execution completed: {self.metadata.name} "
                 f"(Duration: {duration:.2f}s)"
+            )
+
+            # Broadcast task completed via LEITL (if enabled)
+            await self._leitl_broadcast(
+                "task.completed",
+                {
+                    "task_id": execution_id,
+                    "agent": self.metadata.name,
+                    "duration": duration,
+                    "status": "success"
+                }
             )
 
             return AgentResult(
@@ -224,6 +258,17 @@ class BaseAgent(ABC):
 
             # Run error hooks
             await self._run_hooks('on_error', {'error': str(e)})
+
+            # Broadcast task failed via LEITL (if enabled)
+            await self._leitl_broadcast(
+                "task.failed",
+                {
+                    "task_id": execution_id,
+                    "agent": self.metadata.name,
+                    "error": str(e),
+                    "duration": duration
+                }
+            )
 
             return AgentResult(
                 agent_name=self.metadata.name,
@@ -311,5 +356,101 @@ class BaseAgent(ABC):
             'author': self.metadata.author,
             'tags': self.metadata.tags,
             'status': self.status.value,
-            'dependencies': self.metadata.dependencies
+            'dependencies': self.metadata.dependencies,
+            'leitl_enabled': self._leitl_enabled,
+            'leitl_session_id': self._leitl_session_id
         }
+
+    async def enable_leitl(
+        self,
+        leitl_protocol=None,
+        tags: Optional[List[str]] = None
+    ) -> str:
+        """
+        Enable LEITL protocol for this agent
+
+        Args:
+            leitl_protocol: LEITL protocol instance (optional, will be imported if not provided)
+            tags: Optional tags for session categorization
+
+        Returns:
+            LEITL session ID
+        """
+        if self._leitl_enabled:
+            return self._leitl_session_id
+
+        # Import LEITL protocol if not provided
+        if leitl_protocol is None:
+            try:
+                from app.services.leitl_protocol import leitl_protocol as protocol
+                self._leitl_protocol = protocol
+            except ImportError:
+                self.logger.warning("LEITL protocol not available - running in standalone mode")
+                return None
+        else:
+            self._leitl_protocol = leitl_protocol
+
+        # Register session
+        try:
+            session = await self._leitl_protocol.register_session(
+                agent_name=self.metadata.name,
+                agent_type=self.metadata.category,
+                tags=tags or self.metadata.tags
+            )
+
+            self._leitl_enabled = True
+            self._leitl_session_id = session.session_id
+
+            self.logger.info(f"✅ LEITL enabled - Session ID: {session.session_id}")
+            return session.session_id
+
+        except Exception as e:
+            self.logger.error(f"Failed to enable LEITL: {str(e)}")
+            return None
+
+    async def disable_leitl(self):
+        """Disable LEITL protocol and end session"""
+        if not self._leitl_enabled:
+            return
+
+        try:
+            if self._leitl_protocol and self._leitl_session_id:
+                await self._leitl_protocol.end_session(self._leitl_session_id)
+
+            self._leitl_enabled = False
+            self._leitl_session_id = None
+            self.logger.info("LEITL session ended")
+
+        except Exception as e:
+            self.logger.error(f"Error disabling LEITL: {str(e)}")
+
+    async def _leitl_broadcast(
+        self,
+        event_type: str,
+        data: Optional[Dict[str, Any]] = None
+    ):
+        """Broadcast event via LEITL protocol"""
+        if not self._leitl_enabled or not self._leitl_protocol:
+            return
+
+        try:
+            await self._leitl_protocol.broadcast_event(
+                event_type=event_type,
+                session_id=self._leitl_session_id,
+                data=data
+            )
+        except Exception as e:
+            self.logger.warning(f"LEITL broadcast failed: {str(e)}")
+
+    async def _leitl_heartbeat(self, current_task: Optional[str] = None):
+        """Send heartbeat to LEITL protocol"""
+        if not self._leitl_enabled or not self._leitl_protocol:
+            return
+
+        try:
+            await self._leitl_protocol.heartbeat(
+                session_id=self._leitl_session_id,
+                current_task=current_task
+            )
+        except Exception as e:
+            self.logger.warning(f"LEITL heartbeat failed: {str(e)}")

@@ -30,7 +30,7 @@ from agents.categories.ai_ml.cece_agent import CeceAgent
 from agents.categories.ai_ml.wasp_agent import WaspAgent
 from agents.categories.ai_ml.clause_agent import ClauseAgent
 from agents.categories.ai_ml.codex_agent import CodexAgent
-from backend.app.services.orchestration import (
+from app.services.orchestration import (
     OrchestrationEngine,
     Workflow,
     WorkflowStep,
