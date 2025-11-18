@@ -646,7 +646,7 @@ After form submission:
 
 **Traffic:**
 - 1,000 unique visitors/month
-- 500 page views/month
+- 2,000 page views/month
 - 3-minute average session duration
 
 **Conversions:**
