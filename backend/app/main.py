@@ -15,7 +15,7 @@ from app.routers import (
     digitalocean, github, huggingface, vscode, games, browser, dashboard,
     railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
     capture, identity_center, notifications_center, creator, compliance_ops,
-    search, cloudflare, system, webhooks, prism_static, ip_vault, leitl
+    search, cloudflare, system, webhooks, prism_static, ip_vault, leitl, cece
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -34,6 +34,7 @@ openapi_tags = [
     {"name": "cloudflare", "description": "Cloudflare zone, DNS, and Worker scaffolding"},
     {"name": "IP Vault", "description": "Cryptographic proof-of-origin for ideas and intellectual property"},
     {"name": "LEITL", "description": "Live Everyone In The Loop - Multi-agent collaboration with WebDAV context"},
+    {"name": "Cece Ultra", "description": "Full stack cognition engine with 15-step pipeline and architecture layer"},
 ]
 
 
@@ -164,6 +165,9 @@ app.include_router(ip_vault.router)
 
 # LEITL Protocol - Live Everyone In The Loop
 app.include_router(leitl.router)
+
+# Cece Ultra - Full Stack Cognition
+app.include_router(cece.router)
 
 # GitHub Webhooks (Phase Q automation)
 app.include_router(webhooks.router)
