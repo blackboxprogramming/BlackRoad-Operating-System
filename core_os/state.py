@@ -1,7 +1,5 @@
 """Core OS state management"""
 from typing import Optional
-import copy
-
 from core_os.models import OSState, Window, UserSession, WindowState
 
 
