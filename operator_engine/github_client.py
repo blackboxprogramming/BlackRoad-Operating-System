@@ -43,36 +43,46 @@ class GitHubClient:
         """Make an authenticated request to the GitHub API"""
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
 
-        async with httpx.AsyncClient() as client:
-            response = await client.request(
-                method,
-                url,
-                headers=self.headers,
-                json=data,
-                params=params,
-                timeout=30.0,
-            )
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.request(
+                    method,
+                    url,
+                    headers=self.headers,
+                    json=data,
+                    params=params,
+                    timeout=30.0,
+                )
 
-            # Update rate limit info
-            self._rate_limit_remaining = int(
-                response.headers.get("X-RateLimit-Remaining", 0)
-            )
-            self._rate_limit_reset = int(
-                response.headers.get("X-RateLimit-Reset", 0)
-            )
+                # Update rate limit info
+                self._rate_limit_remaining = int(
+                    response.headers.get("X-RateLimit-Remaining", 0)
+                )
+                self._rate_limit_reset = int(
+                    response.headers.get("X-RateLimit-Reset", 0)
+                )
 
-            # Check rate limit
-            if response.status_code == 429:
-                logger.warning("Rate limit exceeded, waiting...")
-                await asyncio.sleep(60)
-                return await self._request(method, endpoint, data, params)
+                # Check rate limit
+                if response.status_code == 429:
+                    logger.warning("Rate limit exceeded, waiting...")
+                    await asyncio.sleep(60)
+                    return await self._request(method, endpoint, data, params)
 
-            response.raise_for_status()
+                response.raise_for_status()
 
-            # Return JSON if present
-            if response.headers.get("Content-Type", "").startswith("application/json"):
-                return response.json()
-            return response.text
+                # Return JSON if present
+                if response.headers.get("Content-Type", "").startswith("application/json"):
+                    return response.json()
+                return response.text
+        except httpx.TimeoutException:
+            logger.error(f"Request to {url} timed out")
+            raise
+        except httpx.NetworkError as e:
+            logger.error(f"Network error accessing {url}: {e}")
+            raise
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error for {url}: {e}")
+            raise
 
     # Pull Request Operations
 
