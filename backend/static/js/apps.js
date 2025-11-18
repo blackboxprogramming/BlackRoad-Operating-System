@@ -91,6 +91,9 @@ class BlackRoadApps {
             case 'ai-chat':
                 this.loadAIChat();
                 break;
+            case 'ip-vault':
+                this.loadIPVault();
+                break;
         }
     }
 
@@ -816,6 +819,184 @@ class BlackRoadApps {
                 sendBtn.disabled = false;
                 sendBtn.textContent = 'Send';
             }
+        }
+    }
+
+    // ===== IP VAULT APPLICATION =====
+
+    async loadIPVault() {
+        try {
+            const response = await this.api.getLEOs(1, 20);
+            this.updateIPVaultUI(response);
+        } catch (error) {
+            console.error('Failed to load IP Vault:', error);
+        }
+    }
+
+    updateIPVaultUI(response) {
+        const content = document.querySelector('#ip-vault .window-content');
+        if (!content) return;
+
+        const { leos, total, page, per_page } = response;
+
+        content.innerHTML = `
+            <div class="ip-vault-container" style="padding: 20px;">
+                <div class="vault-header" style="margin-bottom: 20px;">
+                    <h2 style="margin: 0 0 10px 0;">🔐 IP Vault</h2>
+                    <p style="color: #666; font-size: 12px; margin: 0;">Cryptographic proof-of-origin for your ideas</p>
+                </div>
+
+                <div class="vault-form" style="background: #f5f5f5; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Title (optional):</label>
+                        <input type="text" id="vault-title-input"
+                            style="width: 100%; padding: 8px; border: 1px solid #ccc; font-family: 'MS Sans Serif', Arial, sans-serif;"
+                            placeholder="e.g. Quantum ledger architecture">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Idea:</label>
+                        <textarea id="vault-idea-input"
+                            style="width: 100%; height: 100px; padding: 8px; border: 1px solid #ccc; font-family: 'MS Sans Serif', Arial, sans-serif; resize: vertical;"
+                            placeholder="Enter your idea or concept here..."></textarea>
+                    </div>
+                    <button onclick="window.BlackRoadApps.vaultIdea()"
+                        style="padding: 8px 20px; background: #0078d7; color: white; border: none; cursor: pointer; font-weight: bold;">
+                        🔒 Vault This
+                    </button>
+                    <div id="vault-status" style="margin-top: 10px; color: #666; font-size: 12px;"></div>
+                </div>
+
+                <div class="vault-list">
+                    <h3 style="margin: 0 0 15px 0;">Recent Vaulted Ideas (${total} total)</h3>
+                    <div class="leo-list" style="max-height: 300px; overflow-y: auto;">
+                        ${leos.length > 0 ? leos.map(leo => `
+                            <div class="leo-item" style="background: white; border: 1px solid #ccc; padding: 12px; margin-bottom: 10px; cursor: pointer;"
+                                onclick="window.BlackRoadApps.viewLEO('${leo.id}')">
+                                <div style="font-weight: bold; margin-bottom: 5px;">
+                                    ${this.escapeHtml(leo.title || 'Untitled')}
+                                </div>
+                                <div style="font-size: 11px; color: #666; margin-bottom: 5px;">
+                                    by ${this.escapeHtml(leo.author)} • ${this.formatTime(leo.created_at)}
+                                </div>
+                                <div style="font-size: 10px; font-family: monospace; color: #999;">
+                                    SHA-256: ${leo.sha256.substring(0, 32)}...
+                                </div>
+                                <div style="font-size: 10px; margin-top: 5px;">
+                                    Status: <span style="color: ${leo.anchor_status === 'anchored' ? '#2ecc40' : '#ff851b'}; font-weight: bold;">
+                                        ${leo.anchor_status.toUpperCase()}
+                                    </span>
+                                </div>
+                            </div>
+                        `).join('') : '<div style="color: #666; text-align: center; padding: 40px;">No vaulted ideas yet. Create your first one above!</div>'}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    async vaultIdea() {
+        const titleInput = document.getElementById('vault-title-input');
+        const ideaInput = document.getElementById('vault-idea-input');
+        const statusDiv = document.getElementById('vault-status');
+
+        const title = titleInput?.value.trim() || null;
+        const idea = ideaInput?.value.trim();
+
+        if (!idea) {
+            if (statusDiv) statusDiv.innerHTML = '<span style="color: #d9534f;">Please enter an idea to vault.</span>';
+            return;
+        }
+
+        try {
+            if (statusDiv) statusDiv.innerHTML = '<span style="color: #0078d7;">Vaulting...</span>';
+
+            const leo = await this.api.createLEO(idea, 'Alexa', title);
+
+            if (statusDiv) {
+                statusDiv.innerHTML = `<span style="color: #2ecc40;">✓ Vaulted successfully! LEO ID: ${leo.id.substring(0, 8)}...</span>`;
+            }
+
+            // Clear inputs
+            if (titleInput) titleInput.value = '';
+            if (ideaInput) ideaInput.value = '';
+
+            // Reload the list
+            setTimeout(() => {
+                this.loadIPVault();
+            }, 1000);
+
+        } catch (error) {
+            console.error('Failed to vault idea:', error);
+            if (statusDiv) {
+                statusDiv.innerHTML = `<span style="color: #d9534f;">Failed to vault: ${this.escapeHtml(error.message || 'Unknown error')}</span>`;
+            }
+        }
+    }
+
+    async viewLEO(leoId) {
+        try {
+            const leo = await this.api.getLEO(leoId);
+
+            // Create a modal/dialog to show LEO details
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+            modal.onclick = () => modal.remove();
+
+            const dialog = document.createElement('div');
+            dialog.style.cssText = 'background: white; padding: 20px; max-width: 600px; max-height: 80vh; overflow-y: auto; border: 2px solid #0078d7;';
+            dialog.onclick = (e) => e.stopPropagation();
+
+            dialog.innerHTML = `
+                <h2 style="margin: 0 0 15px 0;">🔐 LEO Details</h2>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">Title:</div>
+                    <div style="margin-bottom: 15px;">${this.escapeHtml(leo.title || 'Untitled')}</div>
+
+                    <div style="font-weight: bold; margin-bottom: 5px;">Author:</div>
+                    <div style="margin-bottom: 15px;">${this.escapeHtml(leo.author)}</div>
+
+                    <div style="font-weight: bold; margin-bottom: 5px;">Created:</div>
+                    <div style="margin-bottom: 15px;">${new Date(leo.created_at).toLocaleString()}</div>
+
+                    <div style="font-weight: bold; margin-bottom: 5px;">LEO ID:</div>
+                    <div style="font-family: monospace; font-size: 11px; background: #f5f5f5; padding: 5px; margin-bottom: 15px;">${leo.id}</div>
+
+                    <div style="font-weight: bold; margin-bottom: 5px;">SHA-256:</div>
+                    <div style="font-family: monospace; font-size: 10px; background: #f5f5f5; padding: 5px; word-break: break-all; margin-bottom: 15px;">${leo.sha256}</div>
+
+                    <div style="font-weight: bold; margin-bottom: 5px;">SHA-512:</div>
+                    <div style="font-family: monospace; font-size: 10px; background: #f5f5f5; padding: 5px; word-break: break-all; margin-bottom: 15px;">${leo.sha512}</div>
+
+                    <div style="font-weight: bold; margin-bottom: 5px;">Keccak-256 (Ethereum-compatible):</div>
+                    <div style="font-family: monospace; font-size: 10px; background: #f5f5f5; padding: 5px; word-break: break-all; margin-bottom: 15px;">${leo.keccak256}</div>
+
+                    <div style="font-weight: bold; margin-bottom: 5px;">Anchor Status:</div>
+                    <div style="margin-bottom: 15px;">
+                        <span style="color: ${leo.anchor_status === 'anchored' ? '#2ecc40' : '#ff851b'}; font-weight: bold;">
+                            ${leo.anchor_status.toUpperCase()}
+                        </span>
+                        ${leo.anchor_txid ? `<br><span style="font-size: 11px;">TX: ${leo.anchor_txid}</span>` : ''}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px; padding: 10px; background: #fffef0; border-left: 3px solid #ffdc00;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">Verification Instructions:</div>
+                    <div style="font-size: 11px; white-space: pre-wrap;">${this.escapeHtml(leo.verification_text)}</div>
+                </div>
+
+                <button onclick="this.parentElement.parentElement.remove()"
+                    style="padding: 8px 20px; background: #0078d7; color: white; border: none; cursor: pointer; font-weight: bold;">
+                    Close
+                </button>
+            `;
+
+            modal.appendChild(dialog);
+            document.body.appendChild(modal);
+
+        } catch (error) {
+            console.error('Failed to load LEO details:', error);
+            alert('Failed to load LEO details: ' + (error.message || 'Unknown error'));
         }
     }
 

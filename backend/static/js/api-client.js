@@ -419,6 +419,38 @@ class ApiClient {
     async deleteFile(fileId) {
         return this.delete(`/api/files/${fileId}`);
     }
+
+    // ===== IP Vault API =====
+
+    async createLEO(idea, author = 'Alexa', title = null) {
+        return this.post('/api/vault/leos', {
+            idea,
+            author,
+            title
+        });
+    }
+
+    async getLEOs(page = 1, perPage = 20, author = null) {
+        let endpoint = `/api/vault/leos?page=${page}&per_page=${perPage}`;
+        if (author) {
+            endpoint += `&author=${encodeURIComponent(author)}`;
+        }
+        return this.get(endpoint);
+    }
+
+    async getLEO(leoId) {
+        return this.get(`/api/vault/leos/${leoId}`);
+    }
+
+    async anchorLEO(leoId, chain = 'bitcoin') {
+        return this.post(`/api/vault/leos/${leoId}/anchor`, {
+            chain
+        });
+    }
+
+    async getLEOEvents(leoId) {
+        return this.get(`/api/vault/leos/${leoId}/events`);
+    }
 }
 
 // Create singleton instance
