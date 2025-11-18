@@ -29,13 +29,6 @@
     });
 
     // Placeholder: Future API integration
-    async function fetchDashboardData() {
-        // TODO Phase 2.6: Fetch real data from /api/prism/metrics
-        // const response = await fetch('/api/prism/metrics');
-        // const data = await response.json();
-        // updateDashboard(data);
-    }
-
     async function fetchJobs() {
         // TODO Phase 2.6: Fetch jobs from /api/prism/jobs
         // const response = await fetch('/api/prism/jobs');
