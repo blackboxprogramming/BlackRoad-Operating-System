@@ -7,7 +7,7 @@ Part of Phase Q - Merge Queue & Automation Strategy.
 Related docs: OPERATOR_PR_EVENT_HANDLERS.md, MERGE_QUEUE_PLAN.md
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert, update
 import logging
