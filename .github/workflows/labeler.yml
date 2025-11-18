@@ -1,0 +1,51 @@
+name: PR Labeler
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    name: Auto-label PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Apply labels
+        uses: actions/labeler@v4
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          configuration-path: .github/labeler.yml
+          sync-labels: true
+
+      - name: Comment on auto-merge eligible PRs
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const labels = pr.labels.map(l => l.name);
+
+            const autoMergeLabels = [
+              'claude-auto',
+              'atlas-auto',
+              'docs',
+              'chore',
+              'tests-only'
+            ];
+
+            const hasAutoMergeLabel = labels.some(l => autoMergeLabels.includes(l));
+
+            if (hasAutoMergeLabel) {
+              await github.rest.issues.createComment({
+                issue_number: pr.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '🤖 This PR is eligible for auto-merge based on its labels. It will be added to the merge queue once all checks pass.'
+              });
+            }

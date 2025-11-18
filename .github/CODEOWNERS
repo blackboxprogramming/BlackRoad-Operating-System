@@ -171,3 +171,150 @@ docker-compose.yml @alexa-amundson @infra-team
 # implemented via GitHub Actions, not actual bot accounts.
 #
 # ==============================================================================
+# BlackRoad OS Code Owners
+#
+# This file defines who is responsible for code in this repository.
+# Each line is a file pattern followed by one or more owners.
+#
+# Ownership hierarchy:
+# 1. Human maintainers (primary approval authority)
+# 2. AI automation teams (can auto-approve safe changes)
+# 3. Specialized reviewers (domain experts)
+#
+# AI teams are GitHub teams that can auto-merge specific types of PRs:
+# - @blackboxprogramming/claude-auto - Claude AI automated changes
+# - @blackboxprogramming/atlas-auto - Atlas AI automated changes
+# - @blackboxprogramming/docs-auto - Documentation-only changes
+# - @blackboxprogramming/test-auto - Test-only changes
+
+# ============================================================================
+# GLOBAL OWNERSHIP
+# ============================================================================
+
+# All files require approval from primary maintainer
+* @alexa-amundson
+
+# ============================================================================
+# BACKEND & API
+# ============================================================================
+
+# FastAPI Backend
+/backend/ @alexa-amundson
+/backend/app/ @alexa-amundson
+/backend/requirements.txt @alexa-amundson
+/backend/Dockerfile @alexa-amundson
+
+# Backend tests can be auto-merged by AI
+/backend/tests/ @alexa-amundson @blackboxprogramming/test-auto
+/backend/pytest.ini @alexa-amundson @blackboxprogramming/test-auto
+
+# ============================================================================
+# FRONTEND & OS
+# ============================================================================
+
+# OS Interface (canonical)
+/backend/static/ @alexa-amundson
+
+# Legacy standalone UI (deprecated, needs migration)
+/blackroad-os/ @alexa-amundson
+
+# ============================================================================
+# OPERATOR ENGINE & AUTOMATION
+# ============================================================================
+
+# Operator Engine (PR automation, merge queue)
+/operator_engine/ @alexa-amundson
+/operator_engine/**/*.py @alexa-amundson
+
+# Prism Console (merge dashboard)
+/prism-console/ @alexa-amundson
+
+# ============================================================================
+# INFRASTRUCTURE & DEVOPS
+# ============================================================================
+
+# GitHub Actions & Workflows (critical - no auto-merge)
+/.github/workflows/ @alexa-amundson
+
+# GitHub Configuration
+/.github/ @alexa-amundson
+/.github/CODEOWNERS @alexa-amundson
+/.github/dependabot.yml @alexa-amundson @blackboxprogramming/claude-auto
+/.github/labeler.yml @alexa-amundson @blackboxprogramming/claude-auto
+/.github/merge_queue.yml @alexa-amundson
+
+# Infrastructure scripts
+/scripts/ @alexa-amundson
+/ops/ @alexa-amundson
+/infra/ @alexa-amundson
+
+# Railway deployment (critical - no auto-merge)
+railway.toml @alexa-amundson
+railway.json @alexa-amundson
+
+# Docker
+docker-compose.yml @alexa-amundson
+/backend/docker-compose.yml @alexa-amundson
+
+# ============================================================================
+# DOCUMENTATION
+# ============================================================================
+
+# Core documentation (safe for auto-merge)
+/docs/ @alexa-amundson @blackboxprogramming/docs-auto
+/README.md @alexa-amundson @blackboxprogramming/docs-auto
+/*.md @alexa-amundson @blackboxprogramming/docs-auto
+
+# Implementation plans (AI-generated, can auto-merge)
+/implementation-plans/ @alexa-amundson @blackboxprogramming/claude-auto
+
+# ============================================================================
+# SDKs
+# ============================================================================
+
+# Python SDK
+/sdk/python/ @alexa-amundson
+/sdk/python/tests/ @alexa-amundson @blackboxprogramming/test-auto
+
+# TypeScript SDK
+/sdk/typescript/ @alexa-amundson
+/sdk/typescript/tests/ @alexa-amundson @blackboxprogramming/test-auto
+
+# ============================================================================
+# AGENTS & AI
+# ============================================================================
+
+# AI Agents (can be auto-merged by Claude)
+/agents/ @alexa-amundson @blackboxprogramming/claude-auto
+/agents/tests/ @alexa-amundson @blackboxprogramming/test-auto
+
+# Prompts & Templates
+/blackroad-universe/prompts/ @alexa-amundson @blackboxprogramming/claude-auto
+
+# Cognitive Research
+/cognitive/ @alexa-amundson
+
+# ============================================================================
+# BRANDING & BUSINESS
+# ============================================================================
+
+# BlackRoad Universe (brand, GTM, domains)
+/blackroad-universe/ @alexa-amundson
+
+# SOP (Standard Operating Procedures)
+/sop/ @alexa-amundson @blackboxprogramming/docs-auto
+
+# ============================================================================
+# SPECIAL FILES
+# ============================================================================
+
+# Security-sensitive files (no auto-merge ever)
+.env.example @alexa-amundson
+backend/.env.example @alexa-amundson
+SECURITY.md @alexa-amundson
+
+# License
+LICENSE @alexa-amundson
+
+# Git configuration
+.gitignore @alexa-amundson @blackboxprogramming/claude-auto
