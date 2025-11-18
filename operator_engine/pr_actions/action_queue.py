@@ -95,56 +95,58 @@ class PRActionQueue:
         Returns:
             action_id: Unique identifier for the action
         """
-        # Use default priority if not specified
-        if priority is None:
-            priority = get_default_priority(action_type)
+        async with self._lock:
+            # Use default priority if not specified
+            if priority is None:
+                priority = get_default_priority(action_type)
 
-        # Create action
-        action = PRAction(
-            action_id=str(uuid.uuid4()),
-            action_type=action_type,
-            repo_owner=repo_owner,
-            repo_name=repo_name,
-            pr_number=pr_number,
-            params=params,
-            priority=priority,
-            status=PRActionStatus.QUEUED,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
-            triggered_by=triggered_by,
-        )
-
-        # Check for duplicates
-        duplicate_id = self._find_duplicate(action)
-        if duplicate_id:
-            logger.info(
-                f"Duplicate action found: {duplicate_id}. "
-                f"Skipping enqueue for {action.action_id}"
+            # Create action
+            action = PRAction(
+                action_id=str(uuid.uuid4()),
+                action_type=action_type,
+                repo_owner=repo_owner,
+                repo_name=repo_name,
+                pr_number=pr_number,
+                params=params,
+                priority=priority,
+                status=PRActionStatus.QUEUED,
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow(),
+                triggered_by=triggered_by,
             )
-            return duplicate_id
 
-        # Add to queue
-        self._queue[action.action_id] = action
+            # Check for duplicates
+            duplicate_id = await self._find_duplicate(action)
+            if duplicate_id:
+                logger.info(
+                    f"Duplicate action found: {duplicate_id}. "
+                    f"Skipping enqueue for {action.action_id}"
+                )
+                return duplicate_id
 
-        logger.info(
-            f"Enqueued {action_type.value} for {repo_owner}/{repo_name}#{pr_number} "
-            f"(priority: {priority.value}, id: {action.action_id})"
-        )
+            # Add to queue
+            self._queue[action.action_id] = action
 
-        return action.action_id
+            logger.info(
+                f"Enqueued {action_type.value} for {repo_owner}/{repo_name}#{pr_number} "
+                f"(priority: {priority.value}, id: {action.action_id})"
+            )
 
-    def _find_duplicate(self, action: PRAction) -> Optional[str]:
+            return action.action_id
+
+    async def _find_duplicate(self, action: PRAction) -> Optional[str]:
         """Check if an identical action is already queued or processing"""
-        for existing_id, existing in {**self._queue, **self._processing}.items():
-            if (
-                existing.action_type == action.action_type
-                and existing.repo_owner == action.repo_owner
-                and existing.repo_name == action.repo_name
-                and existing.pr_number == action.pr_number
-                and existing.params == action.params
-            ):
-                return existing_id
-        return None
+        async with self._lock:
+            for existing_id, existing in {**self._queue, **self._processing}.items():
+                if (
+                    existing.action_type == action.action_type
+                    and existing.repo_owner == action.repo_owner
+                    and existing.repo_name == action.repo_name
+                    and existing.pr_number == action.pr_number
+                    and existing.params == action.params
+                ):
+                    return existing_id
+            return None
 
     async def _worker(self, worker_id: int):
         """Worker that processes actions from the queue"""
