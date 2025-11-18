@@ -103,6 +103,12 @@ class MergePRHandler(BaseHandler):
             action.repo_owner, action.repo_name, pr["base"]["ref"]
         )
 
+        # Defensive checks for required_checks
+        if required_checks is None:
+            required_checks = []
+        elif not isinstance(required_checks, list):
+            logger.warning(f"Unexpected required_checks type: {type(required_checks)}")
+            required_checks = []
         # If no required checks, consider it passing
         if not required_checks:
             return True
