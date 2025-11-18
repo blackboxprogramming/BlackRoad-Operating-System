@@ -58,7 +58,7 @@ import os
 import sys
 import argparse
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 from pathlib import Path
 
 try:
