@@ -4,7 +4,7 @@ Commit Suggestion Handler
 Handles committing code suggestions from reviews.
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 import logging
 
 from . import BaseHandler
