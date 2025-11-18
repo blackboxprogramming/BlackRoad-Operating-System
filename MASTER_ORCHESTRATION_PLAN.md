@@ -173,7 +173,7 @@ This document orchestrates the **complete BlackRoad universe** across all layers
 | CNAME | os | `blackroad.systems` | ✅ Proxied | Alternative alias |
 | CNAME | api | `blackroad-os-production.up.railway.app` | ✅ Proxied | Explicit API subdomain |
 | CNAME | prism | `blackroad-os-production.up.railway.app` | ✅ Proxied | Prism Console subdomain |
-| CNAME | docs | `blackbox programming.github.io` | ✅ Proxied | GitHub Pages for docs |
+| CNAME | docs | `blackboxprogramming.github.io` | ✅ Proxied | GitHub Pages for docs |
 | TXT | @ | `v=spf1 include:_spf.google.com ~all` | - | Email SPF (if using Google Workspace) |
 | MX | @ | `1 aspmx.l.google.com` | - | Email MX (if using Gmail) |
 
