@@ -56,6 +56,10 @@ class Settings(BaseSettings):
     BLOCKCHAIN_DIFFICULTY: int = 4
     MINING_REWARD: float = 50.0
 
+    # GitHub Automation (Phase Q)
+    GITHUB_TOKEN: str = ""
+    GITHUB_WEBHOOK_SECRET: str = ""
+
     class Config:
         env_file = ".env"
         case_sensitive = True
