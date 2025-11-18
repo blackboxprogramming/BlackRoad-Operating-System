@@ -67,10 +67,11 @@ jobs:
           flake8 app --count --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Type check with mypy
+        continue-on-error: true
         run: |
           cd backend
           pip install mypy
-          mypy app --ignore-missing-imports || true
+          mypy app --ignore-missing-imports
 
       - name: Run tests with pytest
         env:
