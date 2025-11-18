@@ -1,5 +1,4 @@
 """Tests for OS state management"""
-import pytest
 from core_os.state import (
     get_initial_state,
     get_current_state,
