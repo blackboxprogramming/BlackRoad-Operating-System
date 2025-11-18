@@ -7,10 +7,9 @@ Part of Phase Q - Merge Queue & Automation Strategy.
 Related docs: OPERATOR_PR_EVENT_HANDLERS.md, MERGE_QUEUE_PLAN.md
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert, update
-from datetime import datetime
+# from sqlalchemy import select, insert, update  # Removed unused imports
 import logging
 
 logger = logging.getLogger(__name__)
@@ -199,7 +198,6 @@ async def handle_pr_review_comment(payload: Dict[str, Any], db: AsyncSession):
 
     action = payload["action"]
     pr_number = payload["pull_request"]["number"]
-    comment = payload["comment"]
 
     logger.info(f"PR #{pr_number} review comment {action}")
 

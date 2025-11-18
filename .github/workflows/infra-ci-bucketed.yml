@@ -32,7 +32,7 @@ jobs:
           pip install yamllint
 
           # Validate all YAML files
-          find .github -name "*.yml" -o -name "*.yaml" | xargs yamllint -d relaxed || true
+          find .github -name "*.yml" -o -name "*.yaml" | xargs yamllint -d relaxed
 
       - name: Validate TOML files
         run: |
