@@ -1,0 +1,255 @@
+# Dependabot Configuration
+# ========================
+#
+# Dependabot automatically creates pull requests to update dependencies.
+# This keeps your project secure and up-to-date.
+#
+# Documentation: https://docs.github.com/en/code-security/dependabot
+#
+# What Dependabot does:
+# --------------------
+# - Checks for outdated dependencies daily/weekly/monthly
+# - Creates PRs to update them
+# - Groups related updates together
+# - Respects semantic versioning
+# - Works with GitHub Actions to run tests
+#
+# How to use:
+# ----------
+# This file is already in the correct location (.github/dependabot.yml)
+# Just commit it and Dependabot will start working automatically!
+
+version: 2
+
+updates:
+  # ========================================
+  # Backend Python Dependencies
+  # ========================================
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "alexa-amundson"
+    labels:
+      - "dependencies"
+      - "backend"
+      - "python"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    # Group minor and patch updates together
+    groups:
+      fastapi-stack:
+        patterns:
+          - "fastapi*"
+          - "uvicorn*"
+          - "pydantic*"
+          - "starlette*"
+      database-stack:
+        patterns:
+          - "sqlalchemy*"
+          - "alembic*"
+          - "psycopg*"
+          - "asyncpg*"
+      testing-stack:
+        patterns:
+          - "pytest*"
+          - "coverage*"
+          - "httpx*"
+
+  # ========================================
+  # Frontend NPM Dependencies (if exists)
+  # ========================================
+  # Uncomment if you have a package.json for frontend
+  # - package-ecosystem: "npm"
+  #   directory: "/frontend"
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "monday"
+  #     time: "06:00"
+  #   open-pull-requests-limit: 5
+  #   reviewers:
+  #     - "alexa-amundson"
+  #   labels:
+  #     - "dependencies"
+  #     - "frontend"
+  #     - "javascript"
+  #   commit-message:
+  #     prefix: "chore(deps)"
+  #   groups:
+  #     dev-dependencies:
+  #       dependency-type: "development"
+
+  # ========================================
+  # Python SDK Dependencies
+  # ========================================
+  - package-ecosystem: "pip"
+    directory: "/sdk/python"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "sdk"
+      - "python"
+    commit-message:
+      prefix: "chore(sdk)"
+
+  # ========================================
+  # TypeScript SDK Dependencies
+  # ========================================
+  - package-ecosystem: "npm"
+    directory: "/sdk/typescript"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "sdk"
+      - "typescript"
+    commit-message:
+      prefix: "chore(sdk)"
+
+  # ========================================
+  # GitHub Actions Workflows
+  # ========================================
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "ci-cd"
+    commit-message:
+      prefix: "chore(ci)"
+
+  # ========================================
+  # Docker (if using Dockerfile)
+  # ========================================
+  - package-ecosystem: "docker"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "chore(docker)"
+
+# ========================================
+# Configuration Options Explained
+# ========================================
+#
+# package-ecosystem:
+#   - pip: Python (requirements.txt, setup.py)
+#   - npm: JavaScript/TypeScript (package.json)
+#   - github-actions: GitHub Actions workflows
+#   - docker: Dockerfiles
+#   - bundler: Ruby (Gemfile)
+#   - composer: PHP (composer.json)
+#   - cargo: Rust (Cargo.toml)
+#
+# directory:
+#   - Path where the manifest file is located
+#   - Use "/" for root, "/backend" for subdirectory
+#
+# schedule.interval:
+#   - daily: Check every day
+#   - weekly: Check once a week
+#   - monthly: Check once a month
+#
+# open-pull-requests-limit:
+#   - Max number of open dependency PRs at once
+#   - Prevents PR spam
+#   - Recommended: 3-10
+#
+# reviewers:
+#   - GitHub usernames to request review from
+#   - Helps ensure updates are reviewed
+#
+# labels:
+#   - Labels to add to PRs
+#   - Helps organize and filter
+#
+# groups:
+#   - Group related dependencies into single PR
+#   - Reduces PR noise
+#   - Example: Update all pytest-related packages together
+#
+# commit-message.prefix:
+#   - Prefix for commit messages
+#   - Common: "chore(deps)", "build", "deps"
+#
+# ========================================
+# Best Practices
+# ========================================
+#
+# 1. Review PRs before merging:
+#    - Check changelogs
+#    - Run tests
+#    - Look for breaking changes
+#
+# 2. Use groups to reduce PR noise:
+#    - Group related packages
+#    - Group by type (dev vs prod)
+#
+# 3. Set appropriate schedule:
+#    - Weekly for active projects
+#    - Monthly for stable projects
+#    - Daily for security-critical projects
+#
+# 4. Limit open PRs:
+#    - Prevents backlog of unreviewed PRs
+#    - 5-10 is usually good
+#
+# 5. Auto-merge patch updates (optional):
+#    - Use GitHub auto-merge for patch versions
+#    - Requires passing CI tests
+#
+# ========================================
+# Monitoring
+# ========================================
+#
+# View Dependabot activity:
+# - Repository → Insights → Dependency graph → Dependabot
+# - Repository → Pull requests (filter by label: "dependencies")
+#
+# Configure alerts:
+# - Repository → Settings → Security & analysis
+# - Enable "Dependabot alerts"
+# - Enable "Dependabot security updates"
+#
+# ========================================
+# Troubleshooting
+# ========================================
+#
+# Dependabot not creating PRs?
+# - Check .github/dependabot.yml is valid YAML
+# - Verify manifest files exist (requirements.txt, package.json)
+# - Check repository settings → Security & analysis
+# - Look for errors in Settings → Dependabot
+#
+# Too many PRs?
+# - Reduce open-pull-requests-limit
+# - Change schedule to monthly
+# - Use groups to combine updates
+#
+# PRs failing tests?
+# - Fix breaking changes before merging
+# - Pin problematic dependencies
+# - Use version ranges in manifest files
