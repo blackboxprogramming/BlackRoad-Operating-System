@@ -704,7 +704,7 @@ Prove the OS                Expand Intelligence         Ecosystem & Orbit
 **Domains Live in Phase 1**:
 1. ✅ `blackroad.systems` - Corporate site + OS positioning
 2. ✅ `blackroad.network` - Developer hub + docs
-3. ✅ `blackroadai.com` - Product console (login, admin)
+3. ✅ `blackroad.ai` - Product console (login, admin)
 4. ✅ `blackroad.me` - Identity portal
 
 **Quarter-by-Quarter**:
