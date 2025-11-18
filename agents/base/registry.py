@@ -321,3 +321,80 @@ class AgentRegistry:
             'categories': self.list_categories(),
             'stats': self.get_stats()
         }
+
+    async def enable_leitl_for_all(
+        self,
+        leitl_protocol=None,
+        tags: Optional[List[str]] = None
+    ) -> Dict[str, str]:
+        """
+        Enable LEITL protocol for all registered agents
+
+        This allows all agents to participate in the Live Everyone In The Loop
+        multi-agent collaboration protocol.
+
+        Args:
+            leitl_protocol: LEITL protocol instance (optional, will be imported if not provided)
+            tags: Optional tags for sessions
+
+        Returns:
+            Dict mapping agent names to LEITL session IDs
+        """
+        self.logger.info("🔗 Enabling LEITL for all agents...")
+
+        sessions = {}
+
+        for agent_name, agent in self._agents.items():
+            try:
+                session_id = await agent.enable_leitl(
+                    leitl_protocol=leitl_protocol,
+                    tags=tags
+                )
+
+                if session_id:
+                    sessions[agent_name] = session_id
+                    self.logger.info(f"  ✓ {agent_name}: {session_id}")
+
+            except Exception as e:
+                self.logger.warning(f"  ✗ {agent_name}: {str(e)}")
+
+        self.logger.info(f"✅ LEITL enabled for {len(sessions)}/{len(self._agents)} agents")
+
+        return sessions
+
+    async def disable_leitl_for_all(self):
+        """Disable LEITL protocol for all agents"""
+        self.logger.info("🔌 Disabling LEITL for all agents...")
+
+        for agent_name, agent in self._agents.items():
+            try:
+                await agent.disable_leitl()
+                self.logger.debug(f"  ✓ {agent_name}")
+            except Exception as e:
+                self.logger.warning(f"  ✗ {agent_name}: {str(e)}")
+
+        self.logger.info("✅ LEITL disabled for all agents")
+
+    def get_leitl_status(self) -> Dict[str, Any]:
+        """
+        Get LEITL status for all agents
+
+        Returns:
+            Dict with LEITL enabled counts and session IDs
+        """
+        enabled_agents = {}
+        disabled_agents = []
+
+        for agent_name, agent in self._agents.items():
+            if agent._leitl_enabled:
+                enabled_agents[agent_name] = agent._leitl_session_id
+            else:
+                disabled_agents.append(agent_name)
+
+        return {
+            "leitl_enabled_count": len(enabled_agents),
+            "leitl_disabled_count": len(disabled_agents),
+            "enabled_agents": enabled_agents,
+            "disabled_agents": disabled_agents,
+            "total_agents": len(self._agents)
+        }
