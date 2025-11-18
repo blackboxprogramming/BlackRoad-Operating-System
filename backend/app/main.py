@@ -15,7 +15,7 @@ from app.routers import (
     digitalocean, github, huggingface, vscode, games, browser, dashboard,
     railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
     capture, identity_center, notifications_center, creator, compliance_ops,
-    search, cloudflare, system
+    search, cloudflare, system, webhooks
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -156,6 +156,16 @@ app.include_router(api_health.router)
 # Agent Library
 app.include_router(agents.router)
 
+# GitHub Webhooks (Phase Q automation)
+app.include_router(webhooks.router)
+
+
+# Prism Console (Phase 2.5) - Admin interface at /prism
+prism_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "prism-console")
+if os.path.exists(prism_dir):
+    app.mount("/prism", StaticFiles(directory=prism_dir, html=True), name="prism")
+    print(f"✅ Prism Console mounted at /prism")
+
 
 # Static file serving for the BlackRoad OS front-end
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
@@ -175,6 +185,7 @@ if os.path.exists(static_dir):
             "version": settings.APP_VERSION,
             "environment": settings.ENVIRONMENT,
             "docs": "/api/docs",
+            "prism": "/prism",
             "status": "operational",
             "note": "Front-end not found. API is operational."
         }
@@ -188,6 +199,7 @@ else:
             "version": settings.APP_VERSION,
             "environment": settings.ENVIRONMENT,
             "docs": "/api/docs",
+            "prism": "/prism",
             "status": "operational",
             "note": "API-only mode. Front-end not deployed."
         }
