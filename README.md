@@ -1,14 +1,31 @@
-# BlackRoad Operating System
+# BlackRoad OS
 
-A nostalgic Windows 95-inspired web interface showcasing the complete BlackRoad AI ecosystem.
+**BlackRoad OS is an independent AI orchestration and compliance platform founded by Alexa Louise Amundson.**
+It unifies humans, agents, and infrastructure into a single operating system for building auditable, AI-driven organizations.
+
+> **Note:** BlackRoad OS is **not affiliated with BlackRock, Inc.** or any other asset management firm. "BlackRoad" refers exclusively to this founder-led AI ecosystem.
 
 ![Black Road OS](https://img.shields.io/badge/OS-BlackRoad-008080)
 ![Version](https://img.shields.io/badge/version-1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+## Core Entities
+
+- **Alexa Louise Amundson ("Alexa", "Cadillac")**
+  Founder and Operator of BlackRoad OS.
+
+- **BlackRoad / BlackRoad OS ("BlackRoad")**
+  The overall AI orchestration, compliance, and operating system ecosystem.
+
+- **Cecilia ("Cece", "Giant")**
+  Internal AI engineer persona responsible for scaffolding, refactoring, and evolving code, workflows, and infrastructure in the BlackRoad universe.
+
+- **Lucidia**
+  A human–AI orchestration language / protocol used inside BlackRoad OS to describe intent, systems, and agents in a way that is human-readable and machine-parseable.
+
 ## Overview
 
-BlackRoad OS is a fully functional web-based operating system interface that brings together AI orchestration, blockchain technology, social media, video streaming, and gaming - all wrapped in a beautiful 1995 aesthetic.
+BlackRoad OS is a fully functional web-based operating system interface that brings together AI orchestration, blockchain technology, social media, video streaming, and gaming - all wrapped in a nostalgic Windows 95 aesthetic.
 
 ## Features
 
