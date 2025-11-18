@@ -1120,6 +1120,243 @@ The master orchestration plan is now backed by **concrete implementation files**
 
 ---
 
+## PHASE 2.5: INFRASTRUCTURE WIRING (COMPLETED 2025-11-18)
+
+### Overview
+
+Phase 2.5 **wires up** the infrastructure decisions and prepares BlackRoad OS for production deployment. This phase codifies architectural choices and creates deployment-ready configurations.
+
+**Status**: ✅ **COMPLETED**
+
+**Branch**: `claude/os-phase2-5-wire-infra-01GoUdf3aSLaDjaQ7nYnZ9pY`
+
+### Key Decisions Codified
+
+1. **✅ Monorepo Strategy**
+   - `BlackRoad-Operating-System` repository is the canonical OS home
+   - All OS components live together for Phase 1-2
+   - Future evolution to multi-repo considered for Phase 2+ (when team > 10 people)
+
+2. **✅ Prism Console Routing**
+   - Prism Console UI served from backend at `/prism` route
+   - Integrated deployment with shared authentication
+   - Static files in `backend/static/prism/`
+
+3. **✅ Documentation via GitHub Pages**
+   - Codex documentation deployed to `docs.blackroad.systems`
+   - MkDocs with Material theme
+   - Automated deployment via GitHub Actions (`.github/workflows/docs-deploy.yml`)
+
+4. **✅ Frontend Technology**
+   - Vanilla JavaScript (ES6+) continues for Phase 2
+   - Zero-dependency approach maintained
+   - No build process required
+
+### URL Structure (Production)
+
+```
+https://blackroad.systems          → Main OS interface (backend/static/)
+https://blackroad.systems/prism    → Prism Console UI
+https://blackroad.systems/api/*    → REST API endpoints
+https://blackroad.systems/api/docs → OpenAPI documentation
+https://docs.blackroad.systems     → Codex documentation (GitHub Pages)
+```
+
+### Deployment Topology
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ CLOUDFLARE (DNS + SSL + CDN)                                │
+│ - blackroad.systems → Railway backend                       │
+│ - docs.blackroad.systems → GitHub Pages                     │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│ RAILWAY (Backend Hosting)                                    │
+│ - FastAPI backend (app/main.py)                             │
+│ - PostgreSQL 15 database                                    │
+│ - Redis 7 cache                                             │
+│ - Routes:                                                   │
+│   • / → Static OS (backend/static/index.html)              │
+│   • /prism → Prism Console (backend/static/prism/)         │
+│   • /api/* → REST endpoints                                │
+│   • /health → Health check                                 │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│ GITHUB PAGES (Documentation)                                │
+│ - Source: codex-docs/ directory                             │
+│ - Built with: MkDocs + Material theme                       │
+│ - Deployed via: .github/workflows/docs-deploy.yml          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### New Files Created
+
+**Documentation & Planning:**
+- `PHASE2_5_SUMMARY_FOR_ALEXA.md` - Complete Phase 2.5 summary and checklist
+- `BLACKROAD_OS_REPO_MAP.md` - Module-by-module breakdown of repository
+- `DEPLOYMENT_NOTES.md` - Production deployment checklist and reference
+
+**Backend Infrastructure:**
+- `backend/app/routers/prism_static.py` - New router to serve Prism Console at `/prism`
+- `backend/static/prism/` - Prism Console UI directory structure
+  - `index.html` - Prism entry point
+  - `css/prism.css` - Prism styling
+  - `js/prism-core.js` - Prism JavaScript
+
+**Documentation System:**
+- `.github/workflows/docs-deploy.yml` - Automated MkDocs deployment
+- `codex-docs/mkdocs.yml` - MkDocs configuration with Material theme
+- `codex-docs/DEPLOY_DOCS.md` - Documentation deployment guide
+- `codex-docs/docs/` - Complete documentation structure
+  - `index.md` - Documentation landing page
+  - `architecture/overview.md` - System architecture
+  - `architecture/phase2-decisions.md` - Architectural decisions
+  - `architecture/infra-deployment.md` - Infrastructure guide
+  - `api/overview.md` - API reference
+  - `guides/quickstart.md` - Quick start guide
+  - `guides/deployment.md` - Deployment guide
+  - `contributing.md` - Contributing guidelines
+
+**Updated Files:**
+- `backend/app/main.py` - Added Prism static router, updated OpenAPI tags
+- `MASTER_ORCHESTRATION_PLAN.md` - This section added
+
+### Phase 2 vs Phase 3: Evolution Path
+
+**Phase 2 (Current - Months 0-12):**
+- ✅ Monorepo for single source of truth
+- ✅ All components deployed together
+- ✅ Simple CI/CD pipeline
+- ✅ Ideal for small team (1-5 developers)
+
+**Phase 3 (Future - Months 12+):**
+
+**When to split into multi-repo:**
+- Team size > 10 developers
+- Clear component ownership boundaries
+- Need for independent release cycles
+- Different tech stacks emerging
+
+**Potential repository structure:**
+```
+blackroad-os-core       → Core runtime, identity (PS-SHA∞)
+blackroad-os-api        → Backend API gateway
+blackroad-os-web        → Pocket OS web interface
+blackroad-os-prism      → Prism Console (admin/observability)
+blackroad-os-operator   → Worker engine, schedulers
+blackroad-os-docs       → Codex, specs, whitepapers
+```
+
+**Migration strategy:**
+- Use `git subtree split` to preserve history
+- Set up cross-repo CI coordination
+- Implement versioned API contracts
+- Maintain unified documentation
+
+### Post-Merge Checklist for Alexa
+
+**Immediate (30-45 minutes):**
+
+1. **Configure GitHub Pages** (5 minutes)
+   - Settings → Pages → Source: `gh-pages` branch, `/ (root)` folder
+   - Custom domain: `docs.blackroad.systems`
+   - Enforce HTTPS: ✅
+
+2. **Configure Railway Deployment** (10 minutes)
+   - Set all required environment variables (see `DEPLOYMENT_NOTES.md`)
+   - Add custom domain: `blackroad.systems`
+   - Verify health check: `curl https://your-app.up.railway.app/health`
+
+3. **Configure Cloudflare DNS** (15 minutes)
+   - Add DNS records (see table in `DEPLOYMENT_NOTES.md`):
+     - `blackroad.systems` → Railway backend
+     - `docs.blackroad.systems` → GitHub Pages
+     - `www.blackroad.systems` → Redirect to apex
+   - SSL/TLS: Full (strict) mode
+   - Enable: Always Use HTTPS
+
+4. **Verify All Routes** (5 minutes)
+   ```bash
+   curl -I https://blackroad.systems           # Main OS
+   curl -I https://blackroad.systems/prism     # Prism Console
+   curl https://blackroad.systems/health       # Health check
+   curl -I https://docs.blackroad.systems      # Documentation
+   ```
+
+5. **Monitor First Deployment** (10 minutes)
+   - Check Railway logs for errors
+   - Verify database tables created
+   - Check Cloudflare analytics for traffic
+   - Test all routes in browser
+
+**Next Steps (Week 1-2):**
+- Polish Prism Console UI (Phase 2.6)
+- Add real API endpoints for Prism (job queue, events, metrics)
+- Expand Codex documentation (API reference, guides)
+- Set up monitoring (Sentry, Railway metrics)
+
+### Quick Reference
+
+**Production URLs:**
+- OS: https://blackroad.systems
+- Prism: https://blackroad.systems/prism
+- API Docs: https://blackroad.systems/api/docs
+- Health: https://blackroad.systems/health
+- Codex: https://docs.blackroad.systems
+
+**Development URLs:**
+- OS: http://localhost:8000
+- Prism: http://localhost:8000/prism
+- API Docs: http://localhost:8000/api/docs
+- Health: http://localhost:8000/health
+- Codex: http://localhost:8001 (mkdocs serve)
+
+**Key Commands:**
+```bash
+# Backend
+cd backend && uvicorn app.main:app --reload
+
+# Documentation
+cd codex-docs && mkdocs serve
+
+# Railway
+railway up
+railway logs --tail 100
+
+# GitHub Pages
+cd codex-docs && mkdocs gh-deploy
+```
+
+**Key Files Reference:**
+| File | Purpose |
+|------|---------|
+| `PHASE2_5_SUMMARY_FOR_ALEXA.md` | Complete Phase 2.5 summary |
+| `BLACKROAD_OS_REPO_MAP.md` | Repository structure map |
+| `DEPLOYMENT_NOTES.md` | Production deployment guide |
+| `codex-docs/DEPLOY_DOCS.md` | Documentation deployment guide |
+| `backend/app/routers/prism_static.py` | Prism Console router |
+| `.github/workflows/docs-deploy.yml` | Docs deployment automation |
+
+### Implementation Status
+
+✅ **Phase 2.5 Complete**
+
+All infrastructure wiring tasks completed:
+- [x] Architectural decisions documented
+- [x] Prism Console backend route implemented
+- [x] Prism Console UI created (basic skeleton)
+- [x] GitHub Pages workflow configured
+- [x] MkDocs documentation structure created
+- [x] Deployment notes and guides written
+- [x] Repository map documented
+- [x] MASTER_ORCHESTRATION_PLAN updated
+
+**Ready for production deployment.**
+
+---
+
 ## READY FOR THE NEXT COMMAND, OPERATOR.
 
 This master plan synthesizes:

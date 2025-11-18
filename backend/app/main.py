@@ -16,11 +16,13 @@ from app.routers import (
     railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
     capture, identity_center, notifications_center, creator, compliance_ops,
     search, cloudflare, system, webhooks
+    search, cloudflare, prism_static
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
 
 openapi_tags = [
+    {"name": "prism", "description": "Prism Console - Administrative interface for job queue, events, and metrics"},
     {"name": "railway", "description": "Railway deployment management"},
     {"name": "vercel", "description": "Vercel project automation"},
     {"name": "stripe", "description": "Stripe billing integrations"},
@@ -165,6 +167,8 @@ prism_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file_
 if os.path.exists(prism_dir):
     app.mount("/prism", StaticFiles(directory=prism_dir, html=True), name="prism")
     print(f"✅ Prism Console mounted at /prism")
+# Prism Console (must be before StaticFiles mount to take precedence)
+app.include_router(prism_static.router)
 
 
 # Static file serving for the BlackRoad OS front-end
