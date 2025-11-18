@@ -49,7 +49,7 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/blackboxprogramming/BlackRoad-Operating-System
     - icon: fontawesome/brands/discord
-      link: https://discord.gg/blackroad  # TODO: Update when Discord is created
+      link: https://discord.gg/blackroad  # Discord: Coming in Phase 1 Q2 (community hub)
   version:
     provider: mike
   analytics:
