@@ -4,7 +4,7 @@ Rerun Checks Handler
 Handles re-running CI/CD checks on PRs.
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 import logging
 
 from . import BaseHandler
