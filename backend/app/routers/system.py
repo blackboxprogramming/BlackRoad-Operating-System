@@ -1,0 +1,83 @@
+"""System endpoints for core OS operations"""
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime
+import os
+
+from app.config import settings
+from app.database import get_db
+
+router = APIRouter(prefix="/api/system", tags=["system"])
+
+
+@router.get("/version")
+async def get_version():
+    """
+    Get system version and build information
+
+    Returns version, build time, environment, and git information
+    """
+    # Try to get git SHA if available
+    git_sha = os.environ.get("GIT_SHA", "development")
+
+    return {
+        "version": settings.APP_VERSION,
+        "build_time": datetime.utcnow().isoformat(),
+        "env": settings.ENVIRONMENT,
+        "git_sha": git_sha[:8] if len(git_sha) > 8 else git_sha,
+        "app_name": settings.APP_NAME,
+    }
+
+
+@router.get("/config/public")
+async def get_public_config():
+    """
+    Get public configuration (non-sensitive settings only)
+
+    Returns feature flags, environment info, and public settings
+    """
+    return {
+        "environment": settings.ENVIRONMENT,
+        "app_name": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+        "features": {
+            "blockchain_enabled": True,
+            "ai_agents_enabled": True,
+            "video_streaming_enabled": True,
+            "gaming_enabled": True,
+            "social_enabled": True,
+        },
+        "limits": {
+            "max_upload_size_mb": 100,
+            "session_timeout_minutes": 60,
+        },
+        "external_services": {
+            "github_integration": bool(os.environ.get("GITHUB_TOKEN")),
+            "stripe_enabled": bool(os.environ.get("STRIPE_SECRET_KEY")),
+            "openai_enabled": bool(os.environ.get("OPENAI_API_KEY")),
+        },
+    }
+
+
+@router.get("/os/state")
+async def get_os_state(db: AsyncSession = Depends(get_db)):
+    """
+    Get current OS state (stub for now)
+
+    Returns the current state of the OS including:
+    - Active windows
+    - Running applications
+    - System resources
+    """
+    # TODO: Integrate with core_os module when implemented
+    return {
+        "status": "ok",
+        "uptime_seconds": 0,  # TODO: Track actual uptime
+        "active_windows": [],
+        "running_apps": [],
+        "system_resources": {
+            "memory_usage_percent": 0,
+            "cpu_usage_percent": 0,
+        },
+        "note": "This is a stub endpoint. Full OS state tracking coming in Phase 2.",
+    }

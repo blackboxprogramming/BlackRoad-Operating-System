@@ -33,60 +33,63 @@ jobs:
           l_max_size: '500'
           xl_label: 'size-xl'
 
-      - name: Label Claude PRs
-        if: startsWith(github.head_ref, 'claude/') || github.actor == 'claude-code[bot]'
-        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "claude-auto"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Label Atlas PRs
-        if: startsWith(github.head_ref, 'atlas/') || github.actor == 'atlas[bot]'
-        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "atlas-auto"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Label Codex PRs
-        if: startsWith(github.head_ref, 'codex/') || github.actor == 'codex[bot]'
-        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "codex-auto"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check if docs-only
-        id: docs-only
+      - name: Accumulate conditional labels
+        id: accumulate-labels
         run: |
+          LABELS=""
+          # Claude PR
+          if [[ "${GITHUB_HEAD_REF}" == claude/* || "${GITHUB_ACTOR}" == "claude-code[bot]" ]]; then
+            LABELS="${LABELS} claude-auto"
+          fi
+          # Atlas PR
+          if [[ "${GITHUB_HEAD_REF}" == atlas/* || "${GITHUB_ACTOR}" == "atlas[bot]" ]]; then
+            LABELS="${LABELS} atlas-auto"
+          fi
+          # Codex PR
+          if [[ "${GITHUB_HEAD_REF}" == codex/* || "${GITHUB_ACTOR}" == "codex[bot]" ]]; then
+            LABELS="${LABELS} codex-auto"
+          fi
+          # Docs-only
           FILES=$(gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files[].path')
           DOCS_ONLY=true
-
           while IFS= read -r file; do
             if [[ ! "$file" =~ ^docs/ ]] && [[ ! "$file" =~ \.md$ ]] && [[ "$file" != "README"* ]]; then
               DOCS_ONLY=false
               break
             fi
           done <<< "$FILES"
-
           if [ "$DOCS_ONLY" = "true" ]; then
-            gh pr edit ${{ github.event.pull_request.number }} --add-label "docs-only"
+            LABELS="${LABELS} docs-only"
             echo "docs_only=true" >> $GITHUB_OUTPUT
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check if tests-only
-        id: tests-only
-        run: |
-          FILES=$(gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files[].path')
+          # Tests-only
           TESTS_ONLY=true
-
           while IFS= read -r file; do
             if [[ ! "$file" =~ /tests/ ]] && [[ ! "$file" =~ test\.py$ ]] && [[ ! "$file" =~ \.test\.(js|ts)$ ]] && [[ ! "$file" =~ \.spec\.(js|ts)$ ]]; then
               TESTS_ONLY=false
               break
             fi
           done <<< "$FILES"
-
           if [ "$TESTS_ONLY" = "true" ]; then
-            gh pr edit ${{ github.event.pull_request.number }} --add-label "tests-only"
+            LABELS="${LABELS} tests-only"
             echo "tests_only=true" >> $GITHUB_OUTPUT
           fi
+          # Output labels for next step
+          echo "labels=${LABELS}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_ACTOR: ${{ github.actor }}
+
+      - name: Apply all accumulated labels atomically
+        if: steps.accumulate-labels.outputs.labels != ''
+        run: |
+          LABELS="${{ steps.accumulate-labels.outputs.labels }}"
+          # Convert space-separated labels to multiple --add-label args
+          ARGS=""
+          for label in $LABELS; do
+            ARGS="${ARGS} --add-label \"$label\""
+          done
+          eval gh pr edit ${{ github.event.pull_request.number }} $ARGS
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

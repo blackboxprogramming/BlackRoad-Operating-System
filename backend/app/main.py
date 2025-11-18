@@ -15,7 +15,7 @@ from app.routers import (
     digitalocean, github, huggingface, vscode, games, browser, dashboard,
     railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
     capture, identity_center, notifications_center, creator, compliance_ops,
-    search, cloudflare
+    search, cloudflare, system
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -148,6 +148,7 @@ app.include_router(creator.router)
 app.include_router(compliance_ops.router)
 app.include_router(search.router)
 app.include_router(cloudflare.router)
+app.include_router(system.router)
 
 # API health monitoring
 app.include_router(api_health.router)
