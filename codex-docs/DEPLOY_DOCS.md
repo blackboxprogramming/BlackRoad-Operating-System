@@ -21,8 +21,8 @@ This guide explains how to build, test, and deploy the BlackRoad OS documentatio
 # Navigate to codex-docs directory
 cd codex-docs
 
-# Install MkDocs and Material theme
-pip install mkdocs mkdocs-material pymdown-extensions
+# Install MkDocs, Material theme, and Minify plugin
+pip install mkdocs mkdocs-material pymdown-extensions mkdocs-minify-plugin
 ```
 
 ### 2. Test Locally
