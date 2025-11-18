@@ -58,7 +58,8 @@ describe('AgentsClient', () => {
         expect.objectContaining({
           name: 'Test Agent',
           type: 'autonomous',
-        })
+        }),
+        undefined
       );
     });
   });
@@ -151,7 +152,8 @@ describe('AgentsClient', () => {
         '/agents/agent-123',
         expect.objectContaining({
           name: 'Updated Agent',
-        })
+        }),
+        undefined
       );
     });
   });
@@ -196,7 +198,8 @@ describe('AgentsClient', () => {
         expect.objectContaining({
           task: 'test_task',
           mode: 'sync',
-        })
+        }),
+        undefined
       );
     });
   });
@@ -243,7 +246,7 @@ describe('AgentsClient', () => {
       const result = await client.start('agent-123');
 
       expect(result.status).toBe('active');
-      expect(mockAxios.post).toHaveBeenCalledWith('/agents/agent-123/start', undefined);
+      expect(mockAxios.post).toHaveBeenCalledWith('/agents/agent-123/start', undefined, undefined);
     });
   });
 
@@ -269,7 +272,7 @@ describe('AgentsClient', () => {
       const result = await client.pause('agent-123');
 
       expect(result.status).toBe('paused');
-      expect(mockAxios.post).toHaveBeenCalledWith('/agents/agent-123/pause', undefined);
+      expect(mockAxios.post).toHaveBeenCalledWith('/agents/agent-123/pause', undefined, undefined);
     });
   });
 
@@ -295,7 +298,7 @@ describe('AgentsClient', () => {
       const result = await client.stop('agent-123');
 
       expect(result.status).toBe('stopped');
-      expect(mockAxios.post).toHaveBeenCalledWith('/agents/agent-123/stop', undefined);
+      expect(mockAxios.post).toHaveBeenCalledWith('/agents/agent-123/stop', undefined, undefined);
     });
   });
 
