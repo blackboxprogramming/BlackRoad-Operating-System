@@ -158,12 +158,12 @@ class GitHubClient:
         self, owner: str, repo: str, comment_id: int
     ) -> Dict:
         """Resolve a review comment thread"""
-        # GitHub uses GraphQL for this, but we can use REST API workaround
-        # by updating the comment with a resolved marker
-        return await self._request(
-            "PATCH",
-            f"/repos/{owner}/{repo}/pulls/comments/{comment_id}",
-            data={"body": "[RESOLVED]"},  # Placeholder - GraphQL is better
+        # This requires the GitHub GraphQL API
+        # For now, we'll use a placeholder
+        # In production, use PyGithub or the GraphQL API directly
+        raise NotImplementedError(
+            "Resolving comments requires GraphQL API. "
+            "Use PyGithub or implement GraphQL client."
         )
 
     async def apply_suggestion(
