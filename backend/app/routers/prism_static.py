@@ -74,7 +74,6 @@ async def serve_prism_static_files(file_path: str):
     This endpoint handles all asset requests for the Prism Console UI.
     """
     # Security: Prevent directory traversal
-    safe_path = Path(file_path).resolve()
     requested_file = PRISM_DIR / file_path
 
     # Ensure the requested file is within the prism directory
