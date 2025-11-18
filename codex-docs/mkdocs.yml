@@ -1,0 +1,75 @@
+site_name: BlackRoad OS Codex
+site_description: Complete documentation for BlackRoad Operating System
+site_author: BlackRoad OS Team
+site_url: https://blackroad.systems/docs
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: indigo
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Architecture:
+      - Overview: architecture.md
+      - 7-Layer Stack: architecture-layers.md
+      - Components: components.md
+  - Infrastructure:
+      - Overview: infra.md
+      - Cloudflare Setup: infra-cloudflare.md
+      - Railway Deployment: infra-railway.md
+      - GitHub Configuration: infra-github.md
+  - Modules:
+      - Backend API: modules/backend-api.md
+      - Core OS Runtime: modules/core-os.md
+      - Operator Engine: modules/operator.md
+      - Web Client (Pocket OS): modules/web-client.md
+      - Prism Console: modules/prism.md
+  - Development:
+      - Getting Started: dev/getting-started.md
+      - Local Setup: dev/local-setup.md
+      - Contributing: dev/contributing.md
+  - API Reference:
+      - System Endpoints: api/system.md
+      - Authentication: api/auth.md
+      - Agents: api/agents.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - mkdocstrings
+
+extra:
+  version: 0.1.0
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/blackboxprogramming/BlackRoad-Operating-System
