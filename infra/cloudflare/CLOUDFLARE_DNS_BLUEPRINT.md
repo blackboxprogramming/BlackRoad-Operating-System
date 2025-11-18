@@ -335,117 +335,131 @@ After DNS setup for each domain:
 
 ---
 
-## Automation Script
+## Implementation Files
 
-**File**: `scripts/cloudflare/sync_dns.py`
+This blueprint is now implemented in the following files:
 
-```python
-#!/usr/bin/env python3
-"""
-Sync DNS records from ops/domains.yaml to Cloudflare
+### 1. DNS Records Configuration
+**File**: `infra/cloudflare/records.yaml`
 
-Usage:
-  export CF_API_TOKEN="your-token"
-  export CF_ZONE_ID="your-zone-id"
-  python scripts/cloudflare/sync_dns.py
-"""
+This file is the **single source of truth** for all DNS records across all BlackRoad domains. It includes:
+- Complete record definitions (type, name, content, TTL, proxy status)
+- Domain metadata (zone ID, phase, priority)
+- Human-readable comments for each record
+- Organized by phase (Phase 1 active domains, Phase 2 future domains)
 
-import os
-import sys
-import yaml
-import requests
-from typing import Dict, List
+**Quick reference**: See `records.yaml` for the exact DNS configuration to apply.
 
-CF_API_TOKEN = os.getenv("CF_API_TOKEN")
-CF_ZONE_ID = os.getenv("CF_ZONE_ID")
-CF_API_BASE = "https://api.cloudflare.com/client/v4"
+### 2. Migration Guide
+**File**: `infra/cloudflare/migrate_to_cloudflare.md`
 
-def load_domains() -> Dict:
-    """Load domain config from ops/domains.yaml"""
-    with open("ops/domains.yaml") as f:
-        return yaml.safe_load(f)
+A **step-by-step guide** for migrating DNS from GoDaddy to Cloudflare. Designed for human operators (Alexa) with:
+- Detailed instructions with screenshots references
+- Mobile-friendly (can be done from iPhone)
+- Troubleshooting section
+- Verification steps
+- Checklist for tracking progress
 
-def get_existing_records(zone_id: str) -> List[Dict]:
-    """Fetch all DNS records for a zone"""
-    url = f"{CF_API_BASE}/zones/{zone_id}/dns_records"
-    headers = {
-        "Authorization": f"Bearer {CF_API_TOKEN}",
-        "Content-Type": "application/json"
-    }
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    return response.json()["result"]
+**Quick reference**: Follow this guide to migrate each domain from GoDaddy DNS to Cloudflare DNS.
 
-def create_dns_record(zone_id: str, record: Dict) -> Dict:
-    """Create a DNS record"""
-    url = f"{CF_API_BASE}/zones/{zone_id}/dns_records"
-    headers = {
-        "Authorization": f"Bearer {CF_API_TOKEN}",
-        "Content-Type": "application/json"
-    }
-    response = requests.post(url, headers=headers, json=record)
-    response.raise_for_status()
-    return response.json()["result"]
+### 3. Automation Script
+**File**: `infra/cloudflare/cloudflare_dns_sync.py`
 
-def update_dns_record(zone_id: str, record_id: str, record: Dict) -> Dict:
-    """Update a DNS record"""
-    url = f"{CF_API_BASE}/zones/{zone_id}/dns_records/{record_id}"
-    headers = {
-        "Authorization": f"Bearer {CF_API_TOKEN}",
-        "Content-Type": "application/json"
-    }
-    response = requests.put(url, headers=headers, json=record)
-    response.raise_for_status()
-    return response.json()["result"]
+An **idempotent Python script** that syncs DNS records from `records.yaml` to Cloudflare via API. Features:
+- Reads structured YAML configuration
+- Creates, updates, and optionally deletes DNS records
+- Dry-run mode for safe testing
+- Domain and phase filtering
+- Comprehensive logging
 
-def sync_records():
-    """Sync DNS records from domains.yaml to Cloudflare"""
-    if not CF_API_TOKEN or not CF_ZONE_ID:
-        print("Error: CF_API_TOKEN and CF_ZONE_ID must be set")
-        sys.exit(1)
-
-    config = load_domains()
-    existing = get_existing_records(CF_ZONE_ID)
-
-    # Build index of existing records
-    existing_index = {
-        f"{r['type']}:{r['name']}": r for r in existing
-    }
-
-    for domain in config.get("domains", []):
-        if domain.get("mode") != "dns":
-            continue
-
-        record_data = {
-            "type": domain["record"]["type"],
-            "name": domain["name"],
-            "content": domain["record"]["value"],
-            "ttl": 1,  # Auto
-            "proxied": True  # Enable Cloudflare proxy
-        }
-
-        key = f"{record_data['type']}:{record_data['name']}"
-
-        if key in existing_index:
-            # Update existing
-            record_id = existing_index[key]["id"]
-            print(f"Updating: {key}")
-            update_dns_record(CF_ZONE_ID, record_id, record_data)
-        else:
-            # Create new
-            print(f"Creating: {key}")
-            create_dns_record(CF_ZONE_ID, record_data)
-
-    print("✅ DNS sync complete!")
-
-if __name__ == "__main__":
-    sync_records()
-```
-
-**Make executable**:
+**Usage**:
 ```bash
-chmod +x scripts/cloudflare/sync_dns.py
+# Set Cloudflare API token
+export CF_API_TOKEN="your-cloudflare-api-token"
+
+# Dry run (safe - shows changes without applying)
+python infra/cloudflare/cloudflare_dns_sync.py --dry-run
+
+# Sync specific domain
+python infra/cloudflare/cloudflare_dns_sync.py --domain blackroad.systems
+
+# Sync all Phase 1 domains
+python infra/cloudflare/cloudflare_dns_sync.py --phase 1
+
+# Apply all changes
+python infra/cloudflare/cloudflare_dns_sync.py
 ```
+
+**Requirements**:
+```bash
+pip install pyyaml requests
+```
+
+## How These Files Connect to Railway + GitHub
+
+### DNS → Railway Flow
+
+1. **Cloudflare DNS** receives user request for `os.blackroad.systems`
+2. **CNAME record** (from `records.yaml`) points to `blackroad-os-production.up.railway.app`
+3. **Cloudflare CDN** proxies request (SSL, caching, DDoS protection)
+4. **Railway** receives request and routes to FastAPI backend
+5. **FastAPI** serves Pocket OS frontend from `backend/static/`
+
+### Railway Custom Domains
+
+For each subdomain pointing to Railway, you must also:
+1. Add the custom domain in **Railway dashboard**:
+   - Service → Settings → Networking → Custom Domains
+   - Add domain (e.g., `os.blackroad.systems`)
+   - Railway auto-provisions SSL certificate (Let's Encrypt)
+
+2. Wait for Railway to show **green checkmark** (SSL ready)
+
+3. Verify: Visit `https://os.blackroad.systems` - should show valid SSL 🔒
+
+### GitHub Actions Integration
+
+The DNS sync script can be automated via GitHub Actions:
+
+**Workflow file** (create at `.github/workflows/dns-sync.yml`):
+```yaml
+name: Sync Cloudflare DNS
+
+on:
+  push:
+    paths:
+      - 'infra/cloudflare/records.yaml'
+  workflow_dispatch:
+
+jobs:
+  sync-dns:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml requests
+
+      - name: Sync DNS records
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          python infra/cloudflare/cloudflare_dns_sync.py --phase 1
+```
+
+**Required GitHub Secrets**:
+- `CF_API_TOKEN` - Cloudflare API token with Zone.DNS edit permissions
+
+**How it works**:
+1. Push changes to `records.yaml`
+2. GitHub Action runs automatically
+3. Script syncs DNS records to Cloudflare
+4. Changes are live within seconds
 
 ---
 
