@@ -1,5 +1,4 @@
 """Tests for core OS models"""
-import pytest
 from core_os.models import UserSession, Window, OSState, WindowState
 
 
