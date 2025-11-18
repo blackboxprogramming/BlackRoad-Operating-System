@@ -5,7 +5,7 @@ Handles GitHub webhook events for the Operator Engine.
 """
 
 from fastapi import APIRouter, Request, Header, Depends
-from typing import Optional, Dict, Any
+from typing import Optional
 import sys
 import os
 
