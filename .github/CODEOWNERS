@@ -1,0 +1,47 @@
+# BlackRoad OS Code Owners
+# This file defines who is responsible for code in this repository.
+# Each line is a file pattern followed by one or more owners.
+
+# Global owners (all files)
+* @alexa-amundson
+
+# Backend
+/backend/ @alexa-amundson
+/backend/app/ @alexa-amundson
+/backend/requirements.txt @alexa-amundson
+/backend/Dockerfile @alexa-amundson
+
+# Frontend / OS
+/blackroad-os/ @alexa-amundson
+/backend/static/ @alexa-amundson
+
+# Infrastructure & DevOps
+/.github/ @alexa-amundson
+/.github/workflows/ @alexa-amundson
+/scripts/ @alexa-amundson
+/ops/ @alexa-amundson
+/infra/ @alexa-amundson
+railway.toml @alexa-amundson
+railway.json @alexa-amundson
+docker-compose.yml @alexa-amundson
+
+# Documentation
+/docs/ @alexa-amundson
+/README.md @alexa-amundson
+/*.md @alexa-amundson
+
+# Python SDK
+/sdk/python/ @alexa-amundson
+
+# TypeScript SDK
+/sdk/typescript/ @alexa-amundson
+
+# Agents & Prompts
+/agents/ @alexa-amundson
+/blackroad-universe/prompts/ @alexa-amundson
+
+# Cognitive & Research
+/cognitive/ @alexa-amundson
+
+# BlackRoad Universe (Brand, GTM, Domains)
+/blackroad-universe/ @alexa-amundson
