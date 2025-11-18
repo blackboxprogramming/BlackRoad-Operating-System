@@ -4,7 +4,7 @@ Open/Close Issue Handler
 Handles creating and managing issues from PR actions.
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 import logging
 
 from . import BaseHandler
