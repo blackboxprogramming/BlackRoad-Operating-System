@@ -4,7 +4,7 @@ Operator Webhooks Router
 Handles GitHub webhook events for the Operator Engine.
 """
 
-from fastapi import APIRouter, Request, Header, Depends
+from fastapi import APIRouter, Request, Header
 from typing import Optional
 import sys
 import os
