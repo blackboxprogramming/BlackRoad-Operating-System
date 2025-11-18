@@ -2,8 +2,6 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse, HTMLResponse
 from pathlib import Path
-import os
-
 router = APIRouter(tags=["prism"])
 
 # Get the static prism directory path
