@@ -769,7 +769,7 @@ railway open
 railway service list
 
 # Environment variables
-railway variables set SECRET_KEY=<value>
+railway variables set SECRET_KEY=<value> --service blackroad-backend
 railway variables list
 ```
 
