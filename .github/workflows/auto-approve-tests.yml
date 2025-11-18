@@ -1,0 +1,50 @@
+name: Auto-Approve Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    if: |
+      contains(github.event.pull_request.labels.*.name, 'tests-only') &&
+      !contains(github.event.pull_request.labels.*.name, 'breaking-change') &&
+      !contains(github.event.pull_request.labels.*.name, 'do-not-merge')
+
+    steps:
+      - name: Wait for tests to pass
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          running-workflow-name: 'auto-approve'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
+
+      - name: Approve PR
+        uses: hmarr/auto-approve-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add auto-merge label
+        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "auto-merge"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on PR
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "🤖 **Auto-Approved (Tests-Only)**
+
+          This PR contains only test changes and all tests have passed.
+
+          **Tier**: 2 (Tests-Only)
+          **Policy**: AUTO_MERGE_POLICY.md#tier-2-tests
+          **Soak Time**: 0 minutes
+
+          Auto-merge will proceed immediately."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
