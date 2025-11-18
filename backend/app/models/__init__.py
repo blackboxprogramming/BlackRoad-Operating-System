@@ -12,6 +12,7 @@ from app.models.identity_profile import UserProfile
 from app.models.notification import Notification
 from app.models.creator import CreativeProject
 from app.models.compliance_event import ComplianceEvent
+from app.models.leo import LEO, AnchorEvent
 
 __all__ = [
     "User",
@@ -40,4 +41,6 @@ __all__ = [
     "Notification",
     "CreativeProject",
     "ComplianceEvent",
+    "LEO",
+    "AnchorEvent",
 ]

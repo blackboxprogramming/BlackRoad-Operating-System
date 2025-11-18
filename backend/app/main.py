@@ -15,8 +15,7 @@ from app.routers import (
     digitalocean, github, huggingface, vscode, games, browser, dashboard,
     railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
     capture, identity_center, notifications_center, creator, compliance_ops,
-    search, cloudflare, system, webhooks
-    search, cloudflare, prism_static
+    search, cloudflare, system, webhooks, prism_static, ip_vault
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -33,6 +32,7 @@ openapi_tags = [
     {"name": "health", "description": "BlackRoad OS service health"},
     {"name": "agents", "description": "BlackRoad Agent Library - 208 AI agents across 10 categories"},
     {"name": "cloudflare", "description": "Cloudflare zone, DNS, and Worker scaffolding"},
+    {"name": "IP Vault", "description": "Cryptographic proof-of-origin for ideas and intellectual property"},
 ]
 
 
@@ -157,6 +157,9 @@ app.include_router(api_health.router)
 
 # Agent Library
 app.include_router(agents.router)
+
+# IP Vault
+app.include_router(ip_vault.router)
 
 # GitHub Webhooks (Phase Q automation)
 app.include_router(webhooks.router)

@@ -1125,6 +1125,10 @@
             <div class="icon-image">🤖</div>
             <div class="icon-label">AI Assistant</div>
         </div>
+        <div class="icon" ondblclick="openWindow('ip-vault')">
+            <div class="icon-image">🔐</div>
+            <div class="icon-label">IP Vault</div>
+        </div>
     </div>
 
     <!-- RoadMail Window -->
@@ -2041,6 +2045,22 @@
 
     <div id="wallet" class="window" style="left: 200px; top: 170px; width: 500px; height: 350px;"><div class="title-bar" onmousedown="dragStart(event, 'wallet')"><div class="title-text"><span>💰</span><span>RoadCoin Wallet</span></div><div class="title-buttons"><div class="title-button" onclick="minimizeWindow('wallet')">_</div><div class="title-button" onclick="maximizeWindow('wallet')">□</div><div class="title-button" onclick="closeWindow('wallet')">×</div></div></div><div class="window-content" style="padding: 20px;"><h2 style="text-align: center; margin: 20px 0;">1,247.89 RC</h2><div style="text-align: center; color: #666; font-size: 11px;">≈ $18,705 USD</div></div></div>
 
+    <!-- IP Vault Window -->
+    <div id="ip-vault" class="window" style="left: 220px; top: 190px; width: 700px; height: 600px;">
+        <div class="title-bar" onmousedown="dragStart(event, 'ip-vault')">
+            <div class="title-text">
+                <span>🔐</span>
+                <span>IP Vault - Cryptographic Proof of Origin</span>
+            </div>
+            <div class="title-buttons">
+                <div class="title-button" onclick="minimizeWindow('ip-vault')">_</div>
+                <div class="title-button" onclick="maximizeWindow('ip-vault')">□</div>
+                <div class="title-button" onclick="closeWindow('ip-vault')">×</div>
+            </div>
+        </div>
+        <div class="window-content"></div>
+    </div>
+
     <!-- Taskbar -->
     <div class="taskbar">
         <div class="start-button" onclick="toggleStartMenu()">
@@ -2075,6 +2095,8 @@
             <div class="start-menu-item" onclick="openWindow('road-city'); toggleStartMenu();"><span style="font-size: 18px;">🏙️</span><span>Road City</span></div>
             <div class="start-menu-item" onclick="openWindow('road-craft'); toggleStartMenu();"><span style="font-size: 18px;">⛏️</span><span>RoadCraft</span></div>
             <div class="start-menu-item" onclick="openWindow('road-life'); toggleStartMenu();"><span style="font-size: 18px;">🏡</span><span>Road Life</span></div>
+            <div class="start-menu-separator"></div>
+            <div class="start-menu-item" onclick="openWindow('ip-vault'); toggleStartMenu();"><span style="font-size: 18px;">🔐</span><span>IP Vault</span></div>
             <div class="start-menu-separator"></div>
             <div class="start-menu-item" onclick="alert('Shutting down...\\n\\nJust kidding! The road never ends! 🛣️')"><span style="font-size: 18px;">🔌</span><span>Shut Down</span></div>
         </div>
