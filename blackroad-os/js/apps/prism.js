@@ -9,6 +9,62 @@
 window.PrismApp = function() {
     const appId = 'prism';
 
+    // If the window already exists, just focus it
+    if (window.OS?.windows?.has(appId)) {
+        window.OS.focusWindow(appId);
+        return;
+    }
+
+    const liveEvents = [...MockData.systemEvents];
+    const eventSubscriptions = [];
+    let eventsListEl = null;
+
+    const addEvent = (level, source, message, timestamp = new Date().toISOString()) => {
+        liveEvents.unshift({ timestamp, level, source, message });
+        if (liveEvents.length > 50) {
+            liveEvents.pop();
+        }
+        refreshEventsList();
+    };
+
+    const refreshEventsList = () => {
+        if (!eventsListEl) return;
+        const newList = Components.List(formatEvents(liveEvents));
+        eventsListEl.replaceWith(newList);
+        eventsListEl = newList;
+    };
+
+    const formatEvents = (events) => events.map(event => ({
+        icon: getLevelIcon(event.level),
+        title: event.message,
+        subtitle: `${event.source} • ${event.timestamp}`
+    }));
+
+    const subscribeToSystemEvents = () => {
+        const bindings = [
+            ['os:boot', () => addEvent('info', 'OS', 'System boot completed')],
+            ['os:ready', () => addEvent('success', 'OS', 'Desktop ready')],
+            ['window:created', ({ windowId, title }) => addEvent('info', 'WindowManager', `Window created: ${title || windowId}`)],
+            ['window:focused', ({ windowId }) => addEvent('info', 'WindowManager', `Window focused: ${windowId}`)],
+            ['window:minimized', ({ windowId }) => addEvent('warning', 'WindowManager', `Window minimized: ${windowId}`)],
+            ['window:restored', ({ windowId }) => addEvent('success', 'WindowManager', `Window restored: ${windowId}`)],
+            ['window:closed', ({ windowId }) => addEvent('info', 'WindowManager', `Window closed: ${windowId}`)],
+            ['notification:shown', ({ title, type }) => addEvent(type || 'info', 'Notifications', title || 'Notification shown')]
+        ];
+
+        bindings.forEach(([event, handler]) => {
+            window.OS.eventBus.on(event, handler);
+            eventSubscriptions.push({ event, handler });
+        });
+    };
+
+    const unsubscribeFromSystemEvents = () => {
+        eventSubscriptions.forEach(({ event, handler }) => {
+            window.OS.eventBus.off(event, handler);
+        });
+        eventSubscriptions.length = 0;
+    };
+
     // Create toolbar
     const toolbar = document.createElement('div');
     toolbar.className = 'window-toolbar';
@@ -68,6 +124,32 @@ window.PrismApp = function() {
         width: '900px',
         height: '700px'
     });
+
+    subscribeToSystemEvents();
+
+    // Clean up listeners when Prism window closes
+    const closeListener = ({ windowId }) => {
+        if (windowId === appId) {
+            unsubscribeFromSystemEvents();
+            window.OS.eventBus.off('window:closed', closeListener);
+        }
+    };
+    window.OS.eventBus.on('window:closed', closeListener);
+
+    function createEventsTab() {
+        const container = document.createElement('div');
+
+        const intro = document.createElement('div');
+        intro.style.marginBottom = '12px';
+        intro.style.color = 'var(--text-secondary)';
+        intro.textContent = 'Live feed from the OS event bus (windows, notifications, and system lifecycle).';
+        container.appendChild(intro);
+
+        eventsListEl = Components.List(formatEvents(liveEvents));
+        container.appendChild(eventsListEl);
+
+        return container;
+    }
 };
 
 function createRunsTab() {
@@ -111,22 +193,6 @@ function createRunsTab() {
     );
 
     container.appendChild(runsTable);
-
-    return container;
-}
-
-function createEventsTab() {
-    const container = document.createElement('div');
-
-    const eventsList = Components.List(
-        MockData.systemEvents.map(event => ({
-            icon: getLevelIcon(event.level),
-            title: event.message,
-            subtitle: `${event.source} • ${event.timestamp}`,
-        }))
-    );
-
-    container.appendChild(eventsList);
 
     return container;
 }
