@@ -1129,6 +1129,10 @@
             <div class="icon-image">🔐</div>
             <div class="icon-label">IP Vault</div>
         </div>
+        <div class="icon" ondblclick="openWindow('leitl')">
+            <div class="icon-image">🔥</div>
+            <div class="icon-label">LEITL</div>
+        </div>
     </div>
 
     <!-- RoadMail Window -->
@@ -2061,6 +2065,22 @@
         <div class="window-content"></div>
     </div>
 
+    <!-- LEITL Dashboard Window -->
+    <div id="leitl" class="window" style="left: 240px; top: 210px; width: 900px; height: 700px;">
+        <div class="title-bar" onmousedown="dragStart(event, 'leitl')">
+            <div class="title-text">
+                <span>🔥</span>
+                <span>LEITL - Live Everyone In The Loop</span>
+            </div>
+            <div class="title-buttons">
+                <div class="title-button" onclick="minimizeWindow('leitl')">_</div>
+                <div class="title-button" onclick="maximizeWindow('leitl')">□</div>
+                <div class="title-button" onclick="closeWindow('leitl')">×</div>
+            </div>
+        </div>
+        <div class="window-content" id="leitl-container"></div>
+    </div>
+
     <!-- Taskbar -->
     <div class="taskbar">
         <div class="start-button" onclick="toggleStartMenu()">
@@ -2097,6 +2117,7 @@
             <div class="start-menu-item" onclick="openWindow('road-life'); toggleStartMenu();"><span style="font-size: 18px;">🏡</span><span>Road Life</span></div>
             <div class="start-menu-separator"></div>
             <div class="start-menu-item" onclick="openWindow('ip-vault'); toggleStartMenu();"><span style="font-size: 18px;">🔐</span><span>IP Vault</span></div>
+            <div class="start-menu-item" onclick="openWindow('leitl'); toggleStartMenu();"><span style="font-size: 18px;">🔥</span><span>LEITL</span></div>
             <div class="start-menu-separator"></div>
             <div class="start-menu-item" onclick="alert('Shutting down...\\n\\nJust kidding! The road never ends! 🛣️')"><span style="font-size: 18px;">🔌</span><span>Shut Down</span></div>
         </div>
@@ -2160,7 +2181,9 @@
                 'ai-chat': '🤖 AI',
                 'road-craft': '⛏️ Craft',
                 'road-life': '🏡 Life',
-                'wallet': '💰 Wallet'
+                'wallet': '💰 Wallet',
+                'ip-vault': '🔐 Vault',
+                'leitl': '🔥 LEITL'
             };
             openWindows.forEach(id => {
                 const btn = document.createElement('div');
@@ -2220,5 +2243,16 @@
     <script src="/static/js/api-client.js"></script>
     <script src="/static/js/auth.js"></script>
     <script src="/static/js/apps.js"></script>
+    <script src="/static/js/apps/leitl.js"></script>
+    <script>
+        // Initialize LEITL app when window opens
+        const originalOpenWindow = window.openWindow;
+        window.openWindow = function(id) {
+            originalOpenWindow(id);
+            if (id === 'leitl' && window.Apps && window.Apps.LEITL) {
+                window.Apps.LEITL.init();
+            }
+        };
+    </script>
 </body>
 </html>
