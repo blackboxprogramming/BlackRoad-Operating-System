@@ -1,47 +1,173 @@
-# BlackRoad OS Code Owners
-# This file defines who is responsible for code in this repository.
+# BlackRoad OS Code Owners — Phase Q Edition
+# This file defines module-based ownership with automation awareness.
 # Each line is a file pattern followed by one or more owners.
+#
+# Related docs: MERGE_QUEUE_PLAN.md, AUTO_MERGE_POLICY.md, GITHUB_AUTOMATION_RULES.md
 
-# Global owners (all files)
+# ==============================================================================
+# GLOBAL OWNERSHIP
+# ==============================================================================
+
+# Default owner for all files (fallback)
 * @alexa-amundson
 
-# Backend
-/backend/ @alexa-amundson
-/backend/app/ @alexa-amundson
-/backend/requirements.txt @alexa-amundson
-/backend/Dockerfile @alexa-amundson
+# ==============================================================================
+# BACKEND (High Scrutiny)
+# ==============================================================================
 
-# Frontend / OS
-/blackroad-os/ @alexa-amundson
-/backend/static/ @alexa-amundson
+# Core backend application
+/backend/ @alexa-amundson @backend-team
+/backend/app/ @alexa-amundson @backend-team
 
-# Infrastructure & DevOps
+# Backend modules (fine-grained ownership)
+/backend/app/routers/ @backend-team @alexa-amundson
+/backend/app/models/ @backend-team @data-team @alexa-amundson
+/backend/app/services/ @backend-team @alexa-amundson
+/backend/app/utils/ @backend-team
+
+# Backend configuration (high scrutiny)
+/backend/requirements.txt @alexa-amundson @backend-team
+/backend/Dockerfile @alexa-amundson @infra-team
+/backend/docker-compose.yml @alexa-amundson @infra-team
+/backend/.env.example @alexa-amundson
+
+# Backend tests (low scrutiny, can auto-approve)
+/backend/tests/ @backend-team @test-bot
+
+# ==============================================================================
+# FRONTEND / OS (Medium Scrutiny)
+# ==============================================================================
+
+# Main OS interface (canonical frontend)
+/backend/static/ @alexa-amundson @frontend-team
+/backend/static/js/ @frontend-team
+/backend/static/index.html @alexa-amundson @frontend-team
+
+# Legacy OS interface (being deprecated)
+/blackroad-os/ @alexa-amundson @frontend-team
+
+# ==============================================================================
+# AGENTS & AUTOMATION (AI-Aware)
+# ==============================================================================
+
+# Agent framework
+/agents/ @alexa-amundson @agent-team
+/agents/base/ @alexa-amundson @agent-team
+/agents/categories/ @agent-team
+
+# Agent tests (can auto-approve)
+/agents/tests/ @agent-team @test-bot
+
+# ==============================================================================
+# INFRASTRUCTURE (Highest Scrutiny — Never Auto-Merge)
+# ==============================================================================
+
+# GitHub workflows (manual review required)
 /.github/ @alexa-amundson
-/.github/workflows/ @alexa-amundson
-/scripts/ @alexa-amundson
-/ops/ @alexa-amundson
-/infra/ @alexa-amundson
-railway.toml @alexa-amundson
-railway.json @alexa-amundson
-docker-compose.yml @alexa-amundson
+/.github/workflows/ @alexa-amundson @infra-team
+/.github/CODEOWNERS @alexa-amundson
 
-# Documentation
-/docs/ @alexa-amundson
-/README.md @alexa-amundson
-/*.md @alexa-amundson
+# Infrastructure as code
+/infra/ @alexa-amundson @infra-team
+/ops/ @alexa-amundson @ops-team @infra-team
+
+# Deployment configuration
+railway.toml @alexa-amundson @infra-team
+railway.json @alexa-amundson @infra-team
+docker-compose.yml @alexa-amundson @infra-team
+
+# CI/CD scripts
+/scripts/ @alexa-amundson @ops-team
+/scripts/railway/ @alexa-amundson @infra-team
+
+# ==============================================================================
+# DOCUMENTATION (Lowest Scrutiny — Can Auto-Merge)
+# ==============================================================================
+
+# General documentation (auto-merge eligible)
+/docs/ @docs-team
+/docs/architecture/ @alexa-amundson @docs-team
+
+# Root-level docs (auto-merge eligible)
+/*.md @docs-team
+/README.md @alexa-amundson @docs-team
+
+# Security documentation (manual review required)
+/SECURITY.md @alexa-amundson
+
+# Phase Q documentation (automation policies)
+/MERGE_QUEUE_PLAN.md @alexa-amundson
+/AUTO_MERGE_POLICY.md @alexa-amundson
+/GITHUB_AUTOMATION_RULES.md @alexa-amundson
+/WORKFLOW_BUCKETING_EXPLAINED.md @alexa-amundson
+/OPERATOR_PR_EVENT_HANDLERS.md @alexa-amundson
+
+# ==============================================================================
+# SDKs (Medium Scrutiny)
+# ==============================================================================
 
 # Python SDK
-/sdk/python/ @alexa-amundson
+/sdk/python/ @alexa-amundson @sdk-team
+/sdk/python/tests/ @sdk-team @test-bot
 
 # TypeScript SDK
-/sdk/typescript/ @alexa-amundson
+/sdk/typescript/ @alexa-amundson @sdk-team
+/sdk/typescript/tests/ @sdk-team @test-bot
 
-# Agents & Prompts
-/agents/ @alexa-amundson
-/blackroad-universe/prompts/ @alexa-amundson
+# ==============================================================================
+# OPERATOR & PRISM (Automation Engine)
+# ==============================================================================
 
-# Cognitive & Research
-/cognitive/ @alexa-amundson
+# GitHub event handlers (critical automation logic)
+/backend/app/services/github_events.py @alexa-amundson @operator-team
+/backend/app/routers/webhooks.py @alexa-amundson @operator-team
 
-# BlackRoad Universe (Brand, GTM, Domains)
-/blackroad-universe/ @alexa-amundson
+# Prism Console (merge dashboard)
+/blackroad-os/js/apps/prism.js @alexa-amundson @prism-team
+/blackroad-os/js/apps/prism-merge-dashboard.js @alexa-amundson @prism-team
+
+# ==============================================================================
+# RESEARCH & COGNITIVE (Low Scrutiny)
+# ==============================================================================
+
+/cognitive/ @alexa-amundson @research-team
+/blackroad-universe/ @alexa-amundson @brand-team
+/blackroad-universe/prompts/ @alexa-amundson @prompt-team
+
+# ==============================================================================
+# STANDARD OPERATING PROCEDURES
+# ==============================================================================
+
+/sop/ @alexa-amundson @ops-team
+
+# ==============================================================================
+# IMPLEMENTATION PLANS
+# ==============================================================================
+
+/implementation-plans/ @alexa-amundson
+
+# ==============================================================================
+# TEAM ALIASES (for reference — not enforced by GitHub unless org teams exist)
+# ==============================================================================
+#
+# @alexa-amundson     — Primary operator, final authority on all changes
+# @backend-team       — Backend engineers (alias for automation)
+# @frontend-team      — Frontend engineers (alias for automation)
+# @agent-team         — AI agent developers (alias for automation)
+# @infra-team         — Infrastructure engineers (alias for automation)
+# @ops-team           — Operations team (alias for automation)
+# @sdk-team           — SDK developers (alias for automation)
+# @docs-team          — Documentation writers (alias for automation)
+# @prism-team         — Prism Console developers (alias for automation)
+# @operator-team      — Operator Engine developers (alias for automation)
+# @research-team      — Research team (alias for automation)
+# @brand-team         — Brand and marketing (alias for automation)
+# @prompt-team        — Prompt engineers (alias for automation)
+# @test-bot           — Auto-approval bot for test-only PRs
+# @docs-bot           — Auto-approval bot for docs-only PRs
+#
+# NOTE: Some team aliases may not be real GitHub teams. They serve as semantic
+# indicators for ownership and automation rules. Auto-approval bots are
+# implemented via GitHub Actions, not actual bot accounts.
+#
+# ==============================================================================

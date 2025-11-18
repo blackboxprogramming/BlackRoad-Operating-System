@@ -1,0 +1,112 @@
+# Auto-Labeling Configuration for BlackRoad OS
+# Labels are automatically applied based on which files are changed in a PR
+#
+# Related docs: GITHUB_AUTOMATION_RULES.md, AUTO_MERGE_POLICY.md
+
+# Documentation
+docs:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'docs/**/*'
+      - '*.md'
+      - 'README.*'
+      - '!backend/README.md'  # Let backend CI handle
+      - '!sdk/python/README.md'  # Let SDK CI handle
+      - '!sdk/typescript/README.md'  # Let SDK CI handle
+
+# Backend
+backend:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'backend/**/*'
+      - 'requirements.txt'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+
+# Frontend / OS
+frontend:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'blackroad-os/**/*'
+      - 'backend/static/**/*'
+
+# Agents
+agents:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'agents/**/*'
+
+# Infrastructure
+infra:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**/*'
+      - 'infra/**/*'
+      - 'ops/**/*'
+      - 'railway.toml'
+      - 'railway.json'
+      - '*.toml'
+      - '!package.json'
+
+# Python SDK
+sdk-python:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'sdk/python/**/*'
+
+# TypeScript SDK
+sdk-typescript:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'sdk/typescript/**/*'
+
+# Tests
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/tests/**/*'
+      - '**/*test*.py'
+      - '**/*.test.js'
+      - '**/*.spec.js'
+      - '**/*.spec.ts'
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'requirements.txt'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'Pipfile'
+      - 'Pipfile.lock'
+      - 'pyproject.toml'
+
+# Cognitive / Research
+cognitive:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'cognitive/**/*'
+      - 'blackroad-universe/**/*'
+
+# SOP (Standard Operating Procedures)
+sop:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'sop/**/*'
+
+# Implementation Plans
+implementation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'implementation-plans/**/*'
+
+# Scripts
+scripts:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'scripts/**/*'
+      - '*.py'
+      - '*.sh'
+      - '!backend/**/*.py'
+      - '!agents/**/*.py'
+      - '!sdk/**/*.py'
