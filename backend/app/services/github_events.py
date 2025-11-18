@@ -198,7 +198,6 @@ async def handle_pr_review_comment(payload: Dict[str, Any], db: AsyncSession):
 
     action = payload["action"]
     pr_number = payload["pull_request"]["number"]
-    comment = payload["comment"]
 
     logger.info(f"PR #{pr_number} review comment {action}")
 
