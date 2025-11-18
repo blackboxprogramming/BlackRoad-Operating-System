@@ -15,7 +15,7 @@ from app.routers import (
     digitalocean, github, huggingface, vscode, games, browser, dashboard,
     railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
     capture, identity_center, notifications_center, creator, compliance_ops,
-    search, cloudflare, system, webhooks, prism_static, ip_vault
+    search, cloudflare, system, webhooks, prism_static, ip_vault, leitl
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -33,6 +33,7 @@ openapi_tags = [
     {"name": "agents", "description": "BlackRoad Agent Library - 208 AI agents across 10 categories"},
     {"name": "cloudflare", "description": "Cloudflare zone, DNS, and Worker scaffolding"},
     {"name": "IP Vault", "description": "Cryptographic proof-of-origin for ideas and intellectual property"},
+    {"name": "LEITL", "description": "Live Everyone In The Loop - Multi-agent collaboration with WebDAV context"},
 ]
 
 
@@ -160,6 +161,9 @@ app.include_router(agents.router)
 
 # IP Vault
 app.include_router(ip_vault.router)
+
+# LEITL Protocol - Live Everyone In The Loop
+app.include_router(leitl.router)
 
 # GitHub Webhooks (Phase Q automation)
 app.include_router(webhooks.router)
