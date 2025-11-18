@@ -707,7 +707,7 @@ You'll know the production stack is stable when:
 **Mitigation:**
 1. ALWAYS pause first (don't delete immediately)
 2. Wait 30 days before deleting
-3. Export environment variables before pausing
+3. Export environment variables before pausing (e.g., run `railway variables list > env-vars-backup.txt`)
 4. Test canonical service works before pausing others
 
 ### Risk 2: Environment Variable Loss
