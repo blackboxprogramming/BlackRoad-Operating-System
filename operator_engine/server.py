@@ -20,6 +20,24 @@ async def health_check():
     return {"status": "healthy", "version": settings.APP_VERSION}
 
 
+@app.get("/version")
+async def version_info():
+    """Version information endpoint"""
+    import platform
+    import os
+    from datetime import datetime
+
+    return {
+        "service": "blackroad-operator",
+        "version": settings.APP_VERSION,
+        "environment": os.getenv("ENVIRONMENT", "development"),
+        "commit": os.getenv("GIT_COMMIT", "unknown"),
+        "built_at": os.getenv("BUILD_TIMESTAMP", datetime.utcnow().isoformat()),
+        "python_version": platform.python_version(),
+        "platform": platform.system(),
+    }
+
+
 @app.get("/jobs", response_model=List[Dict[str, Any]])
 async def list_jobs():
     """List all jobs in the registry"""
