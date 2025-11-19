@@ -32,6 +32,7 @@ except ImportError:
 
 from ..database import get_db
 from ..models.cognition import (
+    Workflow,
     WorkflowExecution,
     WorkflowStatus,
     ReasoningTrace,
@@ -131,11 +132,46 @@ async def run_cognition(
     # Initialize agent
     agent = CeceUltraAgent()
 
+    # Ensure a workflow exists for this execution
+    workflow_name = "Cece Ultra Full Stack Cognition"
+    workflow_result = await db.execute(
+        select(Workflow).where(Workflow.name == workflow_name)
+    )
+    workflow = workflow_result.scalar_one_or_none()
+
+    if not workflow:
+        workflow = Workflow(
+            name=workflow_name,
+            description="Cece Ultra 15-step cognition pipeline with architecture layer",
+            mode=ExecutionMode.SEQUENTIAL,
+            steps=[
+                "trigger",
+                "root_cause",
+                "impulse",
+                "reflection",
+                "challenge",
+                "counterpoint",
+                "determination",
+                "question",
+                "bias_offset",
+                "values_alignment",
+                "clarification",
+                "restatement",
+                "final_clarification",
+                "validation",
+                "final_answer",
+            ],
+            created_by="cece-ultra",
+            tags=["cece", "cognition", "ultra"],
+        )
+        db.add(workflow)
+        await db.flush()
+
     # Create execution record
     execution_id = uuid4()
     execution = WorkflowExecution(
         id=execution_id,
-        workflow_id=uuid4(),  # Create placeholder workflow
+        workflow_id=workflow.id,
         status=WorkflowStatus.RUNNING,
         started_at=datetime.utcnow(),
         initial_context={
