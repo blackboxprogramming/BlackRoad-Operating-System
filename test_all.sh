@@ -205,9 +205,15 @@ run_backend_tests() {
     log_info "Running pytest..."
 
     # Export test environment variables
+    # Unset potentially conflicting variables and set proper test values
+    unset DATABASE_URL DATABASE_ASYNC_URL
     export TEST_DATABASE_URL="${TEST_DATABASE_URL:-sqlite+aiosqlite:///./test.db}"
+    export DATABASE_URL="sqlite:///./test.db"
+    export DATABASE_ASYNC_URL="sqlite+aiosqlite:///./test.db"
     export ENVIRONMENT="testing"
     export ALLOWED_ORIGINS="http://localhost:3000,http://localhost:8000"
+    export SECRET_KEY="test-secret-key-for-local-tests"
+    export WALLET_MASTER_KEY="test-wallet-master-key-32chars-000"
 
     if [[ "$VERBOSE" == "true" ]]; then
       pytest -v --maxfail=1
@@ -259,6 +265,9 @@ run_agents_tests() {
     log_info "Installing agent dependencies..."
     $PY -m pip install -r agents/requirements.txt >/dev/null 2>&1
   fi
+
+  # Ensure pytest-asyncio is installed for async tests
+  $PY -m pip install pytest-asyncio >/dev/null 2>&1
 
   if have pytest; then
     log_info "Running agent tests..."
@@ -312,6 +321,9 @@ run_operator_tests() {
     log_info "Installing operator dependencies..."
     $PY -m pip install -r requirements.txt >/dev/null 2>&1
   fi
+
+  # Ensure pytest-asyncio is installed for async tests
+  $PY -m pip install pytest-asyncio >/dev/null 2>&1
 
   if have pytest && [[ -d tests ]]; then
     log_info "Running operator tests..."
@@ -419,8 +431,8 @@ run_sdk_typescript_tests() {
     npm install >/dev/null 2>&1
   fi
 
-  # Check if test script exists
-  if npm run -s test >/dev/null 2>&1; then
+  # Check if test script exists in package.json
+  if [[ -f package.json ]] && grep -q '"test"' package.json; then
     log_info "Running TypeScript SDK tests (Jest)..."
 
     if [[ "$VERBOSE" == "true" ]]; then

@@ -27,6 +27,21 @@ It unifies humans, agents, and infrastructure into a single operating system for
 
 BlackRoad OS is a fully functional web-based operating system interface that brings together AI orchestration, blockchain technology, social media, video streaming, and gaming - all wrapped in a nostalgic Windows 95 aesthetic.
 
+## Monorepo as the Source of Truth
+
+All BlackRoad services, apps, and docs now live in this monorepo and sync out automatically to their mirror repositories under the `BlackRoad-OS` GitHub organization. Edit here; automation mirrors to the satellites.
+
+### Canonical layout
+
+- `services/core-api` → `BlackRoad-OS/blackroad-os-core`
+- `services/public-api` → `BlackRoad-OS/blackroad-os-api`
+- `services/operator` → `BlackRoad-OS/blackroad-os-operator`
+- `apps/prism-console` → `BlackRoad-OS/blackroad-os-prism-console`
+- `apps/web` → `BlackRoad-OS/blackroad-os-web`
+- `docs/site` → `BlackRoad-OS/blackroad-os-docs`
+
+The mapping is machine-readable at `infra/github/sync-config.yml`, and the sync process is documented in `docs/os/monorepo-sync.md`.
+
 ## Features
 
 ### 🤖 AI & Communication

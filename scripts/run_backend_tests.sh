@@ -20,8 +20,14 @@ source "$VENV_DIR/bin/activate"
 pip install --upgrade pip
 pip install -r requirements.txt
 
+# Unset potentially conflicting variables and set proper test values
+unset DATABASE_URL DATABASE_ASYNC_URL
 export TEST_DATABASE_URL="${TEST_DATABASE_URL:-sqlite+aiosqlite:///./test.db}"
+export DATABASE_URL="sqlite:///./test.db"
+export DATABASE_ASYNC_URL="sqlite+aiosqlite:///./test.db"
 export ENVIRONMENT="${ENVIRONMENT:-testing}"
 export ALLOWED_ORIGINS="${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000}"
+export SECRET_KEY="test-secret-key-for-local-tests"
+export WALLET_MASTER_KEY="test-wallet-master-key-32chars-000"
 
 pytest -v --maxfail=1
