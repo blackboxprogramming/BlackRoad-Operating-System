@@ -1,5 +1,33 @@
+# ==============================================================================
+# ⚠️  CRITICAL WARNING - DO NOT USE THIS CONFIG IN PRODUCTION RAILWAY ⚠️
+# ==============================================================================
+#
+# This railway.toml is for LOCAL DEVELOPMENT AND TESTING ONLY.
+#
+# ❌ DO NOT add "BlackRoad-Operating-System" as a Railway service
+# ❌ DO NOT deploy this monorepo to production Railway environments
+# ❌ DO NOT add this repo to service configurations or env vars
+#
+# ✅ CORRECT DEPLOYMENT MODEL:
+#   - This repo is the SOURCE OF TRUTH (orchestration/sync only)
+#   - Deploy ONLY the satellite repos to Railway:
+#     • blackroad-os-core (from BlackRoad-OS/blackroad-os-core)
+#     • blackroad-os-api (from BlackRoad-OS/blackroad-os-api)
+#     • blackroad-os-operator (from BlackRoad-OS/blackroad-os-operator)
+#     • blackroad-os-prism-console (from BlackRoad-OS/blackroad-os-prism-console)
+#     • blackroad-os-docs (from BlackRoad-OS/blackroad-os-docs)
+#
+# WHY THIS MATTERS:
+#   - Adding the monorepo to Railway will create circular deploy loops
+#   - Environment variables will break (wrong service URLs)
+#   - Cloudflare routing will fail
+#   - Service dependencies will be misconfigured
+#
+# See: docs/os/monorepo-sync.md and DEPLOYMENT_ARCHITECTURE.md
+# ==============================================================================
+
 # BlackRoad OS Monorepo - Railway Configuration
-# This configures multiple services from a single repository
+# This configures multiple services from a single repository FOR LOCAL DEV ONLY
 
 # Backend (Core API)
 [[services]]
