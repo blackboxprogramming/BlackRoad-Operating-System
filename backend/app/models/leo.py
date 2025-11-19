@@ -67,8 +67,8 @@ class AnchorEvent(Base):
     status = Column(String(20), nullable=False)  # pending, confirmed, failed
     error_message = Column(Text, nullable=True)
 
-    # Metadata (renamed from 'metadata' to avoid SQLAlchemy reserved attribute)
-    event_metadata = Column(Text, nullable=True)  # JSON serialized
+    # Metadata (attribute renamed from 'metadata' to avoid SQLAlchemy reserved attribute)
+    event_metadata = Column("metadata", Text, nullable=True)  # JSON serialized
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
