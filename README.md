@@ -31,6 +31,26 @@ BlackRoad OS is a fully functional web-based operating system interface that bri
 
 All BlackRoad services, apps, and docs now live in this monorepo and sync out automatically to their mirror repositories under the `BlackRoad-OS` GitHub organization. Edit here; automation mirrors to the satellites.
 
+> ### ⚠️ CRITICAL DEPLOYMENT WARNING ⚠️
+>
+> **This repository is NOT deployed to production.**
+>
+> - ❌ **DO NOT** add `BlackRoad-Operating-System` to Railway as a service
+> - ❌ **DO NOT** deploy this monorepo to any production environment
+> - ❌ **DO NOT** reference this repo in service configurations or env vars
+>
+> **Deploy ONLY the satellite repositories:**
+> - `blackroad-os-core` (Core API)
+> - `blackroad-os-api` (Public API)
+> - `blackroad-os-operator` (Agent Runtime)
+> - `blackroad-os-prism-console` (Status Console)
+> - `blackroad-os-docs` (Documentation)
+> - `blackroad-os-web` (Public Website)
+>
+> **This repo is the source of truth for code**, but **satellites are the deployable services**.
+>
+> **See**: `DEPLOYMENT_ARCHITECTURE.md` for complete deployment model.
+
 ### Canonical layout
 
 - `services/core-api` → `BlackRoad-OS/blackroad-os-core`

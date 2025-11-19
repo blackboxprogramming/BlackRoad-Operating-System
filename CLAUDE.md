@@ -578,29 +578,55 @@ async def test_create_user(client: AsyncClient):
 
 ## Deployment
 
-### Railway (Backend)
+### ⚠️ CRITICAL: Monorepo vs Satellite Deployment Model
 
-**Configuration** (`railway.toml`):
-```toml
-[build]
-builder = "DOCKERFILE"
-dockerfilePath = "backend/Dockerfile"
+**This repository (`BlackRoad-Operating-System`) is NOT deployed to production.**
 
-[deploy]
-startCommand = "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
-healthcheck.path = "/health"
-```
+BlackRoad OS uses a **monorepo-to-satellite sync architecture**:
 
-**Deployment Steps**:
-1. Push to main branch
-2. GitHub Action triggers Railway deploy
-3. Railway builds Docker image
-4. Runs Alembic migrations
-5. Starts FastAPI server
-6. Health check validation
-7. Traffic cutover
+**Monorepo Role** (`BlackRoad-Operating-System`):
+- ❌ **NOT deployed** to Railway or any production environment
+- ✅ Source of truth for all service code
+- ✅ Syncs code to satellite repos via GitHub Actions
+- ✅ Orchestration, prompts, and infrastructure configs
 
-**Manual Deploy**:
+**Satellite Role** (Deployable Services):
+- ✅ **ONLY satellites are deployed** to Railway
+- Each satellite = one deployable service
+- Satellites: `blackroad-os-core`, `blackroad-os-api`, `blackroad-os-operator`, `blackroad-os-prism-console`, `blackroad-os-docs`, `blackroad-os-web`
+
+**Key Rules**:
+1. ❌ **NEVER** add `BlackRoad-Operating-System` as a Railway service
+2. ❌ **NEVER** reference monorepo in env vars or service configs
+3. ❌ **NEVER** point Cloudflare to monorepo URLs
+4. ✅ **ALWAYS** deploy satellite repos individually
+5. ✅ **ALWAYS** edit code in monorepo (syncs to satellites automatically)
+
+**See**: `DEPLOYMENT_ARCHITECTURE.md` for complete deployment model and troubleshooting.
+
+---
+
+### Railway (Satellite Deployment)
+
+**IMPORTANT**: The `railway.toml` in this repo is for **local development/testing only**.
+
+**Production deployment** is done via satellite repositories:
+- `BlackRoad-OS/blackroad-os-core` → `blackroad-os-core-production` (Railway service)
+- `BlackRoad-OS/blackroad-os-api` → `blackroad-os-api-production` (Railway service)
+- `BlackRoad-OS/blackroad-os-operator` → `blackroad-os-operator-production` (Railway service)
+- `BlackRoad-OS/blackroad-os-prism-console` → `blackroad-os-prism-console-production` (Railway service)
+- `BlackRoad-OS/blackroad-os-docs` → `blackroad-os-docs-production` (Railway service)
+
+**Deployment Flow**:
+1. Edit code in monorepo (e.g., `services/core-api/`)
+2. Commit and push to `main`
+3. GitHub Action syncs to satellite (e.g., `BlackRoad-OS/blackroad-os-core`)
+4. Satellite triggers Railway deployment
+5. Railway builds Docker image
+6. Runs migrations
+7. Deploys to production
+
+**Local Railway Testing** (monorepo only):
 ```bash
 # Install Railway CLI
 curl -fsSL https://railway.app/install.sh | sh
@@ -608,9 +634,12 @@ curl -fsSL https://railway.app/install.sh | sh
 # Login
 railway login
 
-# Deploy
+# Deploy locally (NOT for production)
 railway up
 ```
+
+**Production Railway Deploy** (satellites):
+Done automatically via GitHub Actions when satellite repos update.
 
 ### GitHub Pages (Frontend)
 

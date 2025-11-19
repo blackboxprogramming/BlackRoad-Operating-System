@@ -32,9 +32,8 @@ domains:
     mode: "dns"
     record:
       type: "CNAME"
-      value: "blackroad-operating-system-production.up.railway.app"
-      value: "YOUR-PROD-RAILWAY-APP.up.railway.app"  # replace with your Railway host
-    notes: "Alternative subdomain alias for the OS application"
+      value: "blackroad-os-core-production.up.railway.app"  # Core API satellite service
+    notes: "Alternative subdomain alias for the OS application - points to Core API satellite"
 
   - name: "blackroad.ai"
     type: "root"
