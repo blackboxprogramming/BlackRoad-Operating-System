@@ -6,6 +6,7 @@
 class PrismConsole {
   constructor() {
     this.apiBase = window.location.origin;
+    this.services = [];
     this.init();
   }
 
@@ -15,7 +16,8 @@ class PrismConsole {
     // Setup tab navigation
     this.setupTabs();
 
-    // Load initial data
+    // Load configuration and initial data
+    await this.loadConfig();
     await this.loadDashboard();
 
     // Setup auto-refresh
@@ -46,6 +48,20 @@ class PrismConsole {
     });
   }
 
+  async loadConfig() {
+    try {
+      const config = await this.fetchAPI('/api/system/prism/config');
+      this.services = config.services || [];
+
+      if (config.environment) {
+        document.getElementById('environment-badge').textContent = config.environment;
+      }
+    } catch (error) {
+      console.error('Failed to load Prism configuration', error);
+      this.services = [];
+    }
+  }
+
   async loadDashboard() {
     try {
       // Get system version
@@ -54,8 +70,7 @@ class PrismConsole {
       document.getElementById('environment-badge').textContent = version.env;
 
       // Get system status
-      document.getElementById('system-status').textContent = 'Healthy ✓';
-      document.getElementById('health-status').style.color = '#10b981';
+      await this.loadServiceHealth();
 
       // Update last updated time
       const now = new Date().toLocaleTimeString();
@@ -120,10 +135,73 @@ class PrismConsole {
     }
   }
 
+  async loadServiceHealth() {
+    const tbody = document.getElementById('service-health-body');
+
+    if (!tbody || !this.services.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No services configured</td></tr>';
+      return;
+    }
+
+    const results = await Promise.all(
+      this.services.map(async (service) => {
+        const healthUrl = `${service.url}${service.health_path || '/health'}`;
+        const versionUrl = `${service.url}${service.version_path || '/version'}`;
+
+        try {
+          const [health, version] = await Promise.all([
+            this.fetchExternal(healthUrl),
+            this.fetchExternal(versionUrl),
+          ]);
+
+          return {
+            name: service.name,
+            status: (health.status || 'unknown').toLowerCase(),
+            version: version.version || 'unknown',
+            endpoint: healthUrl,
+          };
+        } catch (error) {
+          console.error(`Health check failed for ${service.name}:`, error);
+          return {
+            name: service.name,
+            status: 'error',
+            version: 'n/a',
+            endpoint: healthUrl,
+          };
+        }
+      })
+    );
+
+    const unhealthy = results.some((result) => result.status !== 'healthy');
+    document.getElementById('system-status').textContent = unhealthy ? 'Issues Detected' : 'Healthy ✓';
+    document.getElementById('health-status').style.color = unhealthy ? '#ef4444' : '#10b981';
+
+    tbody.innerHTML = results
+      .map(
+        (result) => `
+          <tr>
+            <td>${result.name}</td>
+            <td><span class="status-badge ${result.status === 'healthy' ? 'healthy' : 'unhealthy'}">${result.status}</span></td>
+            <td>${result.version}</td>
+            <td><a href="${result.endpoint}" target="_blank" rel="noopener noreferrer">${result.endpoint}</a></td>
+          </tr>
+        `
+      )
+      .join('');
+  }
+
   async fetchAPI(endpoint) {
     const response = await fetch(`${this.apiBase}${endpoint}`);
     if (!response.ok) {
       throw new Error(`API request failed: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async fetchExternal(url) {
+    const response = await fetch(url, { headers: { Accept: 'application/json' } });
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status} ${response.statusText}`);
     }
     return response.json();
   }
