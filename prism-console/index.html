@@ -58,6 +58,25 @@
                 </div>
 
                 <div class="section">
+                    <h3>Service Health</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Status</th>
+                                <th>Version</th>
+                                <th>Endpoint</th>
+                            </tr>
+                        </thead>
+                        <tbody id="service-health-body">
+                            <tr>
+                                <td colspan="4" class="empty-state">Waiting for health checks...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
                     <h3>Quick Actions</h3>
                     <div class="button-group">
                         <button class="action-button" onclick="refreshDashboard()">Refresh Dashboard</button>

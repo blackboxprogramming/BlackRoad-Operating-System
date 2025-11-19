@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import time
+from datetime import datetime, timezone
 import os
 
 from app.config import settings
@@ -225,8 +226,22 @@ else:
 async def health_check():
     """Health check endpoint"""
     return {
+        "service": "core-api",
         "status": "healthy",
-        "timestamp": time.time()
+        "environment": settings.ENVIRONMENT,
+        "version": settings.APP_VERSION,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+
+@app.get("/version")
+async def version():
+    """Service version endpoint"""
+    return {
+        "service": "core-api",
+        "version": settings.APP_VERSION,
+        "environment": settings.ENVIRONMENT,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 
