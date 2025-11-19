@@ -230,6 +230,24 @@ async def health_check():
     }
 
 
+# Version info
+@app.get("/version")
+async def version_info():
+    """Version information endpoint"""
+    import platform
+    from datetime import datetime
+
+    return {
+        "service": "blackroad-core",
+        "version": settings.APP_VERSION,
+        "environment": settings.ENVIRONMENT,
+        "commit": os.getenv("GIT_COMMIT", "unknown"),
+        "built_at": os.getenv("BUILD_TIMESTAMP", datetime.utcnow().isoformat()),
+        "python_version": platform.python_version(),
+        "platform": platform.system(),
+    }
+
+
 # API info
 @app.get("/api")
 async def api_info():
