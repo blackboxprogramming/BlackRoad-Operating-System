@@ -16,25 +16,47 @@ app = FastAPI(
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy", "version": settings.APP_VERSION}
+    """
+    Health check endpoint for Railway and monitoring systems.
+    Returns 200 OK if service is healthy.
+    """
+    import os
+    import time
+    from datetime import datetime
+
+    return {
+        "status": "healthy",
+        "service": "operator",
+        "version": settings.APP_VERSION,
+        "commit": os.getenv("RAILWAY_GIT_COMMIT_SHA", "local")[:7],
+        "environment": os.getenv("ENVIRONMENT", "development"),
+        "timestamp": datetime.utcnow().isoformat() + "Z"
+    }
 
 
 @app.get("/version")
 async def version_info():
-    """Version information endpoint"""
+    """
+    Version information endpoint.
+    Returns detailed version and build information.
+    """
     import platform
     import os
     from datetime import datetime
 
     return {
-        "service": "blackroad-operator",
+        "service": "operator",
         "version": settings.APP_VERSION,
+        "commit": os.getenv("RAILWAY_GIT_COMMIT_SHA", "local")[:7],
         "environment": os.getenv("ENVIRONMENT", "development"),
-        "commit": os.getenv("GIT_COMMIT", "unknown"),
-        "built_at": os.getenv("BUILD_TIMESTAMP", datetime.utcnow().isoformat()),
+        "build_time": os.getenv("BUILD_TIME", "unknown"),
         "python_version": platform.python_version(),
-        "platform": platform.system(),
+        "deployment": {
+            "platform": "Railway",
+            "region": os.getenv("RAILWAY_REGION", "unknown"),
+            "service_id": os.getenv("RAILWAY_SERVICE_ID", "unknown"),
+            "deployment_id": os.getenv("RAILWAY_DEPLOYMENT_ID", "unknown")
+        }
     }
 
 
