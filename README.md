@@ -9,6 +9,16 @@ It unifies humans, agents, and infrastructure into a single operating system for
 ![Version](https://img.shields.io/badge/version-1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+## Meta / Orchestrator repo
+
+This repository is the canonical, meta-level source of truth for BlackRoad OS. It holds shared specs, governance docs, CI standards, and lightweight tooling only. Deployable runtime code lives in the satellite repositories referenced in the OS spec.
+
+- **OS spec:** Machine-readable registry at [`os-spec/os-spec.json`](os-spec/os-spec.json) with a short overview in [`docs/OS_SPEC.md`](docs/OS_SPEC.md).
+- **Repo unification standard:** Authoritative conventions for satellite repos in [`docs/REPO_UNIFICATION.md`](docs/REPO_UNIFICATION.md).
+- **Health dashboard:** Local CLI that pings each service’s `/health` endpoint (`npm run check:health`).
+
+> This repo should remain meta-only. Do not deploy it directly; deploy the satellite services instead.
+
 ## Core Entities
 
 - **Alexa Louise Amundson ("Alexa", "Cadillac")**
@@ -61,6 +71,17 @@ All BlackRoad services, apps, and docs now live in this monorepo and sync out au
 - `docs/site` → `BlackRoad-OS/blackroad-os-docs`
 
 The mapping is machine-readable at `infra/github/sync-config.yml`, and the sync process is documented in `docs/os/monorepo-sync.md`.
+
+## Health dashboard (local)
+
+Run the lightweight status CLI against all satellite services defined in the OS spec:
+
+```bash
+npm install
+npm run check:health
+```
+
+The script reads `os-spec/os-spec.json` and prints a status table. It is intended for operator use; production monitoring should still live in deployed observability stacks.
 
 ## Features
 
