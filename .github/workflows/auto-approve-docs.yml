@@ -1,47 +1,8 @@
-name: Auto-Approve Docs
-
+name: Disabled Workflow
 on:
-  pull_request:
-    types: [opened, synchronize, labeled]
-    paths:
-      - 'docs/**'
-      - '*.md'
-      - 'README.*'
-
-permissions:
-  contents: read
-  pull-requests: write
-
+  workflow_dispatch:
 jobs:
-  auto-approve:
+  disable:
+    if: false
     runs-on: ubuntu-latest
-    if: |
-      contains(github.event.pull_request.labels.*.name, 'docs-only') &&
-      !contains(github.event.pull_request.labels.*.name, 'breaking-change') &&
-      !contains(github.event.pull_request.labels.*.name, 'security') &&
-      !contains(github.event.pull_request.labels.*.name, 'do-not-merge')
-
-    steps:
-      - name: Approve PR
-        uses: hmarr/auto-approve-action@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Add auto-merge label
-        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "auto-merge"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Comment on PR
-        run: |
-          gh pr comment ${{ github.event.pull_request.number }} --body "🤖 **Auto-Approved (Docs-Only)**
-
-          This PR contains only documentation changes and has been automatically approved.
-
-          **Tier**: 1 (Docs-Only)
-          **Policy**: AUTO_MERGE_POLICY.md#tier-1-documentation
-          **Soak Time**: 0 minutes
-
-          Auto-merge will proceed once all checks pass."
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps: []
