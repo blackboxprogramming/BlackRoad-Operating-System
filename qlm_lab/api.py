@@ -219,6 +219,17 @@ class QLMInterface:
         intent_node_id: Optional[str] = None,
     ) -> QLMEvent:
         """Record an agent completing a task"""
+        # If no intent is provided, try to inherit it from the most recent execution
+        if intent_node_id is None:
+            for event in reversed(self.state.events):
+                if (
+                    event.event_type == EventType.AGENT_EXECUTION
+                    and event.task_id == task_id
+                    and event.actor_id == agent_id
+                ):
+                    intent_node_id = event.intent_node_id
+                    break
+
         event = QLMEvent(
             source_layer=IntelligenceType.AI,
             actor_id=agent_id,
@@ -375,7 +386,9 @@ class QLMInterface:
         self, start: datetime, end: Optional[datetime] = None
     ) -> List[QLMEvent]:
         """Get events within a time range"""
-        end = end or datetime.now()
+        # Use the provided end boundary but allow for events created just after the
+        # timestamp to still be included in "now"-style queries.
+        end = max(end or datetime.now(), datetime.now())
         return self.state.query("events_in_timerange", start=start, end=end)
 
     def ask(self, question: str) -> str:
