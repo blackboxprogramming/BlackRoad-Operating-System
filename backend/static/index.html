@@ -1133,6 +1133,10 @@
             <div class="icon-image">🔥</div>
             <div class="icon-label">LEITL</div>
         </div>
+        <div class="icon" ondblclick="openWindow('ceceultra')">
+            <div class="icon-image">🟣</div>
+            <div class="icon-label">Cece Ultra</div>
+        </div>
     </div>
 
     <!-- RoadMail Window -->
@@ -2081,6 +2085,22 @@
         <div class="window-content" id="leitl-container"></div>
     </div>
 
+    <!-- Cece Ultra Window -->
+    <div id="ceceultra" class="window" style="left: 260px; top: 230px; width: 950px; height: 750px;">
+        <div class="title-bar" onmousedown="dragStart(event, 'ceceultra')">
+            <div class="title-text">
+                <span>🟣</span>
+                <span>Cece Ultra - Full Stack Cognition</span>
+            </div>
+            <div class="title-buttons">
+                <div class="title-button" onclick="minimizeWindow('ceceultra')">_</div>
+                <div class="title-button" onclick="maximizeWindow('ceceultra')">□</div>
+                <div class="title-button" onclick="closeWindow('ceceultra')">×</div>
+            </div>
+        </div>
+        <div class="window-content" id="ceceultra-container"></div>
+    </div>
+
     <!-- Taskbar -->
     <div class="taskbar">
         <div class="start-button" onclick="toggleStartMenu()">
@@ -2118,6 +2138,7 @@
             <div class="start-menu-separator"></div>
             <div class="start-menu-item" onclick="openWindow('ip-vault'); toggleStartMenu();"><span style="font-size: 18px;">🔐</span><span>IP Vault</span></div>
             <div class="start-menu-item" onclick="openWindow('leitl'); toggleStartMenu();"><span style="font-size: 18px;">🔥</span><span>LEITL</span></div>
+            <div class="start-menu-item" onclick="openWindow('ceceultra'); toggleStartMenu();"><span style="font-size: 18px;">🟣</span><span>Cece Ultra</span></div>
             <div class="start-menu-separator"></div>
             <div class="start-menu-item" onclick="alert('Shutting down...\\n\\nJust kidding! The road never ends! 🛣️')"><span style="font-size: 18px;">🔌</span><span>Shut Down</span></div>
         </div>
@@ -2183,7 +2204,8 @@
                 'road-life': '🏡 Life',
                 'wallet': '💰 Wallet',
                 'ip-vault': '🔐 Vault',
-                'leitl': '🔥 LEITL'
+                'leitl': '🔥 LEITL',
+                'ceceultra': '🟣 Cece Ultra'
             };
             openWindows.forEach(id => {
                 const btn = document.createElement('div');
@@ -2244,13 +2266,17 @@
     <script src="/static/js/auth.js"></script>
     <script src="/static/js/apps.js"></script>
     <script src="/static/js/apps/leitl.js"></script>
+    <script src="/static/js/apps/ceceultra.js"></script>
     <script>
-        // Initialize LEITL app when window opens
+        // Initialize apps when window opens
         const originalOpenWindow = window.openWindow;
         window.openWindow = function(id) {
             originalOpenWindow(id);
             if (id === 'leitl' && window.Apps && window.Apps.LEITL) {
                 window.Apps.LEITL.init();
+            }
+            if (id === 'ceceultra' && window.Apps && window.Apps.CeceUltra) {
+                window.Apps.CeceUltra.init();
             }
         };
     </script>

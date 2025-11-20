@@ -16,6 +16,7 @@ from app.routers import (
     railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
     capture, identity_center, notifications_center, creator, compliance_ops,
     search, cloudflare, system, webhooks, prism_static, ip_vault, leitl, cognition
+    search, cloudflare, system, webhooks, prism_static, ip_vault, leitl, cece
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -35,6 +36,7 @@ openapi_tags = [
     {"name": "IP Vault", "description": "Cryptographic proof-of-origin for ideas and intellectual property"},
     {"name": "LEITL", "description": "Live Everyone In The Loop - Multi-agent collaboration with WebDAV context"},
     {"name": "Cognition", "description": "Cece Cognition Framework - 15-step reasoning + 6-step architecture + multi-agent orchestration"},
+    {"name": "Cece Ultra", "description": "Full stack cognition engine with 15-step pipeline and architecture layer"},
 ]
 
 
@@ -168,6 +170,8 @@ app.include_router(leitl.router)
 
 # Cognition Framework - Cece + Multi-Agent Orchestration
 app.include_router(cognition.router)
+# Cece Ultra - Full Stack Cognition
+app.include_router(cece.router)
 
 # GitHub Webhooks (Phase Q automation)
 app.include_router(webhooks.router)
