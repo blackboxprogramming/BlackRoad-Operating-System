@@ -1,206 +1,26 @@
-name: BlackRoad OS CI
+name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  validate:
-    name: Validate HTML & JavaScript
+  build-and-test:
     runs-on: ubuntu-latest
-    env:
-      UI_ENTRY: backend/static/index.html
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.11'
-
-      - name: Validate HTML structure
-        run: |
-          echo "🔍 Validating HTML structure..."
-          python3 << 'EOF'
-          import os
-          import sys
-          import re
-
-          def validate_html(filename):
-              errors = []
-              warnings = []
-
-              try:
-                  with open(filename, 'r') as f:
-                      content = f.read()
-              except FileNotFoundError:
-                  print(f"ℹ️  No {filename} found - skipping validation")
-                  return True
-
-              # Check basic structure
-              if not content.strip().startswith('<!DOCTYPE html>'):
-                  errors.append("Missing DOCTYPE declaration")
-
-              if '<html' not in content or '</html>' not in content:
-                  errors.append("Missing html tags")
-
-              if '<head>' not in content or '</head>' not in content:
-                  errors.append("Missing head tags")
-
-              if '<body>' not in content or '</body>' not in content:
-                  errors.append("Missing body tags")
-
-              # Check for unclosed tags
-              script_opens = content.count('<script')
-              script_closes = content.count('</script>')
-              if script_opens != script_closes:
-                  errors.append(f"Mismatched script tags: {script_opens} opens, {script_closes} closes")
-
-              div_opens = content.count('<div')
-              div_closes = content.count('</div>')
-              if div_opens != div_closes:
-                  errors.append(f"Mismatched div tags: {div_opens} opens, {div_closes} closes")
-
-              style_opens = content.count('<style>')
-              style_closes = content.count('</style>')
-              if style_opens != style_closes:
-                  errors.append(f"Mismatched style tags: {style_opens} opens, {style_closes} closes")
-
-              # Report results
-              print(f"\n{'='*60}")
-              print(f"HTML Validation Results: {filename}")
-              print(f"{'='*60}")
-              print(f"File size: {len(content):,} bytes")
-              print(f"Lines: {content.count(chr(10)):,}")
-              print(f"Divs: {div_opens} opens, {div_closes} closes")
-              print(f"Scripts: {script_opens} opens, {script_closes} closes")
-              print(f"Styles: {style_opens} opens, {style_closes} closes")
-
-              if errors:
-                  print(f"\n❌ ERRORS FOUND ({len(errors)}):")
-                  for i, error in enumerate(errors, 1):
-                      print(f"  {i}. {error}")
-                  return False
-              else:
-                  print("\n✅ All validation checks passed!")
-                  return True
-
-          # Validate canonical UI entrypoint
-          target = os.environ.get('UI_ENTRY', 'backend/static/index.html')
-          valid = validate_html(target)
-          sys.exit(0 if valid else 1)
-          EOF
-
-      - name: Check JavaScript syntax
-        run: |
-          echo "🔍 Checking JavaScript syntax..."
-          if [ -f "$UI_ENTRY" ]; then
-            # Extract and check JavaScript
-            python3 << 'EOF'
-          import os
-          import re
-          import sys
-
-          target = os.environ.get('UI_ENTRY', 'backend/static/index.html')
-
-          with open(target, 'r') as f:
-              content = f.read()
-
-          # Extract JavaScript code
-          script_match = re.search(r'<script>(.*?)</script>', content, re.DOTALL)
-          if not script_match:
-              print("ℹ️  No inline JavaScript found")
-              sys.exit(0)
-
-          js_code = script_match.group(1)
-
-          # Basic syntax checks
-          issues = []
-
-          # Check for common syntax errors
-          if js_code.count('{') != js_code.count('}'):
-              issues.append(f"Mismatched braces: {js_code.count('{')} opens, {js_code.count('}')} closes")
-
-          if js_code.count('(') != js_code.count(')'):
-              issues.append(f"Mismatched parentheses: {js_code.count('(')} opens, {js_code.count(')')} closes")
-
-          if js_code.count('[') != js_code.count(']'):
-              issues.append(f"Mismatched brackets: {js_code.count('[')} opens, {js_code.count(']')} closes")
-
-          # Check for basic structure
-          functions = len(re.findall(r'function\s+\w+', js_code))
-          print(f"\n{'='*60}")
-          print(f"JavaScript Syntax Check")
-          print(f"{'='*60}")
-          print(f"Code size: {len(js_code):,} bytes")
-          print(f"Functions declared: {functions}")
-          print(f"Braces: {js_code.count('{')} matched pairs")
-          print(f"Parentheses: {js_code.count('(')} matched pairs")
-          print(f"Brackets: {js_code.count('[')} matched pairs")
-
-          if issues:
-              print(f"\n❌ SYNTAX ISSUES ({len(issues)}):")
-              for i, issue in enumerate(issues, 1):
-                  print(f"  {i}. {issue}")
-              sys.exit(1)
-          else:
-              print("\n✅ JavaScript syntax appears valid!")
-              sys.exit(0)
-          EOF
-          else
-            echo "ℹ️  No UI entrypoint found - skipping JS validation"
-          fi
-
-      - name: Check for common security issues
-        run: |
-          echo "🔒 Checking for security issues..."
-          if [ -f "$UI_ENTRY" ]; then
-            # Check for inline event handlers with user input (basic XSS check)
-            if grep -i "eval(" "$UI_ENTRY"; then
-              echo "⚠️  Warning: Found eval() - potential security risk"
-              # Not failing for this, just warning
-            fi
-
-            if grep -i "innerHTML.*user" "$UI_ENTRY"; then
-              echo "⚠️  Warning: Found innerHTML with user input - potential XSS risk"
-            fi
-
-            echo "✅ Basic security checks completed"
-          else
-            echo "ℹ️  No UI entrypoint found - skipping security checks"
-          fi
-
-      - name: Validate README
-        run: |
-          echo "📄 Checking README..."
-          if [ -f "README.md" ]; then
-            word_count=$(wc -w < README.md)
-            line_count=$(wc -l < README.md)
-            echo "README.md: $line_count lines, $word_count words"
-            if [ $word_count -lt 50 ]; then
-              echo "⚠️  README is quite short (< 50 words)"
-            else
-              echo "✅ README is comprehensive"
-            fi
-          else
-            echo "❌ No README.md found!"
-            exit 1
-          fi
-
-      - name: Summary
-        if: success()
-        run: |
-          echo ""
-          echo "╔════════════════════════════════════════════════════════╗"
-          echo "║                                                        ║"
-          echo "║        ✅ All BlackRoad OS validation checks passed!    ║"
-          echo "║                                                        ║"
-          echo "║  The code is ready for deployment to GitHub Pages.    ║"
-          echo "║                                                        ║"
-          echo "╚════════════════════════════════════════════════════════╝"
-          echo ""
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check
+        run: npm run build
+      - name: Tests
+        run: npm test
