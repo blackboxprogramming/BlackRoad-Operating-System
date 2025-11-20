@@ -27,7 +27,7 @@ All domains are configured in Cloudflare with CNAME records pointing to Railway 
 | **core** | 9gw4d0h2.up.railway.app | Core API | Core backend services, auth, blockchain |
 | **api** | ac7bx15h.up.railway.app | Public API | Public-facing API gateway |
 | **app** | blackroad-operating-system-production.up.railway.app | OS Shell | Main operating system interface |
-| **@ (root)** | kng9hpna.up.railway.app | Root Service | Domain root redirect |
+| **@ (root)** | blackroad-operating-system-production.up.railway.app | Root Service | Domain root - points to main OS interface |
 | **console** | qqr1r4hd.up.railway.app | Prism Console | AI orchestration console |
 | **docs** | 2izt9kog.up.railway.app | Documentation | API docs, guides, references |
 | **os** | vtrb1hrx.up.railway.app | OS Interface | Operating system UI |
@@ -112,9 +112,9 @@ All domains are configured in Cloudflare with CNAME records pointing to Railway 
 - **Purpose**: OS interface alternative endpoint
 
 ### Service: blackroad-os-root-domain
-- **Railway URL**: kng9hpna.up.railway.app
+- **Railway URL**: blackroad-operating-system-production.up.railway.app
 - **Cloudflare DNS**: blackroad.systems (root)
-- **Purpose**: Domain root service
+- **Purpose**: Domain root service - redirects to main OS interface
 
 ---
 
