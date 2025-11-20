@@ -94,6 +94,11 @@ This document establishes the canonical deployment model to prevent misconfigura
    - It's not designed to run as a service
    - It will break everything
 
+4. **Never host the legacy `blackroad-os` bundle**
+   - The only supported UI lives in `backend/static/index.html`
+   - Serve it through the FastAPI backend or the `blackroad-os-web` satellite
+   - Do not push the monorepo or `/blackroad-os` assets directly to Pages/GoDaddy
+
 ### ✅ ALWAYS DO THIS
 
 1. **Deploy ONLY satellite repos to Railway**
