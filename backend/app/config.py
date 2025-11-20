@@ -30,7 +30,7 @@ class Settings(BaseSettings):
 
     # CORS
     # Include production domains by default to ensure Railway deployments work
-    ALLOWED_ORIGINS: str = "https://blackroad.systems,https://www.blackroad.systems,https://os.blackroad.systems,https://blackroad-operating-system-production.up.railway.app,http://localhost:3000,http://localhost:8000"
+    ALLOWED_ORIGINS: str = "https://blackroad.systems,https://app.blackroad.systems,https://www.blackroad.systems,https://os.blackroad.systems,https://blackroad-operating-system-production.up.railway.app,http://localhost:3000,http://localhost:8000"
 
     @property
     def allowed_origins_list(self) -> List[str]:
