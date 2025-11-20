@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
+from datetime import UTC, datetime
 import os
 
 from app.config import settings
@@ -23,6 +24,7 @@ async def get_version():
     return {
         "version": settings.APP_VERSION,
         "build_time": datetime.now(timezone.utc).isoformat(),
+        "build_time": datetime.now(UTC).isoformat(),
         "env": settings.ENVIRONMENT,
         "git_sha": git_sha[:8] if len(git_sha) > 8 else git_sha,
         "app_name": settings.APP_NAME,
