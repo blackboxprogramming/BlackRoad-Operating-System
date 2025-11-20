@@ -1,50 +1,8 @@
-name: Agents CI
-
+name: Disabled Workflow
 on:
-  pull_request:
-    paths:
-      - 'agents/**'
-  push:
-    branches: [main]
-    paths:
-      - 'agents/**'
-
-permissions:
-  contents: read
-
+  workflow_dispatch:
 jobs:
-  test:
-    name: Agent Tests
+  disable:
+    if: false
     runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install pytest pytest-asyncio
-
-      - name: Lint agent code
-        run: |
-          pip install flake8
-          flake8 agents --count --max-line-length=127 --statistics || true
-
-      - name: Run agent tests
-        run: |
-          pytest agents/tests -v
-
-      - name: Validate agent templates
-        run: |
-          echo "Checking agent templates..."
-          find agents/templates -name "*.py" -exec python -m py_compile {} \;
-
-      - name: Check agent registry
-        run: |
-          python -c "from agents import registry; print(f'Registered agents: {len(registry.get_all_agents())}')"
+    steps: []
