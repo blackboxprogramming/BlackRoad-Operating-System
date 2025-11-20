@@ -48,6 +48,8 @@ All BlackRoad services, apps, and docs now live in this monorepo and sync out au
 > - ❌ **DO NOT** add `BlackRoad-Operating-System` to Railway as a service
 > - ❌ **DO NOT** deploy this monorepo to any production environment
 > - ❌ **DO NOT** reference this repo in service configurations or env vars
+> - ❌ **DO NOT** publish the legacy `blackroad-os` static bundle; only ship the
+>   canonical UI that lives under `backend/static/`
 >
 > **Deploy ONLY the satellite repositories:**
 > - `blackroad-os-core` (Core API)
@@ -56,6 +58,8 @@ All BlackRoad services, apps, and docs now live in this monorepo and sync out au
 > - `blackroad-os-prism-console` (Status Console)
 > - `blackroad-os-docs` (Documentation)
 > - `blackroad-os-web` (Public Website)
+> - **Never deploy `BlackRoad-Operating-System` itself** — Railway, GoDaddy, and
+>   Pages should point at the satellites above, not this repo
 >
 > **This repo is the source of truth for code**, but **satellites are the deployable services**.
 >
