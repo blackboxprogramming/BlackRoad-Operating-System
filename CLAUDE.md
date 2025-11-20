@@ -1,8 +1,8 @@
 # CLAUDE.md - AI Assistant Guide for BlackRoad Operating System
 
-> **Last Updated**: 2025-11-18
+> **Last Updated**: 2025-11-20
 > **Repository**: BlackRoad-Operating-System
-> **Primary Language**: Python (Backend), JavaScript (Frontend)
+> **Primary Language**: Python (Backend), JavaScript (Frontend), TypeScript (Services)
 > **Canonical Entry Point**: `backend/static/index.html` served by FastAPI
 
 ---
@@ -11,15 +11,16 @@
 
 1. [Repository Overview](#repository-overview)
 2. [Technology Stack](#technology-stack)
-3. [Repository Structure](#repository-structure)
-4. [Development Setup](#development-setup)
-5. [Key Architectural Patterns](#key-architectural-patterns)
-6. [Development Workflows](#development-workflows)
-7. [Testing Practices](#testing-practices)
-8. [Deployment](#deployment)
-9. [Important Conventions](#important-conventions)
-10. [Common Tasks](#common-tasks)
-11. [Gotchas and Critical Notes](#gotchas-and-critical-notes)
+3. [**NEW: Kernel Architecture & DNS Infrastructure**](#kernel-architecture--dns-infrastructure)
+4. [Repository Structure](#repository-structure)
+5. [Development Setup](#development-setup)
+6. [Key Architectural Patterns](#key-architectural-patterns)
+7. [Development Workflows](#development-workflows)
+8. [Testing Practices](#testing-practices)
+9. [Deployment](#deployment)
+10. [Important Conventions](#important-conventions)
+11. [Common Tasks](#common-tasks)
+12. [Gotchas and Critical Notes](#gotchas-and-critical-notes)
 
 ---
 
@@ -109,6 +110,136 @@ The "Big Kahuna" vision (see `BLACKROAD_OS_BIG_KAHUNA_VISION.md`) outlines an am
 
 ---
 
+## Kernel Architecture & DNS Infrastructure
+
+### Overview
+
+BlackRoad OS now operates as a **distributed operating system** with a unified kernel layer across all services. Each Railway service acts as an OS "process," each Cloudflare domain as a "mount point," and all services communicate via standard syscalls.
+
+### Core Components
+
+**1. Kernel Module** (`kernel/typescript/`):
+- Unified TypeScript kernel for all BlackRoad OS services
+- Service registry with DNS-aware service discovery
+- Inter-service RPC client for seamless communication
+- Event bus, job queue, state management, and structured logging
+- Complete implementation of syscall API specification
+- See: `kernel/typescript/README.md`
+
+**2. Service Registry** (`kernel/typescript/serviceRegistry.ts`):
+- Canonical mapping of all services to DNS endpoints
+- Production Cloudflare DNS: `{service}.blackroad.systems`
+- Railway internal DNS: `{service}.railway.internal`
+- Development and production environment support
+- See: `INFRASTRUCTURE.md`
+
+**3. Syscall API** (`SYSCALL_API.md`):
+- Standard kernel interface that ALL services MUST implement
+- Core syscalls: `/health`, `/version`, `/v1/sys/identity`, `/v1/sys/health`
+- RPC syscalls: `/v1/sys/rpc` for inter-service communication
+- Event, job, state, logging, and metrics syscalls
+- Complete API specification with examples
+
+**4. DNS Infrastructure** (`infra/DNS.md`):
+- Complete Cloudflare DNS mapping
+- Railway production and dev endpoints
+- Email configuration (MX, SPF, DKIM, DMARC)
+- SSL/TLS, security, and monitoring configuration
+
+### Service Architecture
+
+```
+Monorepo (NOT deployed)
+  ↓ Syncs to ↓
+Satellite Repos (e.g., blackroad-os-core)
+  ↓ Deploys to ↓
+Railway Services
+  ↓ Routed via ↓
+Cloudflare DNS (e.g., core.blackroad.systems)
+```
+
+**Production Services**:
+- `operator.blackroad.systems` → GitHub automation, PR orchestration
+- `core.blackroad.systems` → Core backend API, auth, blockchain
+- `api.blackroad.systems` → Public API gateway
+- `console.blackroad.systems` → Prism AI orchestration console
+- `docs.blackroad.systems` → Documentation site
+- `web.blackroad.systems` → Web client/frontend
+- `os.blackroad.systems` → Operating system interface
+- `app.blackroad.systems` → Main OS shell
+
+### Key Documentation
+
+| Document | Purpose | Location |
+|----------|---------|----------|
+| **DNS Infrastructure** | Complete DNS mapping and configuration | `infra/DNS.md` |
+| **Infrastructure & Registry** | Service registry, kernel arch, deployment model | `INFRASTRUCTURE.md` |
+| **Syscall API Spec** | Standard kernel API for all services | `SYSCALL_API.md` |
+| **Railway Deployment** | How to deploy services to Railway | `docs/RAILWAY_DEPLOYMENT.md` |
+| **Atlas Kernel Prompt** | Generate new services with kernel | `prompts/atlas/ATLAS_KERNEL_SCAFFOLD.md` |
+| **Kernel README** | TypeScript kernel usage guide | `kernel/typescript/README.md` |
+| **GitHub Workflows** | Reusable CI/CD templates | `templates/github-workflows/` |
+
+### Quick Start: Using the Kernel
+
+```typescript
+// Import kernel modules
+import { rpc, events, logger, getKernelIdentity } from './kernel';
+
+// Get service identity
+const identity = getKernelIdentity();
+logger.info('Service started', { identity });
+
+// Call another service via RPC
+const user = await rpc.call('core', 'getUserById', { id: 123 });
+
+// Emit an event
+await events.emit('user:created', { userId: 123 });
+
+// All syscalls are automatically exposed via Express routes
+```
+
+### Quick Start: Deploying a New Service
+
+```bash
+# 1. Generate service using Atlas prompt
+# Copy prompts/atlas/ATLAS_KERNEL_SCAFFOLD.md into Claude
+
+# 2. Create satellite repo
+gh repo create BlackRoad-OS/blackroad-os-myservice --private
+
+# 3. Add generated code to satellite repo
+git push origin main
+
+# 4. Railway auto-deploys
+
+# 5. Configure Cloudflare DNS
+# Add CNAME: myservice.blackroad.systems → {railway-url}.up.railway.app
+
+# 6. Verify deployment
+curl https://myservice.blackroad.systems/health
+```
+
+### Inter-Service Communication
+
+Services communicate using **Railway internal DNS** for optimal performance:
+
+```typescript
+// Operator calling Core API
+import { rpc } from './kernel';
+const result = await rpc.call('core', 'someMethod', { params });
+
+// Under the hood:
+// POST http://blackroad-os-core.railway.internal:8000/v1/sys/rpc
+```
+
+External clients use **Cloudflare DNS**:
+```bash
+curl https://api.blackroad.systems/v1/users
+```
+
+---
+
 ## Repository Structure
 
 ```
@@ -160,8 +291,39 @@ The "Big Kahuna" vision (see `BLACKROAD_OS_BIG_KAHUNA_VISION.md`) outlines an am
 │   ├── python/                # Python SDK (v0.1.0)
 │   └── typescript/            # TypeScript SDK (v0.1.0)
 │
+├── kernel/                    # **NEW** BlackRoad OS Kernel
+│   └── typescript/            # TypeScript kernel implementation
+│       ├── types.ts           # Type definitions
+│       ├── serviceRegistry.ts # Service discovery (DNS-aware)
+│       ├── identity.ts        # Service identity
+│       ├── config.ts          # Configuration
+│       ├── logger.ts          # Structured logging
+│       ├── rpc.ts             # Inter-service RPC
+│       ├── events.ts          # Event bus
+│       ├── jobs.ts            # Job queue
+│       ├── state.ts           # State management
+│       ├── index.ts           # Main exports
+│       └── README.md          # Kernel documentation
+│
+├── prompts/                   # **NEW** AI Assistant Prompts
+│   └── atlas/                 # Atlas (Infrastructure Architect)
+│       └── ATLAS_KERNEL_SCAFFOLD.md  # Service generation prompt
+│
+├── templates/                 # **NEW** Reusable Templates
+│   └── github-workflows/      # GitHub Actions workflows
+│       ├── deploy.yml         # Railway deployment
+│       ├── test.yml           # Test suite
+│       ├── validate-kernel.yml # Kernel validation
+│       └── README.md          # Template documentation
+│
 ├── docs/                      # Architecture documentation
+│   ├── RAILWAY_DEPLOYMENT.md  # **NEW** Railway deployment guide
+│   └── [Other docs]
+│
 ├── infra/                     # Infrastructure configs
+│   ├── DNS.md                 # **NEW** Complete DNS mapping
+│   └── [Other infra configs]
+│
 ├── ops/                       # Operations scripts
 ├── scripts/                   # Utility scripts
 │   ├── railway/               # Railway deployment helpers
@@ -178,6 +340,8 @@ The "Big Kahuna" vision (see `BLACKROAD_OS_BIG_KAHUNA_VISION.md`) outlines an am
 ├── railway.json               # Railway service definitions
 └── [Documentation files]
     ├── README.md
+    ├── INFRASTRUCTURE.md      # **NEW** Service registry & kernel arch
+    ├── SYSCALL_API.md         # **NEW** Syscall API specification
     ├── BLACKROAD_OS_BIG_KAHUNA_VISION.md
     ├── CODEBASE_STATUS.md
     ├── SECURITY.md
@@ -191,11 +355,19 @@ The "Big Kahuna" vision (see `BLACKROAD_OS_BIG_KAHUNA_VISION.md`) outlines an am
 - Backend: `backend/app/main.py:8` (FastAPI app)
 - Frontend: `backend/static/index.html` (canonical UI)
 - Agents: `agents/base/agent.py:1` (base agent class)
+- Kernel: `kernel/typescript/index.ts` (kernel exports)
 
 **Configuration**:
 - `backend/app/config.py:1` - All settings (Pydantic)
 - `backend/.env.example` - Environment template
 - `railway.toml` - Railway deployment settings
+- `kernel/typescript/config.ts` - Kernel configuration
+
+**Infrastructure & DNS**:
+- `infra/DNS.md` - Complete DNS mapping (Cloudflare + Railway)
+- `INFRASTRUCTURE.md` - Service registry and kernel architecture
+- `SYSCALL_API.md` - Syscall API specification
+- `kernel/typescript/serviceRegistry.ts` - Service discovery
 
 **Database**:
 - `backend/app/database.py:1` - Session management
