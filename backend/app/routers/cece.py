@@ -242,7 +242,7 @@ async def run_cognition(
                         input_context=request.input,
                         output=str(step_value),
                         confidence_score=pipeline.get('confidence', 0.0),
-                        metadata={'mode': request.mode}
+                        trace_metadata={'mode': request.mode}
                     )
                     db.add(trace)
                     step_number += 1

@@ -3,11 +3,17 @@ import pytest
 import pytest_asyncio
 import asyncio
 import os
+import sys
+from pathlib import Path
 from typing import AsyncGenerator
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
 
 from app.main import app
 from app.database import get_db, Base
