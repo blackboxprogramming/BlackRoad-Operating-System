@@ -54,6 +54,10 @@ EXTRA_REQUIRED_KEYS: Set[str] = {
     "NEXTAUTH_SECRET",
     "NODE_ENV",
     "PYTHON_ENV",
+    # Cloudflare details used by infrastructure automation and DNS routes
+    "CLOUDFLARE_ACCOUNT_ID",
+    "CLOUDFLARE_ZONE_ID",
+    "CLOUDFLARE_EMAIL",
 }
 
 SENSITIVE_KEYS: Set[str] = {
