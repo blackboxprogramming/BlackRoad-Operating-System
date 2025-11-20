@@ -1,14 +1,19 @@
 {
-  "name": "blackroad-operating-system-meta",
-  "version": "0.1.0",
+  "name": "blackroad-operating-system",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "main": "server.mjs",
   "scripts": {
-    "dev": "echo \"No runtime app in meta repo\"",
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
     "build": "tsc --noEmit",
-    "start": "echo \"Meta repo has no start command\"",
     "lint": "eslint . --ext .ts,.js || true",
     "test": "echo \"No automated tests yet\"",
     "check:health": "ts-node tools/health-check.ts"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
