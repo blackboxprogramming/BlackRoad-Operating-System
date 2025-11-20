@@ -1391,6 +1391,235 @@
         toggleRoadMenu(false);
       }
     });
+
+    // ============================================================================
+    // BR-95 API Integration
+    // ============================================================================
+
+    const API_BASE = '/api/br95';
+    let ws = null;
+
+    /**
+     * Fetch and update Lucidia stats
+     */
+    async function updateLucidiaStats() {
+      try {
+        const response = await fetch(`${API_BASE}/lucidia`);
+        const data = await response.json();
+
+        // Update Lucidia window with real data
+        const lucidiaWindow = document.getElementById('lucidia');
+        if (lucidiaWindow) {
+          const statusEl = lucidiaWindow.querySelector('.stat-row:nth-child(1) .stat-value');
+          const agentsEl = lucidiaWindow.querySelector('.stat-row:nth-child(2) .stat-value');
+          const healthEl = lucidiaWindow.querySelector('.stat-row:nth-child(3) .stat-value');
+
+          if (statusEl) statusEl.textContent = data.status.toUpperCase();
+          if (agentsEl) agentsEl.textContent = `${data.active_agents}/${data.total_agents}`;
+          if (healthEl) healthEl.textContent = `${data.system_health.toFixed(2)}%`;
+        }
+
+        console.log('Lucidia stats updated:', data);
+      } catch (error) {
+        console.error('Failed to fetch Lucidia stats:', error);
+      }
+    }
+
+    /**
+     * Fetch and update RoadChain stats
+     */
+    async function updateRoadChainStats() {
+      try {
+        const response = await fetch(`${API_BASE}/roadchain`);
+        const data = await response.json();
+
+        // Update RoadChain window
+        const chainWindow = document.getElementById('roadchain');
+        if (chainWindow) {
+          const blockEl = chainWindow.querySelector('.stat-row:nth-child(1) .stat-value');
+          const nodesEl = chainWindow.querySelector('.stat-row:nth-child(2) .stat-value');
+          const hashEl = chainWindow.querySelector('.stat-row:nth-child(3) .stat-value');
+
+          if (blockEl) blockEl.textContent = data.current_block.toLocaleString();
+          if (nodesEl) nodesEl.textContent = data.active_nodes.toLocaleString();
+          if (hashEl) hashEl.textContent = data.network_hashrate;
+        }
+
+        console.log('RoadChain stats updated:', data);
+      } catch (error) {
+        console.error('Failed to fetch RoadChain stats:', error);
+      }
+    }
+
+    /**
+     * Fetch and update Wallet stats
+     */
+    async function updateWalletStats() {
+      try {
+        const response = await fetch(`${API_BASE}/wallet`);
+        const data = await response.json();
+
+        // Update Wallet window
+        const walletWindow = document.getElementById('wallet');
+        if (walletWindow) {
+          const balanceEl = walletWindow.querySelector('.stat-row:nth-child(1) .stat-value');
+          const usdEl = walletWindow.querySelector('.stat-row:nth-child(2) .stat-value');
+
+          if (balanceEl) balanceEl.textContent = `${data.balance_rc.toFixed(2)} RC`;
+          if (usdEl) usdEl.textContent = `$${data.balance_usd.toFixed(2)}`;
+        }
+
+        console.log('Wallet stats updated:', data);
+      } catch (error) {
+        console.error('Failed to fetch Wallet stats:', error);
+      }
+    }
+
+    /**
+     * Fetch and update Miner stats
+     */
+    async function updateMinerStats() {
+      try {
+        const response = await fetch(`${API_BASE}/miner`);
+        const data = await response.json();
+
+        // Update Miner window
+        const minerWindow = document.getElementById('miner');
+        if (minerWindow) {
+          const hashEl = minerWindow.querySelector('.stat-row:nth-child(1) .stat-value');
+          const sharesEl = minerWindow.querySelector('.stat-row:nth-child(2) .stat-value');
+          const poolEl = minerWindow.querySelector('.stat-row:nth-child(3) .stat-value');
+
+          if (hashEl) hashEl.textContent = data.hash_rate;
+          if (sharesEl) sharesEl.textContent = data.shares_accepted.toLocaleString();
+          if (poolEl) poolEl.textContent = data.pool_name;
+        }
+
+        console.log('Miner stats updated:', data);
+      } catch (error) {
+        console.error('Failed to fetch Miner stats:', error);
+      }
+    }
+
+    /**
+     * Initialize WebSocket connection for live updates
+     */
+    function connectWebSocket() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}${API_BASE}/ws`;
+
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        console.log('✅ BR-95 WebSocket connected');
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          console.log('WebSocket message:', message);
+
+          switch (message.type) {
+            case 'connected':
+              console.log('WebSocket confirmed:', message.message);
+              break;
+
+            case 'miner_update':
+              updateMinerFromWS(message.data);
+              break;
+
+            case 'roadchain_update':
+              updateRoadChainFromWS(message.data);
+              break;
+
+            case 'wallet_update':
+              updateWalletFromWS(message.data);
+              break;
+
+            default:
+              console.log('Unknown message type:', message.type);
+          }
+        } catch (error) {
+          console.error('Failed to parse WebSocket message:', error);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket closed. Reconnecting in 5 seconds...');
+        setTimeout(connectWebSocket, 5000);
+      };
+    }
+
+    /**
+     * Update miner stats from WebSocket
+     */
+    function updateMinerFromWS(data) {
+      const minerWindow = document.getElementById('miner');
+      if (!minerWindow) return;
+
+      const hashEl = minerWindow.querySelector('.stat-row:nth-child(1) .stat-value');
+      const sharesEl = minerWindow.querySelector('.stat-row:nth-child(2) .stat-value');
+
+      if (hashEl) hashEl.textContent = data.hash_rate;
+      if (sharesEl) sharesEl.textContent = data.shares_accepted.toLocaleString();
+    }
+
+    /**
+     * Update RoadChain stats from WebSocket
+     */
+    function updateRoadChainFromWS(data) {
+      const chainWindow = document.getElementById('roadchain');
+      if (!chainWindow) return;
+
+      const blockEl = chainWindow.querySelector('.stat-row:nth-child(1) .stat-value');
+      const nodesEl = chainWindow.querySelector('.stat-row:nth-child(2) .stat-value');
+
+      if (blockEl) blockEl.textContent = data.current_block.toLocaleString();
+      if (nodesEl) nodesEl.textContent = data.active_nodes.toLocaleString();
+    }
+
+    /**
+     * Update Wallet stats from WebSocket
+     */
+    function updateWalletFromWS(data) {
+      const walletWindow = document.getElementById('wallet');
+      if (!walletWindow) return;
+
+      const balanceEl = walletWindow.querySelector('.stat-row:nth-child(1) .stat-value');
+      const usdEl = walletWindow.querySelector('.stat-row:nth-child(2) .stat-value');
+
+      if (balanceEl) balanceEl.textContent = `${data.balance_rc.toFixed(2)} RC`;
+      if (usdEl) usdEl.textContent = `$${data.balance_usd.toFixed(2)}`;
+    }
+
+    /**
+     * Initialize all API connections
+     */
+    function initializeAPIs() {
+      // Fetch initial data
+      updateLucidiaStats();
+      updateRoadChainStats();
+      updateWalletStats();
+      updateMinerStats();
+
+      // Connect to WebSocket for live updates
+      connectWebSocket();
+
+      // Refresh data every 30 seconds (in addition to WebSocket updates)
+      setInterval(() => {
+        updateLucidiaStats();
+      }, 30000);
+    }
+
+    // Initialize APIs after boot sequence
+    setTimeout(() => {
+      initializeAPIs();
+    }, 3000);
+
   </script>
 </body>
 </html>

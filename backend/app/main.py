@@ -16,8 +16,8 @@ from app.routers import (
     digitalocean, github, huggingface, vscode, games, browser, dashboard,
     railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
     capture, identity_center, notifications_center, creator, compliance_ops,
-    search, cloudflare, system, webhooks, prism_static, ip_vault, leitl, cognition
-    search, cloudflare, system, webhooks, prism_static, ip_vault, leitl, cece
+    search, cloudflare, system, webhooks, prism_static, ip_vault, leitl, cognition,
+    cece, br95
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -176,6 +176,9 @@ app.include_router(cece.router)
 
 # GitHub Webhooks (Phase Q automation)
 app.include_router(webhooks.router)
+
+# BR-95 Desktop OS Data APIs + WebSocket
+app.include_router(br95.router)
 
 
 # Prism Console (Phase 2.5) - Admin interface at /prism
