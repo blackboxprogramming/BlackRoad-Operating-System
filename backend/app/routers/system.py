@@ -1,7 +1,7 @@
 """System endpoints for core OS operations"""
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 
 from app.config import settings
@@ -22,7 +22,7 @@ async def get_version():
 
     return {
         "version": settings.APP_VERSION,
-        "build_time": datetime.utcnow().isoformat(),
+        "build_time": datetime.now(timezone.utc).isoformat(),
         "env": settings.ENVIRONMENT,
         "git_sha": git_sha[:8] if len(git_sha) > 8 else git_sha,
         "app_name": settings.APP_NAME,
@@ -80,4 +80,40 @@ async def get_os_state(db: AsyncSession = Depends(get_db)):
             "cpu_usage_percent": 0,
         },
         "note": "This is a stub endpoint. Full OS state tracking coming in Phase 2.",
+    }
+
+
+@router.get("/prism/config")
+async def prism_config(request: Request):
+    """Return Prism Console service configuration for health/status checks."""
+
+    def resolve_url(env_url: str, fallback: str) -> str:
+        return env_url.rstrip("/") if env_url else fallback.rstrip("/")
+
+    base_url = str(request.base_url).rstrip("/")
+
+    services = [
+        {
+            "name": "core-api",
+            "url": resolve_url(settings.PRISM_CORE_API_URL, base_url),
+            "health_path": "/health",
+            "version_path": "/version",
+        },
+        {
+            "name": "public-api",
+            "url": resolve_url(settings.PRISM_PUBLIC_API_URL, base_url),
+            "health_path": "/health",
+            "version_path": "/version",
+        },
+        {
+            "name": "prism-console",
+            "url": resolve_url(settings.PRISM_CONSOLE_URL, base_url),
+            "health_path": "/prism/health",
+            "version_path": "/version",
+        },
+    ]
+
+    return {
+        "environment": settings.ENVIRONMENT,
+        "services": services,
     }

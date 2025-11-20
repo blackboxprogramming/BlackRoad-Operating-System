@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     def allowed_origins_list(self) -> List[str]:
         return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
 
+    # Prism / Status page targets
+    PRISM_CORE_API_URL: str = ""
+    PRISM_PUBLIC_API_URL: str = ""
+    PRISM_CONSOLE_URL: str = ""
+
     # AWS S3
     AWS_ACCESS_KEY_ID: str = ""
     AWS_SECRET_ACCESS_KEY: str = ""

@@ -64,6 +64,15 @@ async def serve_prism_console():
     return FileResponse(prism_index)
 
 
+@router.get("/prism/health")
+async def prism_health():
+    """Health endpoint for Prism Console assets."""
+    return {
+        "service": "prism-console",
+        "status": "healthy",
+    }
+
+
 @router.get("/prism/{file_path:path}")
 async def serve_prism_static_files(file_path: str):
     """
