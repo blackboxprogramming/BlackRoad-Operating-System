@@ -1,0 +1,39 @@
+name: Deploy BlackRoad OS
+
+on:
+  workflow_dispatch:
+    inputs:
+      serviceId:
+        description: "Optional service id to deploy (core, api, operator, agents, console, web, docs)"
+        required: false
+        default: ""
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          if [ -n "${{ github.event.inputs.serviceId }}" ]; then
+            echo "Deploying single service: ${{ github.event.inputs.serviceId }}"
+            npm run deploy:service -- ${{ github.event.inputs.serviceId }}
+          else
+            echo "Deploying all services"
+            npm run deploy:all
+          fi

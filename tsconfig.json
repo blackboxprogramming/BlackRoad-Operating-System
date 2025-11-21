@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "target": "ES2019",
+    "module": "commonjs",
+    "strict": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
     "skipLibCheck": true,
-    "types": ["node"],
-    "lib": ["ES2021", "DOM"]
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "rootDir": "."
   },
-  "include": ["tools/**/*.ts", "os-spec/**/*.json"]
+  "include": [
+    "scripts/**/*.ts",
+    "infra/**/*.json"
+  ]
 }
