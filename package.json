@@ -10,21 +10,18 @@
     "build": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.js || true",
     "test": "echo \"No automated tests yet\"",
-    "check:health": "ts-node tools/health-check.ts"
+    "check:health": "ts-node --esm tools/health-check.ts",
+    "deploy:service": "ts-node --esm scripts/deployService.ts",
+    "deploy:all": "ts-node --esm scripts/deployAll.ts",
+    "health:all": "ts-node --esm scripts/checkHealth.ts"
   },
   "dependencies": {
     "express": "^4.21.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.3"
-  "type": "module",
-  "main": "server.mjs",
-  "scripts": {
-    "start": "node server.mjs"
-  },
-  "dependencies": {
-    "express": "^4.21.0"
+    "node-fetch": "^3.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.0.0"
   }
 }
