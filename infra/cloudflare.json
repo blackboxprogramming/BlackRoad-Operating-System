@@ -10,7 +10,7 @@
         {
           "type": "CNAME",
           "name": "api",
-          "target": "api.blackroad.systems"
+          "target": "YOUR_RAILWAY_API_URL_HERE"
         },
         {
           "type": "CNAME",
