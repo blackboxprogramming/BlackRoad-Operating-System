@@ -40,6 +40,7 @@ Follow these per-domain checklists to bring sites up.
   - `www` → `blackroad.systems` (proxy ✅) — www redirect.
   - `os` → `blackroad-os-production.up.railway.app` (proxy ✅) — OS interface (repo `blackroad-os-core`).
   - `api` → `blackroad-api-production.up.railway.app` (proxy ✅) — API gateway.
+  - `console` → `blackroad-prism-console.vercel.app` (proxy ✅) — Prism Console frontend (public UI).
   - `prism` → `blackroad-prism-console.vercel.app` (proxy ✅) — Prism Console (repo `blackroad-prism-console`).
   - `operator` → `blackroad-operator.up.railway.app` (proxy ❌) — internal operator (no proxy).
   - `lucidia` → `lucidia-api.up.railway.app` (proxy ✅) — Lucidia API.

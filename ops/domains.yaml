@@ -46,6 +46,15 @@ domains:
     notes: "API gateway"
     healthcheck: true
 
+  - name: "console.blackroad.systems"
+    type: "subdomain"
+    provider: "cloudflare"
+    mode: "dns"
+    record:
+      type: "CNAME"
+      value: "blackroad-prism-console.vercel.app"
+    notes: "Prism Console (public UI)"
+
   - name: "prism.blackroad.systems"
     type: "subdomain"
     provider: "cloudflare"

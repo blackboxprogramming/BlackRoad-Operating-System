@@ -356,6 +356,13 @@
       flex-direction: column;
     }
 
+    .window.focused {
+      box-shadow:
+        inset 1px 1px 0 var(--br95-gray-lighter),
+        0 14px 40px rgba(0,0,0,0.8),
+        0 0 0 2px rgba(105,247,255,0.16);
+    }
+
     .window.maximized {
       left: 0 !important;
       top: 36px !important;
@@ -1274,6 +1281,7 @@
 
     let windowZIndex = 10;
     const openWindows = new Set();
+    let focusedWindow = null;
     let draggedWindow = null;
     let offsetX = 0, offsetY = 0;
 
@@ -1281,9 +1289,8 @@
       const win = document.getElementById(id);
       if (!win) return;
       win.classList.add('active');
-      win.style.zIndex = ++windowZIndex;
       openWindows.add(id);
-      updateTaskbar();
+      focusWindow(id);
       toggleRoadMenu(false);
     }
 
@@ -1291,6 +1298,10 @@
       const win = document.getElementById(id);
       if (!win) return;
       win.classList.remove('active');
+      if (win.classList.contains('focused')) {
+        win.classList.remove('focused');
+        focusedWindow = null;
+      }
       openWindows.delete(id);
       updateTaskbar();
     }
@@ -1299,6 +1310,10 @@
       const win = document.getElementById(id);
       if (!win) return;
       win.classList.remove('active');
+      if (win.classList.contains('focused')) {
+        win.classList.remove('focused');
+        focusedWindow = null;
+      }
       updateTaskbar();
     }
 
@@ -1356,11 +1371,15 @@
         if (!win) return;
         const btn = document.createElement('div');
         btn.className = 'taskbar-app';
-        if (win.classList.contains('active')) btn.classList.add('active-app');
+        if (win.classList.contains('focused')) btn.classList.add('active-app');
         btn.textContent = titles[id] || id;
         btn.onclick = () => {
           if (win.classList.contains('active')) {
-            minimizeWindow(id);
+            if (win.classList.contains('focused')) {
+              minimizeWindow(id);
+            } else {
+              focusWindow(id);
+            }
           } else {
             openWindow(id);
           }
@@ -1390,6 +1409,20 @@
       if (!menu.contains(e.target) && !btn.contains(e.target)) {
         toggleRoadMenu(false);
       }
+    });
+
+    function focusWindow(id) {
+      const win = document.getElementById(id);
+      if (!win || !win.classList.contains('active')) return;
+      document.querySelectorAll('.window.focused').forEach(w => w.classList.remove('focused'));
+      win.classList.add('focused');
+      win.style.zIndex = ++windowZIndex;
+      focusedWindow = id;
+      updateTaskbar();
+    }
+
+    document.querySelectorAll('.window').forEach(win => {
+      win.addEventListener('mousedown', () => focusWindow(win.id));
     });
 
     // ============================================================================
