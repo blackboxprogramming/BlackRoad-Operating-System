@@ -1,0 +1,38 @@
+{
+  "zones": {
+    "blackroad.systems": {
+      "records": [
+        {
+          "type": "CNAME",
+          "name": "core",
+          "target": "core.blackroad.systems"
+        },
+        {
+          "type": "CNAME",
+          "name": "api",
+          "target": "api.blackroad.systems"
+        },
+        {
+          "type": "CNAME",
+          "name": "operator",
+          "target": "operator.blackroad.systems"
+        },
+        {
+          "type": "CNAME",
+          "name": "console",
+          "target": "console.blackroad.systems"
+        },
+        {
+          "type": "CNAME",
+          "name": "docs",
+          "target": "docs.blackroad.systems"
+        },
+        {
+          "type": "CNAME",
+          "name": "app",
+          "target": "blackroad.systems"
+        }
+      ]
+    }
+  }
+}
