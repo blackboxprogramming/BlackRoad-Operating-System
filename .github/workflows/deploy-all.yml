@@ -1,0 +1,38 @@
+name: Deploy All Services
+
+on:
+  workflow_dispatch:
+    inputs:
+      serviceId:
+        description: "Optional service id to deploy"
+        required: false
+        type: string
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy services
+        run: |
+          if [ -n "${{ github.event.inputs.serviceId }}" ]; then
+            npm run deploy:service -- ${{ github.event.inputs.serviceId }}
+          else
+            npm run deploy:all
+          fi

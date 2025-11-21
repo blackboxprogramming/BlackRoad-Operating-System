@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
     "target": "ES2021",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "types": ["node"],
     "lib": ["ES2021", "DOM"]
   },
-  "include": ["tools/**/*.ts", "os-spec/**/*.json"]
+  "include": ["scripts/**/*.ts", "tools/**/*.ts", "infra/**/*.json"],
+  "ts-node": {
+    "esm": true
+  }
 }
