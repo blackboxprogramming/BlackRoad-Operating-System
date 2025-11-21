@@ -45,8 +45,12 @@ async function checkService(service: ServiceConfig): Promise<HealthResult> {
 }
 
 function printMatrix(results: HealthResult[]): void {
-  console.log("service    status url                           latency");
-  console.log("------------------------------------------------------");
+  console.log(
+    `${"service".padEnd(10)} ${"status".padEnd(8)} ${"url".padEnd(30)} latency`
+  );
+  console.log(
+    `${"-".repeat(10)} ${"-".repeat(8)} ${"-".repeat(30)} ${"-".repeat(7)}`
+  );
 
   for (const result of results) {
     const latency = result.latencyMs !== null ? `${result.latencyMs}ms` : "--";
