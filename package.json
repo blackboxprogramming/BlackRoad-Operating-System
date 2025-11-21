@@ -12,7 +12,10 @@
     "check:health": "ts-node tools/health-check.ts",
     "deploy:service": "ts-node scripts/deployService.ts",
     "deploy:all": "ts-node scripts/deployAll.ts",
-    "health:all": "ts-node scripts/checkHealth.ts"
+    "health:all": "ts-node scripts/checkHealth.ts",
+    "health:matrix": "ts-node scripts/healthMatrix.ts",
+    "env:check": "ts-node scripts/checkEnv.ts",
+    "repair": "ts-node scripts/repair.ts"
   },
   "dependencies": {
     "express": "^4.21.0",

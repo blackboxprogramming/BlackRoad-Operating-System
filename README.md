@@ -87,6 +87,15 @@ npm run check:health
 
 The script reads `os-spec/os-spec.json` and prints a status table. It is intended for operator use; production monitoring should still live in deployed observability stacks.
 
+## OS Control Commands
+
+- `npm run deploy:all`
+- `npm run deploy:service -- <id>`
+- `npm run health:all`
+- `npm run health:matrix`
+- `npm run env:check`
+- `npm run repair`
+
 ## Features
 
 ### 🤖 AI & Communication
