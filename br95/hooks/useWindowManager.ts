@@ -271,7 +271,7 @@ export function useWindowManager() {
         currentBlock: data.current_block ?? prev.currentBlock,
         networkHashrate: data.network_hashrate ?? prev.networkHashrate,
         activeNodes: data.active_nodes ?? prev.activeNodes,
-        yourHashrate: data.network_hashrate ?? prev.yourHashrate,
+        yourHashrate: data.your_hashrate ?? prev.yourHashrate,
         shares: prev.shares,
         dailyEarnings: prev.dailyEarnings,
       }));
