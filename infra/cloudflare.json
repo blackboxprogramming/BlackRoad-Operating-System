@@ -15,7 +15,7 @@
         {
           "type": "CNAME",
           "name": "operator",
-          "target": "operator.blackroad.systems"
+          "target": "operator.<railway-app-hash>.railway.app"
         },
         {
           "type": "CNAME",
