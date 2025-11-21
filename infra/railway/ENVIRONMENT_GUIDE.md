@@ -2,6 +2,8 @@
 
 Railway deployments are driven from the monorepo. Each service declares its own variables here so workflows can validate and operators can provision them consistently.
 
+- See `SERVICE_SETTINGS.md` in this folder for the per-repo Railway build/start/health matrix and optional Dockerfile templates.
+
 ## Core API (`services/core-api`)
 - `CORE_API_DATABASE_URL`
 - `CORE_API_SECRET_KEY`
