@@ -1,57 +1,57 @@
-    :root {
-      /* Brand system */
-      --br-black: #02030a;
-      --br-bg-elevated: #050816;
-      --br-bg-alt: #090c1f;
-      --br-white: #ffffff;
-      --br-muted: #a7b0c7;
-      --br-border-subtle: rgba(255,255,255,0.08);
-      --br-accent-warm: #ff9a3c;  /* top of logo gradient */
-      --br-accent-mid: #ff4fa3;   /* magenta */
-      --br-accent-cool: #327cff;  /* electric blue */
-      --br-accent-neo: #69f7ff;   /* cyan */
-      --br-radius-lg: 24px;
-      --br-radius-md: 16px;
-      --br-radius-sm: 10px;
-      --br-shadow-soft: 0 18px 45px rgba(0,0,0,0.45);
-      --br-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-      --br-font-mono: "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+:root {
+  /* Brand system */
+  --br-black: #02030a;
+  --br-bg-elevated: #050816;
+  --br-bg-alt: #090c1f;
+  --br-white: #ffffff;
+  --br-muted: #a7b0c7;
+  --br-border-subtle: rgba(255,255,255,0.08);
+  --br-accent-warm: #ff9a3c;  /* top of logo gradient */
+  --br-accent-mid: #ff4fa3;   /* magenta */
+  --br-accent-cool: #327cff;  /* electric blue */
+  --br-accent-neo: #69f7ff;   /* cyan */
+  --br-radius-lg: 24px;
+  --br-radius-md: 16px;
+  --br-radius-sm: 10px;
+  --br-shadow-soft: 0 18px 45px rgba(0,0,0,0.45);
+  --br-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  --br-font-mono: "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
 
-      /* BR‑95 chrome (retro-style, brand-colored) */
-      --br95-gray: #181c2a;
-      --br95-gray-light: #232842;
-      --br95-gray-lighter: #2f3554;
-      --br95-border-light: #4b5378;
-      --br95-border-dark: #050816;
-      --br95-border-darkest: #000000;
-    }
+  /* BR‑95 chrome (retro-style, brand-colored) */
+  --br95-gray: #181c2a;
+  --br95-gray-light: #232842;
+  --br95-gray-lighter: #2f3554;
+  --br95-border-light: #4b5378;
+  --br95-border-dark: #050816;
+  --br95-border-darkest: #000000;
+}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    body {
-      font-family: var(--br-font-sans);
-      background: radial-gradient(circle at top, #121735 0, var(--br-black) 60%);
-      height: 100vh;
-      overflow: hidden;
-      color: var(--br-white);
-      -webkit-font-smoothing: antialiased;
-    }
+body {
+  font-family: var(--br-font-sans);
+  background: radial-gradient(circle at top, #121735 0, var(--br-black) 60%);
+  height: 100vh;
+  overflow: hidden;
+  color: var(--br-white);
+  -webkit-font-smoothing: antialiased;
+}
 
-    /* CRT scanline overlay */
-    .scanline {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.06) 50%);
-      background-size: 100% 3px;
-      mix-blend-mode: soft-light;
-      opacity: 0.4;
-      pointer-events: none;
-      z-index: 9999;
-    }
+/* CRT scanline overlay */
+.scanline {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.06) 50%);
+  background-size: 100% 3px;
+  mix-blend-mode: soft-light;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 9999;
+}
 
     /* Boot screen (from Desktop OS vibe) */
     .boot-screen {
