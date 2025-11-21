@@ -1,8 +1,5 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "target": "ES2019",
     "module": "commonjs",
     "strict": true,
@@ -12,12 +9,5 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["scripts/**/*.ts", "tools/**/*.ts", "infra/**/*.json"],
-  "ts-node": {
-    "esm": true
-  }
-  "include": [
-    "scripts/**/*.ts",
-    "infra/**/*.json"
-  ]
+  "include": ["scripts/**/*.ts", "tools/**/*.ts", "infra/**/*.json"]
 }
