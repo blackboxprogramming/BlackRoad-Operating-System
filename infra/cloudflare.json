@@ -5,7 +5,7 @@
         {
           "type": "CNAME",
           "name": "core",
-          "target": "core.blackroad.systems"
+          "target": "core.up.railway.app"
         },
         {
           "type": "CNAME",
