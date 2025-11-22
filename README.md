@@ -9,15 +9,36 @@ It unifies humans, agents, and infrastructure into a single operating system for
 ![Version](https://img.shields.io/badge/version-1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-## Meta / Orchestrator repo
+## Overview
 
-This repository is the canonical, meta-level source of truth for BlackRoad OS. It holds shared specs, governance docs, CI standards, and lightweight tooling only. Deployable runtime code lives in the satellite repositories referenced in the OS spec.
+This repository is the canonical, meta-level source of truth for BlackRoad OS. It holds shared specs, governance docs, CI standards, and lightweight tooling that orchestrate the deployable satellite services. A small placeholder Express server lives at the root to provide a standardized `/health` endpoint for ops automation; it is **not** a production application.
 
 - **OS spec:** Machine-readable registry at [`os-spec/os-spec.json`](os-spec/os-spec.json) with a short overview in [`docs/OS_SPEC.md`](docs/OS_SPEC.md).
 - **Repo unification standard:** Authoritative conventions for satellite repos in [`docs/REPO_UNIFICATION.md`](docs/REPO_UNIFICATION.md).
 - **Health dashboard:** Local CLI that pings each service’s `/health` endpoint (`npm run check:health`).
 
-> This repo should remain meta-only. Do not deploy it directly; deploy the satellite services instead.
+## Related Repositories
+
+The deployable services live in dedicated repositories. This repo orchestrates and documents them:
+
+- [`blackroad-os-core`](https://github.com/blackboxprogramming/blackroad-os-core) — Core API and business logic for the OS.
+- [`blackroad-os-api`](https://github.com/blackboxprogramming/blackroad-os-api) — Public API surface area for external integrations.
+- [`blackroad-os-operator`](https://github.com/blackboxprogramming/blackroad-os-operator) — Agent runtime and orchestration layer.
+- [`blackroad-os-prism-console`](https://github.com/blackboxprogramming/blackroad-os-prism-console) — Operational console and status visualization.
+- [`blackroad-os-docs`](https://github.com/blackboxprogramming/blackroad-os-docs) — Documentation site and publishing pipeline.
+- [`blackroad-os-web`](https://github.com/blackboxprogramming/blackroad-os-web) — Public marketing and experience layer.
+
+## Deployment / Usage
+
+This repo is documentation- and tooling-first. Do **not** deploy it directly to production. To run the local placeholder server and health check:
+
+```bash
+npm install
+npm start
+# Health endpoint: http://localhost:8080/health
+```
+
+Operator utilities such as `npm run check:health`, `npm run deploy:all`, and related scripts help coordinate the satellite services but should be run from a trusted workstation or CI environment.
 
 ## Core Entities
 
@@ -350,5 +371,3 @@ For issues, questions, or contributions, please visit:
 **Built with 💻 by the BlackRoad community**
 
 *Where AI meets the open road* 🛣️
-# BlackRoad-Operating-System
-# BlackRoad-Operating-System
