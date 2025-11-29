@@ -13,10 +13,18 @@
       --br-white: #ffffff;
       --br-muted: #a7b0c7;
       --br-border-subtle: rgba(255,255,255,0.08);
-      --br-accent-warm: #ff9a3c;  /* top of logo gradient */
-      --br-accent-mid: #ff4fa3;   /* magenta */
-      --br-accent-cool: #327cff;  /* electric blue */
-      --br-accent-neo: #69f7ff;   /* cyan */
+      /* BlackRoad Brand Gradient: #FF9D00 → #FF6B00 → #FF0066 → #FF006B → #D600AA → #7700FF → #0066FF */
+      --br-accent-warm: #FF9D00;   /* orange - top of logo gradient */
+      --br-accent-orange: #FF6B00; /* deep orange */
+      --br-accent-pink: #FF0066;   /* hot pink */
+      --br-accent-mid: #FF006B;    /* magenta-pink */
+      --br-accent-magenta: #D600AA; /* magenta */
+      --br-accent-purple: #7700FF; /* electric purple */
+      --br-accent-cool: #0066FF;   /* electric blue */
+      --br-accent-neo: #69f7ff;    /* cyan (for terminal/highlights) */
+      /* Brand gradient for use across UI */
+      --br-gradient: linear-gradient(135deg, #FF9D00, #FF6B00, #FF0066, #D600AA, #7700FF, #0066FF);
+      --br-gradient-horizontal: linear-gradient(90deg, #FF9D00, #FF6B00, #FF0066, #D600AA, #7700FF, #0066FF);
       --br-radius-lg: 24px;
       --br-radius-md: 16px;
       --br-radius-sm: 10px;
@@ -96,7 +104,11 @@
       margin: 0 auto 28px;
       background: conic-gradient(from 180deg,
         var(--br-accent-warm),
+        var(--br-accent-orange),
+        var(--br-accent-pink),
         var(--br-accent-mid),
+        var(--br-accent-magenta),
+        var(--br-accent-purple),
         var(--br-accent-cool),
         var(--br-accent-warm));
       border-radius: 38px;
@@ -105,8 +117,8 @@
       justify-content: center;
       position: relative;
       box-shadow:
-        0 0 60px rgba(255,154,60,0.35),
-        0 0 100px rgba(255,79,163,0.28),
+        0 0 60px rgba(255,157,0,0.35),
+        0 0 100px rgba(255,0,102,0.28),
         0 20px 40px rgba(0,0,0,0.8);
       animation: logoGlow 2s ease-in-out infinite;
     }
@@ -114,14 +126,14 @@
     @keyframes logoGlow {
       0%,100% {
         box-shadow:
-          0 0 60px rgba(255,154,60,0.35),
-          0 0 100px rgba(255,79,163,0.28),
+          0 0 60px rgba(255,157,0,0.35),
+          0 0 100px rgba(255,0,102,0.28),
           0 20px 40px rgba(0,0,0,0.8);
       }
       50% {
         box-shadow:
-          0 0 80px rgba(255,154,60,0.5),
-          0 0 120px rgba(255,79,163,0.4),
+          0 0 80px rgba(255,107,0,0.5),
+          0 0 120px rgba(214,0,170,0.4),
           0 20px 40px rgba(0,0,0,0.9);
       }
     }
@@ -227,7 +239,9 @@
       border-radius: 8px;
       background: conic-gradient(from 180deg,
         var(--br-accent-warm),
-        var(--br-accent-mid),
+        var(--br-accent-pink),
+        var(--br-accent-magenta),
+        var(--br-accent-purple),
         var(--br-accent-cool),
         var(--br-accent-warm));
       margin-right: 14px;
@@ -612,7 +626,9 @@
       border-radius: 4px;
       background: conic-gradient(from 180deg,
         var(--br-accent-warm),
-        var(--br-accent-mid),
+        var(--br-accent-pink),
+        var(--br-accent-magenta),
+        var(--br-accent-purple),
         var(--br-accent-cool),
         var(--br-accent-warm));
       display: inline-block;
