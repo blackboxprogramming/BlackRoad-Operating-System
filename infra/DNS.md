@@ -19,7 +19,19 @@ This document provides the **complete, production-accurate** DNS and Railway ser
 
 All domains are configured in Cloudflare with CNAME records pointing to Railway production endpoints.
 
-### Primary Domain: blackroad.systems
+### Primary Domain: blackroad.io (Consumer-Facing)
+
+The primary public-facing domain for BlackRoad OS.
+
+| Subdomain | CNAME Target | Service | Purpose |
+|-----------|--------------|---------|---------|
+| **@ (root)** | blackroad-operating-system-production.up.railway.app | OS Shell | Main BlackRoad OS interface |
+| **www** | blackroad.io | WWW Redirect | Standard www redirect to root |
+| **app** | blackroad-operating-system-production.up.railway.app | OS Shell | Alias for main OS |
+| **api** | ac7bx15h.up.railway.app | Public API | Public-facing API gateway |
+| **docs** | 2izt9kog.up.railway.app | Documentation | API docs, guides, references |
+
+### Secondary Domain: blackroad.systems (Infrastructure)
 
 | Subdomain | CNAME Target | Service | Purpose |
 |-----------|--------------|---------|---------|
