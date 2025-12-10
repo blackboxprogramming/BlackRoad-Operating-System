@@ -1,8 +1,13 @@
-# Canonical code ownership for BlackRoad OS meta repository
-# Keep ownership broad and predictable; satellite repos may define finer rules.
+# BlackRoad OS Code Owners
+* @alexa
 
-* @alexa-amundson
-/docs/ @docs-team @alexa-amundson
-/os-spec/ @infra-team @alexa-amundson
-/tools/ @infra-team @alexa-amundson
-/.github/ @infra-team @alexa-amundson
+# Python services
+*.py @alexa
+
+# Railway configurations
+railway*.json @alexa
+railway*.toml @alexa
+
+# Security-sensitive files
+.env* @alexa
+*secret* @alexa
