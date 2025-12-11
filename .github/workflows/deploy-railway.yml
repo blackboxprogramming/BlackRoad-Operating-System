@@ -2,108 +2,56 @@ name: Deploy to Railway
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
+    paths:
+      - '**/*.py'
+      - 'requirements.txt'
+      - 'railway-services/**'
   workflow_dispatch:
-    inputs:
-      service:
-        description: 'Service to deploy (all, infra, core, operator, web)'
-        required: false
-        default: 'all'
-
-env:
-  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
 jobs:
-  detect-changes:
+  deploy:
     runs-on: ubuntu-latest
-    outputs:
-      aiops: ${{ steps.changes.outputs.aiops }}
-      analytics: ${{ steps.changes.outputs.analytics }}
-      codex: ${{ steps.changes.outputs.codex }}
-      infra: ${{ steps.changes.outputs.infra }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+    strategy:
+      max-parallel: 5
+      matrix:
+        service:
+          - api-gateway
+          - agent-hub
+          - ws-server
+          - mesh-network
+          - vectordb
+          - event-stream
+          - message-queue
+          - tsdb
+          - llm-server
+          - ml-pipeline
+          - rag-service
+          - model-forge
 
-      - uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            aiops:
-              - 'services/aiops/**'
-            analytics:
-              - 'services/analytics/**'
-            codex:
-              - 'services/codex/**'
-            infra:
-              - 'infra/**'
-
-  deploy-infra:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.aiops == 'true' || github.event.inputs.service == 'all' || github.event.inputs.service == 'infra'
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy to blackroad-os-infra
         run: |
-          echo "Deploying AIops service to blackroad-os-infra..."
-          # railway link --project blackroad-os --service blackroad-os-infra
-          # railway up --service blackroad-os-infra
+          npm install -g @railway/cli
+
+      - name: Deploy ${{ matrix.service }} to Railway
+        run: |
+          railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+          railway up --service ${{ matrix.service }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-  deploy-core:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.analytics == 'true' || github.event.inputs.service == 'all' || github.event.inputs.service == 'core'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy to blackroad-os-core
+      - name: Wait for deployment
         run: |
-          echo "Deploying Analytics service to blackroad-os-core..."
-          # railway link --project blackroad-os --service blackroad-os-core
-          # railway up --service blackroad-os-core
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          echo "⏳ Waiting for ${{ matrix.service }} to be ready..."
+          sleep 30
 
-  deploy-operator:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.codex == 'true' || github.event.inputs.service == 'all' || github.event.inputs.service == 'operator'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy to blackroad-os-operator
+      - name: Health Check
         run: |
-          echo "Deploying Codex service to blackroad-os-operator..."
-          # railway link --project blackroad-os --service blackroad-os-operator
-          # railway up --service blackroad-os-operator
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-  notify:
-    needs: [deploy-infra, deploy-core, deploy-operator]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deployment Summary
-        run: |
-          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Service | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| infra | ${{ needs.deploy-infra.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| core | ${{ needs.deploy-core.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| operator | ${{ needs.deploy-operator.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "🏥 Checking health of ${{ matrix.service }}..."
+          # Railway URL format: https://<service>.up.railway.app
+          # Health check would go here when service URLs are known
+          echo "✅ Deployment complete"

@@ -1,4 +1,13 @@
-name: PR Labeler
+# ============================================================================
+# BlackRoad OS - Auto Labeler
+# Copyright (c) 2025 BlackRoad OS, Inc. / Alexa Louise Amundson
+# All Rights Reserved.
+# ============================================================================
+#
+# Automatically labels PRs based on files changed.
+# ============================================================================
+
+name: Labeler
 
 on:
   pull_request:
@@ -10,42 +19,36 @@ permissions:
 
 jobs:
   label:
-    name: Auto-label PR
+    name: Auto Label PR
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Apply labels
-        uses: actions/labeler@v4
+      - name: Label PR
+        uses: actions/labeler@v5
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           configuration-path: .github/labeler.yml
-          sync-labels: true
 
-      - name: Comment on auto-merge eligible PRs
-        uses: actions/github-script@v6
+  size-label:
+    name: Size Label
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Label PR by size
+        uses: codelytv/pr-size-labeler@v1
         with:
-          script: |
-            const pr = context.payload.pull_request;
-            const labels = pr.labels.map(l => l.name);
-
-            const autoMergeLabels = [
-              'claude-auto',
-              'atlas-auto',
-              'docs',
-              'chore',
-              'tests-only'
-            ];
-
-            const hasAutoMergeLabel = labels.some(l => autoMergeLabels.includes(l));
-
-            if (hasAutoMergeLabel) {
-              await github.rest.issues.createComment({
-                issue_number: pr.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: '🤖 This PR is eligible for auto-merge based on its labels. It will be added to the merge queue once all checks pass.'
-              });
-            }
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          xs_label: 'size/XS'
+          xs_max_size: 10
+          s_label: 'size/S'
+          s_max_size: 100
+          m_label: 'size/M'
+          m_max_size: 500
+          l_label: 'size/L'
+          l_max_size: 1000
+          xl_label: 'size/XL'
+          fail_if_xl: false
