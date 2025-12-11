@@ -15,10 +15,14 @@
  * - Event-driven design for loose coupling
  * - Accessible-first with ARIA attributes
  *
- * TODO v0.2.0: Add window resizing support
- * TODO v0.2.0: Add window maximize functionality
+ * TODO v0.3.0: Add window resizing support
  * TODO v0.3.0: Add window snapping/tiling
  * TODO v0.3.0: Add window position persistence (localStorage)
+ *
+ * v0.2.0 Features:
+ * - Window maximize functionality (toggle between normal and maximized states)
+ * - Double-click titlebar to maximize
+ * - Keyboard shortcut support for maximize
  */
 
 class BlackRoadOS {
@@ -47,12 +51,214 @@ class BlackRoadOS {
         this.windowsContainer = document.getElementById('windows-container');
         this.taskbarWindows = document.getElementById('taskbar-windows');
 
+        // Inject required CSS for dynamic window management
+        this.injectStyles();
+
         // Setup global event listeners
         this.setupGlobalListeners();
 
         // Emit boot event
         this.eventBus.emit('os:boot', { timestamp: new Date().toISOString() });
         console.log('✅ BlackRoad OS initialized');
+    }
+
+    /**
+     * Inject required CSS styles for window management
+     */
+    injectStyles() {
+        // Check if styles are already injected
+        if (document.getElementById('blackroad-os-styles')) {
+            return;
+        }
+
+        const styles = document.createElement('style');
+        styles.id = 'blackroad-os-styles';
+        styles.textContent = `
+            /* BlackRoad OS Window Manager Styles */
+
+            .os-window {
+                position: absolute;
+                background: var(--br95-gray, #181c2a);
+                border-radius: 10px;
+                border-top: 2px solid var(--br95-border-light, #4b5378);
+                border-left: 2px solid var(--br95-border-light, #4b5378);
+                border-right: 2px solid var(--br95-border-darkest, #000000);
+                border-bottom: 2px solid var(--br95-border-darkest, #000000);
+                box-shadow: inset 1px 1px 0 var(--br95-gray-lighter, #2f3554), 0 14px 40px rgba(0,0,0,0.7);
+                min-width: 320px;
+                min-height: 200px;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                transition: box-shadow 0.15s ease;
+            }
+
+            .os-window.focused {
+                box-shadow: inset 1px 1px 0 var(--br95-gray-lighter, #2f3554),
+                            0 14px 40px rgba(0,0,0,0.8),
+                            0 0 0 2px rgba(105,247,255,0.16);
+            }
+
+            .os-window.minimized {
+                display: none;
+            }
+
+            .os-window.opening {
+                animation: windowOpen 0.2s ease-out;
+            }
+
+            @keyframes windowOpen {
+                from {
+                    opacity: 0;
+                    transform: scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+
+            /* Maximized window state */
+            .os-window.maximized {
+                border-radius: 0 !important;
+                transition: none;
+            }
+
+            .os-window.maximized .window-titlebar {
+                border-radius: 0;
+            }
+
+            /* Window titlebar */
+            .window-titlebar {
+                height: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 3px 6px;
+                background: linear-gradient(90deg,
+                    var(--br-accent-warm, #FF9D00),
+                    var(--br-accent-mid, #FF006B),
+                    var(--br-accent-cool, #0066FF));
+                color: var(--br-white, #ffffff);
+                cursor: move;
+                user-select: none;
+                font-size: 12px;
+                font-weight: 600;
+                flex-shrink: 0;
+            }
+
+            .os-window.maximized .window-titlebar {
+                cursor: default;
+            }
+
+            .window-titlebar-left {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                overflow: hidden;
+            }
+
+            .window-icon {
+                font-size: 16px;
+                flex-shrink: 0;
+            }
+
+            .window-title {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+            }
+
+            /* Window controls */
+            .window-controls {
+                display: flex;
+                gap: 2px;
+                flex-shrink: 0;
+            }
+
+            .window-control-btn {
+                width: 20px;
+                height: 20px;
+                background: var(--br95-gray-light, #232842);
+                border-top: 1px solid var(--br95-border-light, #4b5378);
+                border-left: 1px solid var(--br95-border-light, #4b5378);
+                border-right: 1px solid var(--br95-border-darkest, #000000);
+                border-bottom: 1px solid var(--br95-border-darkest, #000000);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--br-black, #02030a);
+                cursor: pointer;
+                box-shadow: inset 1px 1px 0 rgba(255,255,255,0.4);
+                transition: transform 0.1s ease;
+            }
+
+            .window-control-btn:hover {
+                background: var(--br95-gray-lighter, #2f3554);
+            }
+
+            .window-control-btn:active {
+                border-top: 1px solid var(--br95-border-darkest, #000000);
+                border-left: 1px solid var(--br95-border-darkest, #000000);
+                border-right: 1px solid var(--br95-border-light, #4b5378);
+                border-bottom: 1px solid var(--br95-border-light, #4b5378);
+                box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4);
+            }
+
+            .window-control-btn.close:hover {
+                background: #e74c3c;
+                color: white;
+            }
+
+            /* Window content */
+            .window-content {
+                flex: 1;
+                background: var(--br-bg-elevated, #050816);
+                padding: 12px;
+                color: var(--br-white, #ffffff);
+                font-size: 13px;
+                overflow: auto;
+            }
+
+            .window-content.no-padding {
+                padding: 0;
+            }
+
+            /* Taskbar window buttons */
+            .taskbar-window-button {
+                min-width: 100px;
+                max-width: 160px;
+                height: 28px;
+                background: var(--br95-gray, #181c2a);
+                border-top: 2px solid var(--br95-border-light, #4b5378);
+                border-left: 2px solid var(--br95-border-light, #4b5378);
+                border-right: 2px solid var(--br95-border-darkest, #000000);
+                border-bottom: 2px solid var(--br95-border-darkest, #000000);
+                padding: 0 10px;
+                display: flex;
+                align-items: center;
+                font-size: 12px;
+                color: var(--br-white, #ffffff);
+                cursor: pointer;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                box-shadow: inset 1px 1px 0 rgba(255,255,255,0.25);
+            }
+
+            .taskbar-window-button.active {
+                border-top: 2px solid var(--br95-border-darkest, #000000);
+                border-left: 2px solid var(--br95-border-darkest, #000000);
+                border-right: 2px solid var(--br95-border-light, #4b5378);
+                border-bottom: 2px solid var(--br95-border-light, #4b5378);
+                box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+                background: var(--br95-gray-lighter, #2f3554);
+            }
+        `;
+        document.head.appendChild(styles);
     }
 
     /**
@@ -211,7 +417,15 @@ class BlackRoadOS {
             element: windowEl,
             title: options.title,
             icon: options.icon,
-            minimized: false
+            minimized: false,
+            maximized: false,
+            // Store original bounds for restore after maximize
+            originalBounds: {
+                left: windowEl.style.left,
+                top: windowEl.style.top,
+                width: windowEl.style.width,
+                height: windowEl.style.height
+            }
         });
 
         // Add to taskbar
@@ -243,6 +457,15 @@ class BlackRoadOS {
     createTitlebar(windowId, options) {
         const titlebar = document.createElement('div');
         titlebar.className = 'window-titlebar';
+
+        // Double-click titlebar to toggle maximize
+        titlebar.addEventListener('dblclick', (e) => {
+            // Don't maximize if double-clicking on controls
+            if (e.target.classList.contains('window-control-btn') || e.target.tagName === 'BUTTON') {
+                return;
+            }
+            this.toggleMaximizeWindow(windowId);
+        });
 
         const titlebarLeft = document.createElement('div');
         titlebarLeft.className = 'window-titlebar-left';
@@ -279,18 +502,16 @@ class BlackRoadOS {
             this.minimizeWindow(windowId);
         });
 
-        // Maximize button (stub for v0.2.0)
+        // Maximize button
         const maximizeBtn = document.createElement('button');
         maximizeBtn.className = 'window-control-btn maximize';
         maximizeBtn.innerHTML = '□';
-        maximizeBtn.setAttribute('aria-label', 'Maximize window (coming soon)');
-        maximizeBtn.title = 'Maximize (coming in v0.2.0)';
-        maximizeBtn.disabled = true; // Disabled until implemented
-        maximizeBtn.style.opacity = '0.5';
-        // TODO v0.2.0: Implement maximize functionality
-        // Should toggle between normal and fullscreen (minus taskbar)
-        // Store original size/position for restore
-        // Add 'maximized' class and update button to restore icon
+        maximizeBtn.setAttribute('aria-label', 'Maximize window');
+        maximizeBtn.title = 'Maximize';
+        maximizeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleMaximizeWindow(windowId);
+        });
 
         // Close button
         const closeBtn = document.createElement('button');
@@ -327,6 +548,12 @@ class BlackRoadOS {
         handle.addEventListener('mousedown', (e) => {
             // Don't drag if clicking on buttons or other interactive elements
             if (e.target.classList.contains('window-control-btn') || e.target.tagName === 'BUTTON') {
+                return;
+            }
+
+            // Don't start drag if window is maximized
+            const windowData = this.windows.get(windowEl.id);
+            if (windowData?.maximized) {
                 return;
             }
 
@@ -466,6 +693,106 @@ class BlackRoadOS {
         // Emit events
         this.eventBus.emit('window:restored', { windowId });
         this.callLifecycleHooks('onWindowRestored', { windowId });
+    }
+
+    /**
+     * Toggle window maximize state
+     * @param {string} windowId - Window identifier
+     */
+    toggleMaximizeWindow(windowId) {
+        const windowData = this.windows.get(windowId);
+        if (!windowData) return;
+
+        if (windowData.maximized) {
+            this.unmaximizeWindow(windowId);
+        } else {
+            this.maximizeWindow(windowId);
+        }
+    }
+
+    /**
+     * Maximize a window to fill the available space
+     * @param {string} windowId - Window identifier
+     */
+    maximizeWindow(windowId) {
+        const windowData = this.windows.get(windowId);
+        if (!windowData || windowData.maximized) return;
+
+        const windowEl = windowData.element;
+
+        // Store current bounds for restore (update in case window was moved/resized)
+        windowData.originalBounds = {
+            left: windowEl.style.left,
+            top: windowEl.style.top,
+            width: windowEl.style.width,
+            height: windowEl.style.height
+        };
+
+        // Calculate available space (excluding taskbar at bottom)
+        // Taskbar is typically 40px, menubar is ~36px
+        const menubarHeight = document.querySelector('.menubar')?.offsetHeight || 36;
+        const taskbarHeight = document.querySelector('.taskbar')?.offsetHeight || 40;
+
+        // Apply maximized state
+        windowEl.style.left = '0';
+        windowEl.style.top = `${menubarHeight}px`;
+        windowEl.style.width = '100%';
+        windowEl.style.height = `calc(100vh - ${menubarHeight}px - ${taskbarHeight}px)`;
+
+        // Add maximized class for styling
+        windowEl.classList.add('maximized');
+        windowData.maximized = true;
+
+        // Update maximize button icon to restore icon
+        const maximizeBtn = windowEl.querySelector('.window-control-btn.maximize');
+        if (maximizeBtn) {
+            maximizeBtn.innerHTML = '❐';  // Restore/overlap icon
+            maximizeBtn.title = 'Restore';
+            maximizeBtn.setAttribute('aria-label', 'Restore window');
+        }
+
+        // Focus the window
+        this.focusWindow(windowId);
+
+        // Emit events
+        this.eventBus.emit('window:maximized', { windowId });
+
+        console.log(`⬜ Maximized window: "${windowData.title}" (${windowId})`);
+    }
+
+    /**
+     * Restore a maximized window to its original size
+     * @param {string} windowId - Window identifier
+     */
+    unmaximizeWindow(windowId) {
+        const windowData = this.windows.get(windowId);
+        if (!windowData || !windowData.maximized) return;
+
+        const windowEl = windowData.element;
+        const bounds = windowData.originalBounds;
+
+        // Restore original bounds
+        windowEl.style.left = bounds.left;
+        windowEl.style.top = bounds.top;
+        windowEl.style.width = bounds.width;
+        windowEl.style.height = bounds.height;
+
+        // Remove maximized class
+        windowEl.classList.remove('maximized');
+        windowData.maximized = false;
+
+        // Update maximize button icon back to maximize icon
+        const maximizeBtn = windowEl.querySelector('.window-control-btn.maximize');
+        if (maximizeBtn) {
+            maximizeBtn.innerHTML = '□';  // Maximize icon
+            maximizeBtn.title = 'Maximize';
+            maximizeBtn.setAttribute('aria-label', 'Maximize window');
+        }
+
+        // Emit events
+        this.eventBus.emit('window:unmaximized', { windowId });
+
+        console.log(`⬛ Restored window: "${windowData.title}" (${windowId})`);
     }
 
     /**
