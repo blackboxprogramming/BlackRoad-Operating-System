@@ -1,14 +1,24 @@
-# Summary
-<!-- High-level explanation of the change and the services it touches -->
+# Pull Request
 
-## Checklist
-- [ ] Linked the relevant issue or task
-- [ ] Updated docs or specs if behavior changed
-- [ ] Added or adjusted tests (or noted why not needed)
-- [ ] Ran required checks locally (lint/test/build)
+## Description
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
+- [ ] Documentation update
+- [ ] Infrastructure/DevOps change
 
 ## Testing
-<!-- List commands run locally, e.g. npm test -->
+- [ ] Tested locally
+- [ ] Health checks pass
+- [ ] Railway deployment succeeds
 
-## Notes
-<!-- Deployment impacts, follow-ups, or escalations -->
+## Checklist
+- [ ] Code follows project style
+- [ ] Self-reviewed code
+- [ ] Updated documentation
+- [ ] Tests pass
+
+---
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
