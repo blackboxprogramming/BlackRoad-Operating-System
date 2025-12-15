@@ -4,9 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
+import os
+import platform
 import time
 from datetime import datetime, timezone
-import os
 
 from app.config import settings
 from app.database import async_engine, Base
@@ -242,29 +243,18 @@ async def health_check():
 
 
 @app.get("/version")
-async def version():
-    """Service version endpoint"""
+async def version_info():
+    """Version information endpoint"""
+
+    now = datetime.now(timezone.utc)
+
     return {
         "service": "core-api",
         "version": settings.APP_VERSION,
         "environment": settings.ENVIRONMENT,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    }
-
-
-# Version info
-@app.get("/version")
-async def version_info():
-    """Version information endpoint"""
-    import platform
-    from datetime import datetime
-
-    return {
-        "service": "blackroad-core",
-        "version": settings.APP_VERSION,
-        "environment": settings.ENVIRONMENT,
-        "commit": os.getenv("GIT_COMMIT", "unknown"),
-        "built_at": os.getenv("BUILD_TIMESTAMP", datetime.utcnow().isoformat()),
+        "timestamp": now.isoformat(),
+        "commit": os.getenv("GIT_COMMIT", os.getenv("GIT_SHA", "unknown")),
+        "built_at": os.getenv("BUILD_TIMESTAMP", now.isoformat()),
         "python_version": platform.python_version(),
         "platform": platform.system(),
     }

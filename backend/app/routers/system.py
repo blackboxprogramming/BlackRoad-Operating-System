@@ -1,14 +1,15 @@
 """System endpoints for core OS operations"""
+import os
+from datetime import UTC, datetime, timezone
+
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
-from datetime import UTC, datetime
-import os
 
 from app.config import settings
 from app.database import get_db
 
 router = APIRouter(prefix="/api/system", tags=["system"])
+START_TIME = datetime.now(UTC)
 
 
 @router.get("/version")
@@ -23,8 +24,7 @@ async def get_version():
 
     return {
         "version": settings.APP_VERSION,
-        "build_time": datetime.now(timezone.utc).isoformat(),
-        "build_time": datetime.now(UTC).isoformat(),
+        "build_time": os.environ.get("BUILD_TIMESTAMP", START_TIME.isoformat()),
         "env": settings.ENVIRONMENT,
         "git_sha": git_sha[:8] if len(git_sha) > 8 else git_sha,
         "app_name": settings.APP_NAME,
@@ -72,9 +72,11 @@ async def get_os_state(db: AsyncSession = Depends(get_db)):
     - System resources
     """
     # TODO: Integrate with core_os module when implemented
+    uptime_seconds = int((datetime.now(UTC) - START_TIME).total_seconds())
+
     return {
         "status": "ok",
-        "uptime_seconds": 0,  # TODO: Track actual uptime
+        "uptime_seconds": uptime_seconds,
         "active_windows": [],
         "running_apps": [],
         "system_resources": {
