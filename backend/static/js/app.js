@@ -33,7 +33,9 @@ class BootLoader {
         this.shortcuts = [
             { key: 'P', ctrl: true, shift: true, app: 'prism', description: 'Open Prism Console' },
             { key: 'M', ctrl: true, shift: true, app: 'miners', description: 'Open Miners Dashboard' },
-            { key: 'E', ctrl: true, shift: true, app: 'engineering', description: 'Open Engineering DevTools' }
+            { key: 'E', ctrl: true, shift: true, app: 'engineering', description: 'Open Engineering DevTools' },
+            { key: 'T', ctrl: true, shift: true, action: 'toggleTheme', description: 'Toggle Theme' },
+            { key: 'F11', action: 'toggleFullscreen', description: 'Toggle Fullscreen' }
             // TODO v0.2.0: Make shortcuts customizable via Settings app
         ];
 
@@ -326,12 +328,63 @@ class BootLoader {
 
                 if (ctrlMatch && shiftMatch && altMatch && keyMatch) {
                     e.preventDefault();
-                    launchApp(shortcut.app);
+
+                    // Handle action-based shortcuts
+                    if (shortcut.action) {
+                        this.executeShortcutAction(shortcut.action);
+                    } else if (shortcut.app) {
+                        launchApp(shortcut.app);
+                    }
                 }
             });
         });
 
         console.log(`⌨️ Registered ${this.shortcuts.length} keyboard shortcuts`);
+    }
+
+    /**
+     * Execute a shortcut action
+     * @param {string} action - Action identifier
+     */
+    executeShortcutAction(action) {
+        switch (action) {
+            case 'toggleTheme':
+                if (window.ThemeManager) {
+                    window.ThemeManager.toggleTheme();
+                }
+                break;
+            case 'toggleFullscreen':
+                this.toggleFullscreen();
+                break;
+            default:
+                console.warn(`Unknown shortcut action: ${action}`);
+        }
+    }
+
+    /**
+     * Toggle browser fullscreen mode
+     */
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            // Enter fullscreen
+            document.documentElement.requestFullscreen().then(() => {
+                if (window.OS) {
+                    window.OS.showNotification({
+                        type: 'info',
+                        title: 'Fullscreen Mode',
+                        message: 'Press F11 to exit fullscreen',
+                        duration: 2000
+                    });
+                }
+            }).catch((err) => {
+                console.warn(`Fullscreen request failed: ${err.message}`);
+            });
+        } else {
+            // Exit fullscreen
+            document.exitFullscreen().catch((err) => {
+                console.warn(`Exit fullscreen failed: ${err.message}`);
+            });
+        }
     }
 
     /**

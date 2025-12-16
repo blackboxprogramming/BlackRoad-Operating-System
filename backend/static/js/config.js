@@ -198,8 +198,8 @@ const Config = {
         openMiners: 'Ctrl+Shift+M',
         openEngineering: 'Ctrl+Shift+E',
         closeWindow: 'Escape',
-        toggleTheme: 'Ctrl+Shift+T',    // TODO: Implement
-        toggleFullscreen: 'F11'         // TODO: Implement
+        toggleTheme: 'Ctrl+Shift+T',
+        toggleFullscreen: 'F11'
     },
 
     /**
