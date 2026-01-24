@@ -1,21 +1,23 @@
 # BlackRoad OS Deployment Architecture
 
-> **Last Updated**: 2025-11-19
+> **Last Updated**: 2026-01-24
 > **Status**: Canonical deployment model for all BlackRoad OS services
+> **Current Mode**: Temporary Hybrid Deployment (see below)
 
 ---
 
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [The Monorepo vs Satellite Model](#the-monorepo-vs-satellite-model)
-3. [Critical Rules](#critical-rules)
-4. [Deployment Topology](#deployment-topology)
-5. [Service-to-Repository Mapping](#service-to-repository-mapping)
-6. [Environment Configuration](#environment-configuration)
-7. [Cloudflare DNS Configuration](#cloudflare-dns-configuration)
-8. [Common Mistakes to Avoid](#common-mistakes-to-avoid)
-9. [Troubleshooting](#troubleshooting)
+2. [⚠️ Current Status: Temporary Hybrid Deployment](#current-status-temporary-hybrid-deployment)
+3. [The Monorepo vs Satellite Model](#the-monorepo-vs-satellite-model)
+4. [Critical Rules](#critical-rules)
+5. [Deployment Topology](#deployment-topology)
+6. [Service-to-Repository Mapping](#service-to-repository-mapping)
+7. [Environment Configuration](#environment-configuration)
+8. [Cloudflare DNS Configuration](#cloudflare-dns-configuration)
+9. [Common Mistakes to Avoid](#common-mistakes-to-avoid)
+10. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -30,7 +32,73 @@ This document establishes the canonical deployment model to prevent misconfigura
 
 ---
 
+## ⚠️ Current Status: Temporary Hybrid Deployment
+
+### 🚨 IMPORTANT: Temporary Deployment Active
+
+**As of 2026-01-24, BlackRoad OS is running in a TEMPORARY HYBRID deployment mode.**
+
+**What this means**:
+- The monorepo (`BlackRoad-Operating-System`) IS currently deployed to Railway
+- This is explicitly temporary to get the BR-95 desktop UI online quickly
+- Satellite infrastructure is being built in parallel
+- Migration to satellites is planned and tracked
+
+**Current deployment**:
+- **Service**: `BlackRoad-Operating-System` (monorepo)
+- **Railway Project**: `gregarious-wonder`
+- **Domain**: `app.blackroad.systems`
+- **Status**: TEMPORARY - will be deprecated
+
+**This violates the target architecture described below, but is allowed temporarily for speed to market.**
+
+### Why Temporary Deployment?
+
+The monorepo deployment was chosen for pragmatic reasons:
+- ✅ Get product to market faster
+- ✅ Validate product-market fit before building full satellite infrastructure
+- ✅ Serve users while architecture is finalized
+- ✅ Maintain ability to iterate quickly
+
+### Migration Timeline
+
+```
+Now: Temporary monorepo deployment
+ ↓
+Phase 1 (2-4 weeks): Prepare satellites
+ ↓
+Phase 2 (1-2 weeks): Deploy satellites in parallel
+ ↓
+Phase 3 (2-3 weeks): Migrate traffic to satellites
+ ↓
+Phase 4 (1 week): Deprecate monorepo deployment
+ ↓
+Future: Pure satellite architecture
+```
+
+**See**: `TEMPORARY_DEPLOYMENT.md` for complete migration plan.
+
+### Allowed Temporary Deviations
+
+While in temporary deployment mode, these deviations are **explicitly allowed**:
+
+✅ Monorepo deployed to Railway (must be marked "temporary")
+✅ Monorepo URLs in ALLOWED_ORIGINS (must also include satellite URLs)
+✅ `app.blackroad.systems` pointing to monorepo
+✅ Single service serving all APIs
+
+❌ Still forbidden:
+- Adding `MONOREPO_URL` environment variables
+- Permanent monorepo deployment without migration plan
+- Abandoning satellite infrastructure development
+
+**Governance**: Weekly reviews to track migration progress. If not migrated within 12 weeks, re-evaluate architecture decision.
+
+---
+
 ## The Monorepo vs Satellite Model
+
+**This section describes the TARGET architecture.** See above for current temporary state.
 
 ### BlackRoad-Operating-System (Monorepo)
 
@@ -42,13 +110,17 @@ This document establishes the canonical deployment model to prevent misconfigura
 - Stores orchestration logic, prompts, and infrastructure configs
 - Serves as the "brain" - NOT the compute
 
-**Deployment Status**: ❌ **NEVER DEPLOYED TO PRODUCTION**
+**Deployment Status**:
+- **Current**: ⚠️ **TEMPORARILY DEPLOYED TO PRODUCTION** (see above)
+- **Target**: ❌ **SHOULD NOT BE DEPLOYED** (satellite architecture)
 
-**Why NOT deployable**:
+**Why NOT permanently deployable**:
 - No single entry point (contains multiple services)
 - Would create circular deployment dependencies
-- Not designed for runtime execution
-- Would break service discovery and routing
+- Not designed for long-term runtime execution
+- Would break service discovery and routing in satellite model
+- Slow deployments (30+ minutes for full monorepo)
+- Single point of failure
 
 ### Satellite Repositories
 

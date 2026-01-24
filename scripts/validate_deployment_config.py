@@ -151,7 +151,7 @@ def is_allowed_file(file_path: Path) -> bool:
 
 
 def check_railway_toml(result: ValidationResult):
-    """Validate railway.toml is marked for local dev only"""
+    """Validate railway.toml deployment approach"""
     railway_toml = REPO_ROOT / "railway.toml"
 
     if not railway_toml.exists():
@@ -160,22 +160,42 @@ def check_railway_toml(result: ValidationResult):
 
     content = railway_toml.read_text()
 
-    # Check for warning banner
-    if "CRITICAL WARNING" not in content:
-        result.add_error(
+    # Check if this is a temporary monorepo deployment
+    is_temporary = "temporary" in content.lower() or "temp" in content.lower()
+
+    # Check if monorepo is being deployed
+    has_monorepo_deployment = (
+        "BlackRoad-Operating-System" in content or
+        "blackroad-operating-system" in content or
+        "gregarious-wonder" in content  # Railway project name
+    )
+
+    if has_monorepo_deployment and is_temporary:
+        # Temporary deployment is OK, but warn
+        result.add_warning(
             "railway.toml",
-            "Missing CRITICAL WARNING banner at top of file"
+            "Monorepo is being deployed TEMPORARILY - ensure migration plan exists"
         )
 
-    # Check for "LOCAL DEV" or similar marker
-    if "LOCAL DEV" not in content and "DEVELOPMENT" not in content:
+        # Check for migration timeline
+        if "long-term" not in content.lower() and "satellite" not in content.lower():
+            result.add_warning(
+                "railway.toml",
+                "Should reference long-term satellite architecture"
+            )
+
+        result.add_pass("railway.toml acknowledges temporary monorepo deployment")
+
+    elif has_monorepo_deployment and not is_temporary:
+        # Permanent monorepo deployment - ERROR
         result.add_error(
             "railway.toml",
-            "Not clearly marked as local development only"
+            "Monorepo deployment found without 'temporary' marker - this violates architecture"
         )
 
-    if not result.errors:
-        result.add_pass("railway.toml has proper warnings")
+    else:
+        # No monorepo deployment - ideal state
+        result.add_pass("railway.toml follows satellite deployment model")
 
 
 def check_env_files(result: ValidationResult):
@@ -185,7 +205,8 @@ def check_env_files(result: ValidationResult):
     for pattern in CHECK_PATTERNS:
         env_files.extend(REPO_ROOT.glob(pattern))
 
-    found_issues = False
+    found_errors = False
+    found_warnings = False
     checked_count = 0
 
     for env_file in env_files:
@@ -200,16 +221,35 @@ def check_env_files(result: ValidationResult):
             for match in matches:
                 # Get line number
                 line_num = content[:match.start()].count('\n') + 1
-                result.add_error(
-                    f"{env_file.name}:{line_num}",
-                    f"Contains forbidden reference: '{match.group()}'"
-                )
-                found_issues = True
+                matched_text = match.group()
+
+                # Check if this is in ALLOWED_ORIGINS (temporary allowance)
+                line_start = content.rfind('\n', 0, match.start()) + 1
+                line_end = content.find('\n', match.end())
+                if line_end == -1:
+                    line_end = len(content)
+                full_line = content[line_start:line_end]
+
+                # If it's in ALLOWED_ORIGINS and includes other valid origins, it's a warning not an error
+                if 'ALLOWED_ORIGINS=' in full_line and 'blackroad.systems' in full_line:
+                    result.add_warning(
+                        f"{env_file.name}:{line_num}",
+                        f"Temporary monorepo reference in ALLOWED_ORIGINS: '{matched_text}' - should migrate to satellite URLs"
+                    )
+                    found_warnings = True
+                else:
+                    result.add_error(
+                        f"{env_file.name}:{line_num}",
+                        f"Contains forbidden reference: '{matched_text}'"
+                    )
+                    found_errors = True
 
     if checked_count == 0:
         result.add_warning("env files", "No environment files found to check")
-    elif not found_issues:
+    elif not found_errors and not found_warnings:
         result.add_pass(f"Environment files clean ({checked_count} checked)")
+    elif not found_errors:
+        result.add_pass(f"Environment files have warnings but no errors ({checked_count} checked)")
 
 
 def check_satellite_configs(result: ValidationResult):
@@ -346,6 +386,37 @@ def check_readme_warnings(result: ValidationResult):
         result.add_pass("README.md has proper deployment warnings")
 
 
+def check_migration_plan(result: ValidationResult):
+    """Check if migration plan exists for temporary monorepo deployment"""
+    railway_toml = REPO_ROOT / "railway.toml"
+
+    if not railway_toml.exists():
+        return
+
+    content = railway_toml.read_text()
+    is_temporary = "temporary" in content.lower()
+
+    if not is_temporary:
+        return  # Not a temporary deployment, no migration needed
+
+    # Check for migration documentation
+    migration_docs = [
+        REPO_ROOT / "MIGRATION_TO_SATELLITES.md",
+        REPO_ROOT / "TEMPORARY_DEPLOYMENT.md",
+        REPO_ROOT / "docs/MIGRATION_PLAN.md",
+    ]
+
+    migration_doc_exists = any(doc.exists() for doc in migration_docs)
+
+    if not migration_doc_exists:
+        result.add_warning(
+            "Migration plan",
+            "Temporary monorepo deployment detected but no migration plan found (MIGRATION_TO_SATELLITES.md or TEMPORARY_DEPLOYMENT.md)"
+        )
+    else:
+        result.add_pass("Migration plan documentation exists")
+
+
 def main():
     """Run all validation checks"""
     print(f"\n{BOLD}{BLUE}BlackRoad OS Deployment Configuration Validator{RESET}")
@@ -362,6 +433,7 @@ def main():
     check_cloudflare_docs(result)
     check_deployment_architecture_exists(result)
     check_readme_warnings(result)
+    check_migration_plan(result)
 
     # Print results
     exit_code = result.print_summary()

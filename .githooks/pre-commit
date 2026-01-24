@@ -1,0 +1,71 @@
+#!/bin/bash
+# BlackRoad OS Pre-Commit Hook
+# Validates deployment configuration before allowing commit
+#
+# Install: git config core.hooksPath .githooks
+# Bypass: git commit --no-verify (use sparingly!)
+
+set -e
+
+echo "🔍 Running BlackRoad OS deployment validation..."
+echo ""
+
+# Run validation script
+python3 scripts/validate_deployment_config.py
+
+# Check exit code
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "❌ Pre-commit validation failed!"
+    echo ""
+    echo "Options:"
+    echo "  1. Fix the issues and try again"
+    echo "  2. Bypass with: git commit --no-verify (NOT recommended)"
+    echo ""
+    exit 1
+fi
+
+echo ""
+echo "✅ Deployment validation passed!"
+echo ""
+
+# Check for common mistakes in staged files
+echo "🔍 Checking staged files for common mistakes..."
+
+# Check if railway.toml was modified
+if git diff --cached --name-only | grep -q "railway.toml"; then
+    echo "⚠️  railway.toml was modified"
+
+    # Check if 'temporary' marker is still present
+    if ! git diff --cached railway.toml | grep -q "temporary"; then
+        if ! grep -q "temporary" railway.toml; then
+            echo "❌ ERROR: railway.toml modified but 'temporary' marker removed"
+            echo "   If removing temporary deployment, ensure migration is complete!"
+            exit 1
+        fi
+    fi
+fi
+
+# Check for hardcoded monorepo URLs in new code
+staged_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(py|js|ts|tsx|json|yaml|yml|toml)$' || true)
+
+if [ -n "$staged_files" ]; then
+    for file in $staged_files; do
+        # Skip validation script itself
+        if [[ "$file" == "scripts/validate_deployment_config.py" ]]; then
+            continue
+        fi
+
+        # Check for forbidden patterns in staged changes
+        if git diff --cached "$file" | grep -E "blackroad-operating-system.*\.up\.railway\.app" | grep "^+" | grep -v "ALLOWED_ORIGINS" > /dev/null; then
+            echo "❌ ERROR: $file contains hardcoded monorepo Railway URL"
+            echo "   Use satellite URLs (blackroad-os-core-production.up.railway.app)"
+            exit 1
+        fi
+    done
+fi
+
+echo "✅ Staged files look good!"
+echo ""
+
+exit 0
