@@ -1,7 +1,7 @@
 # FastAPI and Server
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-python-multipart==0.0.6
+python-multipart==0.0.22
 
 # Database
 sqlalchemy==2.0.23
@@ -27,7 +27,7 @@ botocore==1.32.7
 # Email
 email-validator==2.1.0.post1
 emails==0.6.0
-jinja2==3.1.2
+jinja2==3.1.6
 
 # WebSockets
 websockets==12.0
@@ -40,11 +40,11 @@ psutil==5.9.6
 
 # HTTP Client
 httpx==0.25.2
-aiohttp==3.9.1
+aiohttp==3.13.3
 
 # Crypto/Blockchain
-cryptography==41.0.7
-ecdsa==0.18.0
+cryptography==46.0.5
+ecdsa==0.19.1
 hashlib-additional==1.0.0
 
 # Testing
@@ -63,4 +63,4 @@ prometheus-client==0.19.0
 # Note: Most integrations use httpx (already included above)
 # Additional packages for specific integrations:
 stripe==7.8.0
-sentry-sdk==1.39.1
+sentry-sdk==1.45.1
