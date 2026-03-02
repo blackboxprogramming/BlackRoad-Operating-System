@@ -40,7 +40,7 @@ psutil==5.9.6
 
 # HTTP Client
 httpx==0.25.2
-aiohttp==3.9.1
+aiohttp==3.13.3
 
 # Crypto/Blockchain
 cryptography==41.0.7
