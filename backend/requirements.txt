@@ -45,7 +45,7 @@ aiohttp==3.9.1
 # Crypto/Blockchain
 cryptography==41.0.7
 ecdsa==0.18.0
-hashlib-additional==1.0.0
+hashlib-additional==1.1
 
 # Testing
 pytest==7.4.3
