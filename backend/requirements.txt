@@ -62,5 +62,5 @@ prometheus-client==0.19.0
 # New API Integrations (Railway, Vercel, Stripe, Twilio, Slack, Discord, Sentry)
 # Note: Most integrations use httpx (already included above)
 # Additional packages for specific integrations:
-stripe==7.8.0
+stripe==14.4.0
 sentry-sdk==1.39.1
