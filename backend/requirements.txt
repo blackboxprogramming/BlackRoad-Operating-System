@@ -22,7 +22,7 @@ hiredis==2.2.3
 
 # AWS S3 for File Storage
 boto3==1.29.7
-botocore==1.32.7
+botocore==1.42.59
 
 # Email
 email-validator==2.1.0.post1
