@@ -573,11 +573,9 @@ document.body.appendChild(card);
 
 **Branch Strategy**:
 - `main` - Production branch (protected)
-- `claude/*` - AI assistant branches (auto-created)
-- `codex/*`, `copilot/*` - Other AI branches
+- `copilot/*` - Copilot AI branches (auto-created)
+- `lucidia/*` - Lucidia orchestration branches
 - `feature/*`, `fix/*`, `docs/*` - Human developer branches
-
-**Current Branch**: `claude/claude-md-mi3wes6waq9fnfmt-012kKpHTPTV5D9YBFB7ufuwy`
 
 **Commit Guidelines**:
 ```bash
@@ -646,8 +644,8 @@ ALLOWED_ORIGINS=http://localhost:8000,https://yourdomain.com
 # Blockchain
 WALLET_MASTER_KEY=your-wallet-master-key
 
-# AI
-OPENAI_API_KEY=sk-...
+# Self-hosted AI (Ollama on Pi cluster)
+OLLAMA_BASE_URL=http://localhost:11434
 
 # Cloud (optional)
 AWS_ACCESS_KEY_ID=...

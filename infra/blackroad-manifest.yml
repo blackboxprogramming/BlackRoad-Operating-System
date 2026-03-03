@@ -154,9 +154,9 @@ projects:
               example: "https://blackroad.systems"
 
           optional:
-            - name: "OPENAI_API_KEY"
-              description: "OpenAI API access"
-              secret: true
+            - name: "OLLAMA_BASE_URL"
+              description: "Self-hosted Ollama instance URL"
+              secret: false
             - name: "GITHUB_TOKEN"
               description: "GitHub API access for agents"
               secret: true
@@ -454,9 +454,7 @@ planned_projects:
 
         env:
           required:
-            - "OPENAI_API_KEY"
-            - "ANTHROPIC_API_KEY"
-            - "GROQ_API_KEY"
+            - "OLLAMA_BASE_URL"
             - "DATABASE_URL"
             - "REDIS_URL"
 

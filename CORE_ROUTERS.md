@@ -228,7 +228,7 @@ agents, api_health, browser, capture, cloudflare, compliance_ops, creator, dashb
 - `SECRET_KEY` (auth)
 - `DATABASE_URL` (all routers)
 - `REDIS_URL` (sessions, caching)
-- `OPENAI_API_KEY` (ai_chat)
+- `OLLAMA_BASE_URL` (ai_chat — self-hosted)
 - `SMTP_*` variables (email - optional if email is stub)
 - `AWS_*` variables (files - optional if files is stub)
 

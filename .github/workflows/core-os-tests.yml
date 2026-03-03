@@ -2,7 +2,7 @@ name: Core OS Tests
 
 on:
   push:
-    branches: [ main, claude/** ]
+    branches: [ main, copilot/** ]
     paths:
       - 'core_os/**'
       - '.github/workflows/core-os-tests.yml'

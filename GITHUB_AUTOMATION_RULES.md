@@ -85,17 +85,17 @@ Applied by `.github/labeler.yml` action on PR open/update.
 
 | Label | Applied When | Purpose |
 |-------|--------------|---------|
-| `claude-auto` | Author is `claude-code[bot]` or branch starts with `claude/` | Claude-generated PR |
-| `atlas-auto` | Author is `atlas[bot]` or branch starts with `atlas/` | Atlas-generated PR |
-| `codex-auto` | Author is `codex[bot]` or branch starts with `codex/` | Codex-generated PR |
+| `copilot-auto` | Branch starts with `copilot/` | Copilot-generated PR |
+| `lucidia-auto` | Branch starts with `lucidia/` | Lucidia-generated PR |
+| `owner-auto` | Author is `blackboxprogramming` | Owner-generated PR |
 | `dependabot` | Author is `dependabot[bot]` | Dependency update PR |
 
 **Implementation**:
 ```yaml
 # .github/workflows/label-author.yml
-- name: Label Claude PRs
-  if: startsWith(github.head_ref, 'claude/') || github.actor == 'claude-code[bot]'
-  run: gh pr edit ${{ github.event.pull_request.number }} --add-label "claude-auto"
+- name: Label Copilot PRs
+  if: startsWith(github.head_ref, 'copilot/')
+  run: gh pr edit ${{ github.event.pull_request.number }} --add-label "copilot-auto"
 ```
 
 ### Manual Labels
@@ -174,10 +174,10 @@ jobs:
 ✅ **Action**: Auto-approve with human notification
 ✅ **Approver**: `scaffold-bot`
 
-#### Tier 4: AI-Generated (Claude/Atlas)
+#### Tier 4: Self-Hosted AI / Copilot Generated
 
-✅ **Condition**: PR from AI agent
-- Labels: `claude-auto`, `atlas-auto`, or `codex-auto`
+✅ **Condition**: PR from Copilot, Lucidia, or owner
+- Labels: `copilot-auto`, `lucidia-auto`, or `owner-auto`
 - Required checks: **All** CI checks pass
 - Max size: 500 lines (larger needs human review)
 - No `breaking-change` or `security` labels
@@ -195,7 +195,7 @@ on:
 jobs:
   approve:
     if: |
-      contains(github.event.pull_request.labels.*.name, 'claude-auto') &&
+      contains(github.event.pull_request.labels.*.name, 'copilot-auto') &&
       github.event.state == 'success' &&
       !contains(github.event.pull_request.labels.*.name, 'breaking-change')
     runs-on: ubuntu-latest
@@ -254,7 +254,7 @@ A PR is **automatically merged** if it meets **ALL** of these criteria:
 2. ✅ **Checks Passing**: All required status checks pass
 3. ✅ **Up to Date**: Branch is current (or in merge queue)
 4. ✅ **No Conflicts**: No merge conflicts
-5. ✅ **Labeled**: Has one of: `auto-merge`, `claude-auto`, `docs-only`, `merge-ready`
+5. ✅ **Labeled**: Has one of: `auto-merge`, `copilot-auto`, `lucidia-auto`, `owner-auto`, `docs-only`, `merge-ready`
 6. ✅ **Not Blocked**: No `do-not-merge`, `wip`, `needs-review` labels
 
 #### Tier-Specific Conditions
@@ -269,7 +269,7 @@ A PR is **automatically merged** if it meets **ALL** of these criteria:
 - ✅ All tests pass (including new tests)
 - ⏱️ Merge immediately
 
-**AI-Generated PRs** (`claude-auto`, `atlas-auto`):
+**Self-Hosted AI / Copilot PRs** (`copilot-auto`, `lucidia-auto`, `owner-auto`):
 - ✅ Auto-approve + auto-merge enabled
 - ✅ **All** CI checks pass (backend, frontend, security)
 - ✅ No `breaking-change` label
@@ -319,7 +319,7 @@ env:
 ```yaml
 # .github/workflows/auto-merge.yml
 - name: Wait soak time
-  if: contains(github.event.pull_request.labels.*.name, 'claude-auto')
+  if: contains(github.event.pull_request.labels.*.name, 'copilot-auto')
   run: sleep 300  # 5 minutes
 ```
 
@@ -349,7 +349,7 @@ env:
 
 ### Feature Branch Protection
 
-**Branches**: `feature/*`, `claude/*`, `atlas/*`
+**Branches**: `feature/*`, `copilot/*`, `lucidia/*`
 
 **Rules**:
 - ⚠️ No protection (development branches)

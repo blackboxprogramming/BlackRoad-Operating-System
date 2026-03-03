@@ -117,8 +117,8 @@ SECRET_KEY=your-very-secret-key-change-this-in-production
 # CORS (Add your frontend URLs)
 ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
 
-# OpenAI (for AI Chat)
-OPENAI_API_KEY=your-openai-api-key
+# Self-hosted AI (Ollama on Pi cluster)
+OLLAMA_BASE_URL=http://localhost:11434
 ```
 
 ## API Documentation

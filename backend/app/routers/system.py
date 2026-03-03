@@ -56,7 +56,7 @@ async def get_public_config():
         "external_services": {
             "github_integration": bool(os.environ.get("GITHUB_TOKEN")),
             "stripe_enabled": bool(os.environ.get("STRIPE_SECRET_KEY")),
-            "openai_enabled": bool(os.environ.get("OPENAI_API_KEY")),
+            "ollama_enabled": bool(os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")),
         },
     }
 

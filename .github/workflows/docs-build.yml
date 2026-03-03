@@ -2,7 +2,7 @@ name: Documentation Build
 
 on:
   push:
-    branches: [ main, claude/** ]
+    branches: [ main, copilot/** ]
     paths:
       - 'codex-docs/**'
       - '.github/workflows/docs-build.yml'

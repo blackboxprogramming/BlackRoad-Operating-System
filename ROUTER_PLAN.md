@@ -466,7 +466,7 @@ app.include_router(system.router)
      - SECRET_KEY
      - DATABASE_URL
      - REDIS_URL
-     - OPENAI_API_KEY (optional)
+     - OLLAMA_BASE_URL (self-hosted AI)
      - SMTP_* (optional)
      - AWS_* (optional)
 

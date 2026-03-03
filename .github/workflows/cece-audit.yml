@@ -2,7 +2,7 @@ name: Cece System Audit
 
 on:
   push:
-    branches: [main, claude/**]
+    branches: [main, copilot/**]
   pull_request:
     branches: [main]
   workflow_dispatch:  # Allow manual trigger

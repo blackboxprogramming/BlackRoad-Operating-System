@@ -2,7 +2,7 @@ name: Test Orchestrator - All Suites
 
 on:
   push:
-    branches: ["main", "claude/**", "copilot/**", "codex/**"]
+    branches: ["main", "copilot/**"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:

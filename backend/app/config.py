@@ -66,8 +66,8 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     EMAIL_FROM: str = "noreply@blackroad.com"
 
-    # OpenAI
-    OPENAI_API_KEY: str = ""
+    # Self-hosted AI (Ollama on Pi cluster)
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
 
     # Blockchain
     BLOCKCHAIN_DIFFICULTY: int = 4

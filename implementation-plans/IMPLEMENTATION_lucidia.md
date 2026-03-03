@@ -10,12 +10,12 @@
 ## PURPOSE
 
 **Lucidia** is the **AI intelligence layer** that:
-- Routes requests to multiple AI models (Claude, GPT-4, Llama, Gemini)
+- Routes requests to self-hosted models via Ollama on Pi cluster (Llama, Mistral, Phi, Gemma)
 - Orchestrates multi-agent conversations
 - Manages long-term memory and context
 - Provides personas (Cece, Amundson, etc.)
 - Tool calling and function execution
-- Cost optimization (use cheaper models when appropriate)
+- Zero external provider dependency (fully self-hosted)
 
 **Role in Architecture**: **Layer 4** (Orchestration & Intelligence)
 
@@ -29,46 +29,39 @@
 
 ```python
 # lucidia/router.py
-from anthropic import Anthropic
-from openai import OpenAI
-import requests
+import httpx
+import os
 
 class ModelRouter:
     def __init__(self):
-        self.claude = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-        self.openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.ollama_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
     async def route(self, prompt: str, preferences: dict):
-        """Route to best model based on task, cost, latency."""
+        """Route to best self-hosted model based on task."""
 
         # Task classification
         task_type = self.classify_task(prompt)
 
-        # Routing logic
+        # Routing logic — all models self-hosted via Ollama on Pi cluster
         if task_type == "code":
-            return await self.call_claude(prompt, model="claude-sonnet-4")
+            return await self.call_ollama(prompt, model="codellama:13b")
         elif task_type == "creative":
-            return await self.call_openai(prompt, model="gpt-4")
+            return await self.call_ollama(prompt, model="llama3:8b")
         elif task_type == "fast":
-            return await self.call_openai(prompt, model="gpt-3.5-turbo")
+            return await self.call_ollama(prompt, model="phi3:mini")
         else:
-            # Default to Claude
-            return await self.call_claude(prompt)
+            # Default to Llama 3
+            return await self.call_ollama(prompt, model="llama3:8b")
 
-    async def call_claude(self, prompt: str, model: str = "claude-3-5-sonnet-20241022"):
-        response = self.claude.messages.create(
-            model=model,
-            max_tokens=4096,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return response.content[0].text
-
-    async def call_openai(self, prompt: str, model: str = "gpt-4"):
-        response = self.openai.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return response.choices[0].message.content
+    async def call_ollama(self, prompt: str, model: str = "llama3:8b"):
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{self.ollama_url}/api/generate",
+                json={"model": model, "prompt": prompt, "stream": False},
+                timeout=120.0
+            )
+            response.raise_for_status()
+            return response.json()["response"]
 ```
 
 ### 2. Multi-Agent Orchestration
@@ -78,9 +71,9 @@ class ModelRouter:
 class AgentOrchestrator:
     def __init__(self):
         self.agents = {
-            "cece": Agent(name="Cece", role="OS Architect", model="claude-sonnet-4"),
-            "amundson": Agent(name="Amundson", role="Quantum Physicist", model="claude-opus-4"),
-            "designer": Agent(name="Designer", role="UI/UX", model="gpt-4"),
+            "cece": Agent(name="Cece", role="OS Architect", model="llama3:8b"),
+            "amundson": Agent(name="Amundson", role="Quantum Physicist", model="llama3:8b"),
+            "designer": Agent(name="Designer", role="UI/UX", model="mistral:7b"),
         }
 
     async def orchestrate(self, task: str):
@@ -233,14 +226,15 @@ lucidia/
 **Core**:
 - Python 3.11+
 - FastAPI (API service)
-- Anthropic SDK (Claude)
-- OpenAI SDK (GPT-4)
+- Ollama (self-hosted LLM runtime on Pi cluster)
+- httpx (async HTTP client for Ollama API)
 - ChromaDB (vector memory)
 
-**Optional**:
-- LangChain (agent framework)
-- LlamaIndex (context management)
-- Replicate (open-source models)
+**Self-Hosted Models** (via Ollama):
+- Llama 3 8B (general purpose)
+- CodeLlama 13B (code generation)
+- Mistral 7B (creative/reasoning)
+- Phi-3 Mini (fast/lightweight tasks)
 
 ---
 
@@ -252,10 +246,11 @@ lucidia/
 **Month 12**: Production deployment, OS integration
 
 **Success Criteria**:
-- ✅ 3+ models supported (Claude, GPT-4, Llama)
-- ✅ <2s average response time
+- ✅ 3+ self-hosted models running on Pi cluster (Llama 3, CodeLlama, Mistral, Phi-3)
+- ✅ <5s average response time (self-hosted hardware)
 - ✅ 95% user satisfaction
 - ✅ 10+ personas available
+- ✅ Zero external API dependencies
 
 ---
 
@@ -287,19 +282,20 @@ lucidia/
 
 ## COST OPTIMIZATION
 
-**Model Cost Comparison**:
-- Claude Sonnet 4: $3 / 1M input tokens
-- GPT-4: $10 / 1M input tokens
-- GPT-3.5 Turbo: $0.50 / 1M input tokens
-- Llama 3 (open-source): Free (hosting cost only)
+**Self-Hosted Model Cost**:
+- All models run on Pi cluster — zero per-token API costs
+- One-time hardware cost: Raspberry Pi 5 cluster
+- Electricity only ongoing cost
+- No vendor lock-in, no rate limits, no API keys
 
 **Strategy**:
-- Use GPT-3.5 for simple queries (classification, summarization)
-- Use Claude Sonnet for complex reasoning (code, analysis)
-- Use GPT-4 for creative tasks (copywriting, brainstorming)
+- Use Phi-3 Mini for simple queries (classification, summarization)
+- Use CodeLlama 13B for code generation and analysis
+- Use Llama 3 8B for general reasoning and conversation
+- Use Mistral 7B for creative tasks
 - Cache common queries in Redis
 
-**Projected Savings**: 60% vs. using GPT-4 for everything
+**Projected Savings**: 100% vs. using external AI providers
 
 ---
 

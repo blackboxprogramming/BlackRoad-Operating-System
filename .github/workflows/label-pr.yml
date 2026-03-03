@@ -37,17 +37,17 @@ jobs:
         id: accumulate-labels
         run: |
           LABELS=""
-          # Claude PR
-          if [[ "${GITHUB_HEAD_REF}" == claude/* || "${GITHUB_ACTOR}" == "claude-code[bot]" ]]; then
-            LABELS="${LABELS} claude-auto"
+          # Copilot PR
+          if [[ "${GITHUB_HEAD_REF}" == copilot/* ]]; then
+            LABELS="${LABELS} copilot-auto"
           fi
-          # Atlas PR
-          if [[ "${GITHUB_HEAD_REF}" == atlas/* || "${GITHUB_ACTOR}" == "atlas[bot]" ]]; then
-            LABELS="${LABELS} atlas-auto"
+          # Lucidia PR
+          if [[ "${GITHUB_HEAD_REF}" == lucidia/* ]]; then
+            LABELS="${LABELS} lucidia-auto"
           fi
-          # Codex PR
-          if [[ "${GITHUB_HEAD_REF}" == codex/* || "${GITHUB_ACTOR}" == "codex[bot]" ]]; then
-            LABELS="${LABELS} codex-auto"
+          # Owner PR (@blackboxprogramming)
+          if [[ "${GITHUB_ACTOR}" == "blackboxprogramming" ]]; then
+            LABELS="${LABELS} owner-auto"
           fi
           # Docs-only
           FILES=$(gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files[].path')

@@ -82,7 +82,7 @@ async def check_all_apis():
     - Slack API
     - Discord API
     - Sentry API
-    - OpenAI API
+    - Ollama (self-hosted AI)
     - Hugging Face API
     - DigitalOcean API
     - AWS S3
@@ -111,7 +111,7 @@ async def check_all_apis():
     # Add checks for existing APIs
     api_checks.update({
         "github": lambda: check_github_status(),
-        "openai": lambda: check_openai_status(),
+        "ollama": lambda: check_ollama_status(),
         "huggingface": lambda: check_huggingface_status(),
         "digitalocean": lambda: check_digitalocean_status(),
         "aws": lambda: check_aws_status(),
@@ -206,7 +206,7 @@ async def check_specific_api(api_name: str):
         "discord": lambda: __import__("app.routers.discord", fromlist=["get_discord_status"]).get_discord_status(),
         "sentry": lambda: __import__("app.routers.sentry", fromlist=["get_sentry_status"]).get_sentry_status(),
         "github": check_github_status,
-        "openai": check_openai_status,
+        "ollama": check_ollama_status,
         "huggingface": check_huggingface_status,
         "digitalocean": check_digitalocean_status,
         "aws": check_aws_status,
@@ -258,35 +258,28 @@ async def check_github_status():
         }
 
 
-async def check_openai_status():
-    """Check OpenAI API status"""
-    openai_key = os.getenv("OPENAI_API_KEY")
-    if not openai_key:
-        return {
-            "connected": False,
-            "message": "OpenAI API key not configured",
-            "key_configured": False
-        }
+async def check_ollama_status():
+    """Check self-hosted Ollama status"""
+    ollama_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
     import httpx
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                "https://api.openai.com/v1/models",
-                headers={"Authorization": f"Bearer {openai_key}"},
+                f"{ollama_url}/api/tags",
                 timeout=10.0
             )
             response.raise_for_status()
             return {
                 "connected": True,
-                "message": "OpenAI API connected successfully",
-                "key_configured": True
+                "message": "Ollama (self-hosted) connected successfully",
+                "url_configured": True
             }
     except Exception as e:
         return {
             "connected": False,
-            "message": f"OpenAI API connection failed: {str(e)}",
-            "key_configured": True
+            "message": f"Ollama connection failed: {str(e)}",
+            "url_configured": bool(ollama_url)
         }
 
 

@@ -18,7 +18,7 @@ Use this file as the single source of truth for environment variables across Rai
 | `CF_ZONE_ID` | Cloudflare zone identifier. | - | `CF_ZONE_ID` secret for cache purge. | Config variable in Workers/Pages. | Export in terminal when running scripts. |
 | `CF_API_TOKEN` | Token for DNS/cache automation. | - | `CF_API_TOKEN` secret. | Secret binding in Workers automation. | Export in terminal; do not store. |
 | `RAILWAY_TOKEN` | Token for CLI/CI deployments. | N/A | `RAILWAY_TOKEN` secret. | - | Export locally when using Railway CLI. |
-| `OPENAI_API_KEY` | Agent/LLM access key. | Backend variable if used server-side. | `OPENAI_API_KEY` secret for agent jobs. | Worker secret if routing requests. | `.env` entry for local agent dev. |
+| `OLLAMA_BASE_URL` | Self-hosted Ollama URL for LLM. | Backend variable for AI routing. | Config variable for agent jobs. | Config variable if routing requests. | `.env` entry for local agent dev. |
 | `GITHUB_TOKEN` | GitHub API access for agents/prism. | - | Automatic Actions token or PAT secret. | Worker secret if used in edge functions. | Export locally when testing agent integrations. |
 
 ## Usage Notes

@@ -49,7 +49,7 @@ async def get_dashboard_overview(
         "digitalocean": bool(digital_ocean_token),
         "github": bool(os.getenv("GITHUB_TOKEN")),
         "huggingface": bool(os.getenv("HUGGINGFACE_TOKEN")),
-        "openai": bool(os.getenv("OPENAI_API_KEY")),
+        "ollama": bool(os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")),
         "aws_s3": bool(os.getenv("AWS_ACCESS_KEY_ID")),
         "smtp": bool(os.getenv("SMTP_HOST")),
     }
@@ -98,9 +98,9 @@ async def get_dashboard_overview(
         {
             "name": "AI Assistant",
             "icon": "🤖",
-            "status": "online" if services_config["openai"] else "offline",
-            "enabled": services_config["openai"],
-            "connected": services_config["openai"],
+            "status": "online" if services_config["ollama"] else "offline",
+            "enabled": services_config["ollama"],
+            "connected": services_config["ollama"],
             "stats": {"conversations": stats["ai"]["conversations"], "messages": stats["ai"]["messages"]},
             "endpoint": "/api/ai-chat"
         },
@@ -250,10 +250,10 @@ async def list_all_services(
         {
             "id": "ai_chat",
             "name": "AI Assistant",
-            "description": "Conversational AI powered by OpenAI",
+            "description": "Conversational AI powered by self-hosted Ollama",
             "category": "productivity",
             "icon": "🤖",
-            "configured": bool(os.getenv("OPENAI_API_KEY"))
+            "configured": bool(os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"))
         },
         {
             "id": "files",

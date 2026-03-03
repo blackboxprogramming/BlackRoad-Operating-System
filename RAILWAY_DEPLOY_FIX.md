@@ -144,7 +144,7 @@ Based on `backend/.env.example`, the following variables **MUST** be set in Rail
 
 | Variable | Purpose | Required When |
 |----------|---------|---------------|
-| `OPENAI_API_KEY` | AI chat features | Using AI router |
+| `OLLAMA_BASE_URL` | AI chat features (self-hosted) | Using AI router |
 | `GITHUB_TOKEN` | GitHub integration | Using GitHub router |
 | `STRIPE_SECRET_KEY` | Payment processing | Using Stripe router |
 | `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` | Email sending | Using email router |

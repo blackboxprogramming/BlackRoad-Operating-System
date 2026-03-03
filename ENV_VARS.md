@@ -278,32 +278,19 @@ WALLET_MASTER_KEY=your-generated-master-key-here
 
 ## API Integrations
 
-### OPENAI_API_KEY
+### OLLAMA_BASE_URL
 **Required:** For AI features (Lucidia, agents)
-**Description:** OpenAI API key for GPT models
+**Description:** URL of self-hosted Ollama instance running on Pi cluster
+**Default:** `http://localhost:11434`
 
-**How to get:**
-1. Go to https://platform.openai.com/api-keys
-2. Create new secret key
-3. Copy key (starts with `sk-`)
-
-**Example:**
-```bash
-OPENAI_API_KEY=sk-proj-1234567890abcdef...
-```
-
-### ANTHROPIC_API_KEY
-**Required:** For Claude integration
-**Description:** Anthropic API key for Claude models
-
-**How to get:**
-1. Go to https://console.anthropic.com/settings/keys
-2. Create new API key
-3. Copy key
+**Setup:**
+1. Install Ollama on your Pi cluster or local machine
+2. Pull desired models (e.g., `ollama pull llama3`)
+3. Set the base URL to your Ollama instance
 
 **Example:**
 ```bash
-ANTHROPIC_API_KEY=sk-ant-1234567890abcdef...
+OLLAMA_BASE_URL=http://192.168.1.100:11434
 ```
 
 ### GITHUB_TOKEN
@@ -648,9 +635,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 REFRESH_TOKEN_EXPIRE_DAYS=7
 WALLET_MASTER_KEY=[generate-unique-32-char-string]
 
-# AI (add when ready)
-# OPENAI_API_KEY=sk-proj-...
-# ANTHROPIC_API_KEY=sk-ant-...
+# Self-hosted AI (Ollama on Pi cluster)
+# OLLAMA_BASE_URL=http://localhost:11434
 
 # Observability (add when ready)
 # SENTRY_DSN=https://...
@@ -677,9 +663,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES=120
 REFRESH_TOKEN_EXPIRE_DAYS=30
 WALLET_MASTER_KEY=local-dev-wallet-key
 
-# AI (optional - use your own keys)
-# OPENAI_API_KEY=sk-...
-# ANTHROPIC_API_KEY=sk-ant-...
+# Self-hosted AI (Ollama on Pi cluster)
+# OLLAMA_BASE_URL=http://localhost:11434
 ```
 
 ### GitHub Actions Secrets

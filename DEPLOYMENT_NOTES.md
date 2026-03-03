@@ -59,9 +59,8 @@ WALLET_MASTER_KEY=<generate-with-openssl-rand-hex-32>
 ### Optional Variables (Add as Needed)
 
 ```bash
-# AI Integration
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
+# Self-hosted AI (Ollama on Pi cluster)
+OLLAMA_BASE_URL=http://localhost:11434
 
 # External Services
 GITHUB_TOKEN=ghp_...

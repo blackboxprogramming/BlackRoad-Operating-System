@@ -2,7 +2,7 @@ name: Operator Engine Tests
 
 on:
   push:
-    branches: [ main, claude/** ]
+    branches: [ main, copilot/** ]
     paths:
       - 'operator_engine/**'
       - '.github/workflows/operator-tests.yml'

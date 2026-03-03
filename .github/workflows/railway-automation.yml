@@ -2,7 +2,7 @@ name: Railway Secrets & Automation Audit
 
 on:
   push:
-    branches: ["main", "claude/**"]
+    branches: ["main", "copilot/**"]
   pull_request:
     branches: ["main"]
   schedule:

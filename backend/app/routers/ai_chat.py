@@ -177,8 +177,8 @@ async def send_message(
     )
     db.add(user_message)
 
-    # Generate AI response (simplified - in production, call OpenAI API)
-    ai_response_content = f"This is a simulated AI response to: '{message_data.content}'. In production, this would call the OpenAI API configured in settings.OPENAI_API_KEY."
+    # Generate AI response (simplified - in production, routes to self-hosted Ollama on Pi cluster)
+    ai_response_content = f"This is a simulated AI response to: '{message_data.content}'. In production, this routes to the self-hosted Ollama instance at OLLAMA_BASE_URL."
 
     ai_message = Message(
         conversation_id=conversation_id,

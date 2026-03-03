@@ -26,6 +26,6 @@ patterns = ["**/*.py", "requirements.txt", "Dockerfile"]
 # - ALLOWED_ORIGINS
 
 # Optional:
-# - OPENAI_API_KEY
+# - OLLAMA_BASE_URL
 # - GITHUB_TOKEN
 # - SENTRY_DSN

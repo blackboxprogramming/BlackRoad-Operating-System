@@ -2,7 +2,7 @@ name: Backend Tests & API Connectivity
 
 on:
   push:
-    branches: ["main", "claude/**"]
+    branches: ["main", "copilot/**"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
@@ -126,7 +126,6 @@ jobs:
                   "Slack API": "https://slack.com/api",
                   "Discord API": "https://discord.com/api/v10",
                   "Sentry API": "https://sentry.io/api/0",
-                  "OpenAI API": "https://api.openai.com",
                   "HuggingFace API": "https://huggingface.co/api",
                   "DigitalOcean API": "https://api.digitalocean.com",
               }

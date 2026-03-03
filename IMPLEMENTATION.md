@@ -316,10 +316,9 @@ FRONTEND_URL=https://os.blackroad.systems
 WALLET_MASTER_KEY=<generated securely>
 ```
 
-**AI/ML** (Phase 1):
+**AI/ML** (Self-hosted via Ollama on Pi cluster):
 ```bash
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...  # For Lucidia in Phase 2
+OLLAMA_BASE_URL=http://localhost:11434
 ```
 
 **Cloud** (optional, Phase 2):
