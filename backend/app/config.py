@@ -77,6 +77,10 @@ class Settings(BaseSettings):
     GITHUB_TOKEN: str = ""
     GITHUB_WEBHOOK_SECRET: str = ""
 
+    # Ollama local LLM
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_DEFAULT_MODEL: str = "llama3"
+
     class Config:
         env_file = ".env"
         case_sensitive = True

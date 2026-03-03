@@ -18,7 +18,7 @@ from app.routers import (
     railway, vercel, stripe, twilio, slack, discord, sentry, api_health, agents,
     capture, identity_center, notifications_center, creator, compliance_ops,
     search, cloudflare, system, webhooks, prism_static, ip_vault, leitl, cognition,
-    cece, br95
+    cece, br95, ollama
 )
 from app.services.crypto import rotate_plaintext_wallet_keys
 
@@ -181,6 +181,8 @@ app.include_router(webhooks.router)
 # BR-95 Desktop OS Data APIs + WebSocket
 app.include_router(br95.router)
 
+# Ollama local LLM proxy
+app.include_router(ollama.router)
 
 # Prism Console (Phase 2.5) - Admin interface at /prism
 prism_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "prism-console")
