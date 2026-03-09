@@ -25,7 +25,7 @@ boto3==1.29.7
 botocore==1.32.7
 
 # Email
-email-validator==2.1.0.post1
+email-validator==2.3.0
 emails==0.6.0
 jinja2==3.1.2
 
