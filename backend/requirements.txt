@@ -18,7 +18,7 @@ pyjwt==2.8.0
 
 # Redis Cache
 redis==5.0.1
-hiredis==2.2.3
+hiredis==3.3.0
 
 # AWS S3 for File Storage
 boto3==1.29.7
