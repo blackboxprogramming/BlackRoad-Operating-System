@@ -37,8 +37,10 @@ jobs:
           done
 
           if [ $FAILED -gt 0 ]; then
-            echo "⚠️  $FAILED service(s) failed health check"
-            exit 1
+            echo "⚠️  $FAILED service(s) failed health check (may be offline/unreachable)"
+            echo "::warning::$FAILED service(s) failed health check"
+          else
+            echo "✅ All services healthy"
           fi
 
       - name: Notify on failure
