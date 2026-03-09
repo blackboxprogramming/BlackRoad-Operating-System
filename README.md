@@ -137,7 +137,14 @@ pytest tests/ -v
 ## 🔄 Dynamic README Status
 
 <!-- DYNAMIC_STATS_START -->
-> Stats auto-updated by the nightly workflow.
+| Metric | Count |
+|--------|-------|
+| Python files | 469 |
+| JavaScript files | 42 |
+| Agent modules | 234 |
+| API routers | 43 |
+| CI/CD workflows | 66 |
+| Last updated | 2026-03-08 |
 <!-- DYNAMIC_STATS_END -->
 
 ---
