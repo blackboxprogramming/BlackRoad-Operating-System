@@ -1,159 +1,117 @@
-# 🖤 BlackRoad Operating System
+# BlackRoad Operating System
 
-> A nostalgic Windows 95–inspired web operating system powered by AI, blockchain,  
-> real-time streaming, and 200+ autonomous agents.  
-> Built by **Alexa Louise Amundson** and the BlackRoad OS community.
+**The Operating System for Governed AI**
 
-<!-- DYNAMIC BADGES – auto-updated by GitHub Actions -->
-[![CI](https://github.com/blackboxprogramming/BlackRoad-Operating-System/actions/workflows/ci.yml/badge.svg)](https://github.com/blackboxprogramming/BlackRoad-Operating-System/actions/workflows/ci.yml)
-[![Backend Tests](https://github.com/blackboxprogramming/BlackRoad-Operating-System/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/blackboxprogramming/BlackRoad-Operating-System/actions/workflows/backend-tests.yml)
-[![Deploy to GitHub Pages](https://github.com/blackboxprogramming/BlackRoad-Operating-System/actions/workflows/deploy.yml/badge.svg)](https://github.com/blackboxprogramming/BlackRoad-Operating-System/actions/workflows/deploy.yml)
-[![License](https://img.shields.io/github/license/blackboxprogramming/BlackRoad-Operating-System)](LICENSE)
-[![Last Commit](https://img.shields.io/github/last-commit/blackboxprogramming/BlackRoad-Operating-System)](https://github.com/blackboxprogramming/BlackRoad-Operating-System/commits/main)
+Master monorepo for BlackRoad OS — a platform that unifies identity management, AI orchestration, and quantum computing under a single governed architecture. Built with TypeScript, Python, and deployed across a sovereign Raspberry Pi fleet.
 
----
+## Products
 
-## 🚀 Live Demo
+### RoadAuth — Identity & Access Management
+AI-powered IAM with 4 security agents (Sentinel, Auditor, Enforcer, Provisioner). SOC 2, HIPAA, FedRAMP compliance built in. JWT + Paseto tokens, WebAuthn, OAuth2/LDAP/SAML/SCIM 2.0.
 
-| Surface | URL |
-|---------|-----|
-| **OS Interface** | [blackroad.systems](https://blackroad.systems) |
-| **GitHub Pages** | [blackboxprogramming.github.io/BlackRoad-Operating-System](https://blackboxprogramming.github.io/BlackRoad-Operating-System) |
-| **API Docs** | [blackroad.systems/api/docs](https://blackroad.systems/api/docs) |
+### Lucidia — AI with Memory
+Conversational AI with persistent memory and multi-service orchestration. 108 local models via Ollama. Sovereign — runs on your hardware.
 
----
+### Quantum Framework
+State-vector quantum circuit simulator with VQE, QAOA, Grover's, QFT implementations. Visual circuit designer at circuits.blackroad.io.
 
-## ✨ Features
-
-- 🖥️ **BR-95 Desktop** — retro Windows 95–style UI with a modern brand gradient
-- 🤖 **200+ Autonomous Agents** across 10 categories (DevOps, Engineering, Finance, Security, …)
-- 🧠 **Local Ollama LLM** — run any model locally, no cloud API key required
-- ⛓️ **RoadChain Blockchain** — proof-of-origin for ideas and IP
-- 🎮 **Games & Media** — video streaming, browser, games built in
-- 🔐 **Identity & Auth** — JWT-based auth with wallet encryption
-- 📡 **Real-time WebSocket** — live collaboration via LEITL protocol
-- 🌐 **GitHub Pages** — static frontend deployed automatically on every push to `main`
-
----
-
-## 🏗️ Architecture
+## Architecture
 
 ```
-Browser (Vanilla JS, zero dependencies)
-        ↕ HTTP / WebSocket
-FastAPI Backend  (Python 3.11, async)
-        ↕
-┌──────────────┬──────────────┬──────────────┐
-│  PostgreSQL  │    Redis     │  Local/Cloud │
-│  (primary)   │  (cache/ws)  │  LLM (Ollama)│
-└──────────────┴──────────────┴──────────────┘
+┌────────────────────────────────────────────────────┐
+│                   BlackRoad OS                      │
+├──────────────┬──────────────┬──────────────────────┤
+│   apps/      │   backend/   │   services/          │
+│   web UI     │   Python API │   core-api, codex,   │
+│   prism      │   FastAPI    │   analytics, aiops   │
+│   console    │   alembic    │   operator engine    │
+├──────────────┴──────────────┴──────────────────────┤
+│   agents/        │   sdk/         │   kernel/       │
+│   base classes   │   Python SDK   │   TypeScript    │
+│   categories     │   TypeScript   │   core runtime  │
+│   templates      │   SDK          │                 │
+├──────────────────┴────────────────┴─────────────────┤
+│              Infrastructure Layer                    │
+│   deploy/ · infra/ · ops/ · scripts/                │
+│   Docker · Railway · Cloudflare Workers             │
+└─────────────────────────────────────────────────────┘
 ```
 
----
+## Project Structure
 
-## 🤖 Local Ollama Setup
+```
+├── agents/          # AI agent framework (base, categories, templates)
+├── apps/            # Web applications (prism-console, web client, docs)
+├── backend/         # Python API server (FastAPI, Docker, alembic)
+├── blackroad-os/    # Core OS web interface and Lucidia shell
+├── kernel/          # TypeScript kernel runtime
+├── sdk/             # Python and TypeScript SDKs
+├── services/        # Microservices (core-api, codex, analytics, aiops, operator)
+├── deploy/          # Deployment configurations
+├── infra/           # Infrastructure as code
+├── scripts/         # Automation and deployment scripts
+├── tools/           # Health checks and utilities
+├── server.mjs       # Main Node.js server
+├── package.json     # Node.js project configuration
+└── requirements.txt # Python dependencies
+```
 
-BlackRoad OS ships a built-in proxy for your local [Ollama](https://ollama.com) instance — no OpenAI key needed.
+## Quickstart
 
 ```bash
-# 1. Install Ollama
-curl -fsSL https://ollama.com/install.sh | sh
-
-# 2. Pull a model
-ollama pull llama3
-
-# 3. Start Ollama (default: http://localhost:11434)
-ollama serve
-
-# 4. Start the backend
-cd backend && uvicorn app.main:app --reload
-
-# 5. Chat via API
-curl -X POST http://localhost:8000/api/ollama/chat \
-  -H 'Content-Type: application/json' \
-  -d '{"messages": [{"role": "user", "content": "Hello from BlackRoad OS!"}]}'
-
-# 6. Check available models
-curl http://localhost:8000/api/ollama/models
-```
-
-**Environment variables** (`.env`):
-```env
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_DEFAULT_MODEL=llama3
-```
-
----
-
-## ⚡ Quick Start
-
-```bash
-# Clone
 git clone https://github.com/blackboxprogramming/BlackRoad-Operating-System.git
-cd BlackRoad-Operating-System/backend
+cd BlackRoad-Operating-System
 
-# Install dependencies
-pip install -r requirements.txt
+# Node.js server
+npm install
+npm start
 
-# Copy env template
-cp .env.example .env   # edit as needed
-
-# Run
-uvicorn app.main:app --reload
-# → http://localhost:8000
-```
-
-**Docker Compose** (Postgres + Redis + FastAPI):
-```bash
-cd backend && docker-compose up
-```
-
----
-
-## 🧪 Tests
-
-```bash
+# Python backend
 cd backend
-pytest tests/ -v
-# 51 tests, all green ✅
+pip install -r requirements.txt
+python run.py
+
+# Health check
+npm run check:health
 ```
 
----
+## Services
 
-## 📂 Repository Structure
+| Service | Description |
+|---------|-------------|
+| `core-api` | Central API gateway |
+| `codex` | AI code generation service |
+| `analytics` | Usage and performance analytics |
+| `aiops` | AI operations and monitoring |
+| `operator` | Fleet management and orchestration |
+| `public-api` | External-facing API |
 
-| Directory | Purpose |
-|-----------|---------|
-| `backend/` | FastAPI server, routers, models |
-| `backend/static/` | **Canonical frontend** (served at `/`) |
-| `agents/` | 200+ autonomous agents |
-| `kernel/` | TypeScript kernel for service orchestration |
-| `sdk/` | Python & TypeScript client SDKs |
-| `docs/` | Architecture documentation |
-| `infra/` | DNS & infrastructure configs |
+## Infrastructure
 
----
+- **5 Raspberry Pi 5 nodes** — WireGuard mesh network
+- **52 TOPS AI acceleration** — 2x Hailo-8 accelerators
+- **108 local models** — Ollama bridge on sovereign hardware
+- **18 Cloudflare tunnels** — Edge routing for 48+ domains
+- **Docker Swarm** — Container orchestration across fleet
 
-## 🔄 Dynamic README Status
+## Related Repositories
 
-<!-- DYNAMIC_STATS_START -->
-| Metric | Count |
-|--------|-------|
-| Python files | 469 |
-| JavaScript files | 42 |
-| Agent modules | 234 |
-| API routers | 43 |
-| CI/CD workflows | 66 |
-| Last updated | 2026-03-09 |
-<!-- DYNAMIC_STATS_END -->
+| Repo | Description |
+|------|-------------|
+| [lucidia](https://github.com/blackboxprogramming/lucidia) | AI with persistent memory |
+| [lucidia-cli](https://github.com/blackboxprogramming/lucidia-cli) | Sovereign coding CLI |
+| [quantum-math-lab](https://github.com/blackboxprogramming/quantum-math-lab) | Quantum circuit simulator |
+| [blackroad-api-sdks](https://github.com/blackboxprogramming/blackroad-api-sdks) | JS, Python, Go, Ruby SDKs |
+| [blackroad-scripts](https://github.com/blackboxprogramming/blackroad-scripts) | 400+ automation scripts |
+| [context-bridge](https://github.com/blackboxprogramming/context-bridge) | Persistent memory layer |
 
----
+## Links
 
-## 📜 License
+- [blackroad.io](https://blackroad.io)
+- [docs.blackroad.io](https://docs.blackroad.io)
+- [circuits.blackroad.io](https://circuits.blackroad.io)
+- [simulator.blackroad.io](https://simulator.blackroad.io)
 
-[GNU General Public License v3.0](LICENSE) © 2025 Alexa Louise Amundson / BlackRoad OS
+## License
 
----
-
-*BlackRoad OS is not affiliated with BlackRock, Inc. or any asset management firm.*
-
+Copyright 2026 BlackRoad OS, Inc. — Alexa Amundson. All rights reserved.
