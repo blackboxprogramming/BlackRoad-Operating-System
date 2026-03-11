@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
     "target": "ES2021",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -11,7 +10,6 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["scripts/**/*.ts", "tools/**/*.ts", "infra/**/*.json"]
   "include": ["scripts/**/*.ts", "tools/**/*.ts", "infra/**/*.json"],
   "ts-node": {
     "esm": false
