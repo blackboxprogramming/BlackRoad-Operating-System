@@ -17,7 +17,7 @@ bcrypt==4.1.1
 pyjwt==2.8.0
 
 # Redis Cache
-redis==5.0.1
+redis==7.3.0
 hiredis==3.3.0
 
 # AWS S3 for File Storage
