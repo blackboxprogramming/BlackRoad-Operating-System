@@ -55,3 +55,14 @@ Articles on building and running this infrastructure:
 ## License
 
 Copyright 2026 BlackRoad OS, Inc. — Alexa Amundson. All rights reserved.
+
+## Related Projects
+
+| Project | Description |
+|---------|-------------|
+| [BlackRoad AI Dashboard](https://github.com/blackboxprogramming/blackroad-ai-dashboard) | Real-time AI fleet monitoring dashboard |
+| [BlackRoad Desktop App](https://github.com/blackboxprogramming/blackroad-desktop-app) | Electron app for fleet management |
+| [BlackRoad Chrome Extension](https://github.com/blackboxprogramming/blackroad-chrome-extension) | Browser extension for fleet monitoring |
+| [Fleet Heartbeat](https://github.com/blackboxprogramming/fleet-heartbeat) | Distributed health monitoring system |
+| [Lucidia](https://github.com/blackboxprogramming/lucidia) | Autonomous AI agent with persistent memory |
+| [Hailo Vision](https://github.com/blackboxprogramming/hailo-vision) | Computer vision with Hailo-8 AI accelerators |
