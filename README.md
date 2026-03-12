@@ -1,116 +1,56 @@
-# BlackRoad Operating System
+# BlackRoad OS
 
-**The Operating System for Governed AI**
+Self-hosted edge AI operating system running 52 TOPS of inference on Raspberry Pi clusters.
 
-Master monorepo for BlackRoad OS — a platform that unifies identity management, AI orchestration, and quantum computing under a single governed architecture. Built with TypeScript, Python, and deployed across a sovereign Raspberry Pi fleet.
+## What is BlackRoad OS?
 
-## Products
+BlackRoad OS is a sovereign computing platform that runs AI inference, networking, and automation entirely on hardware you own. No cloud dependencies. No API keys expiring at 2am. Five Raspberry Pi 5 nodes connected by a WireGuard mesh network, accelerated by dual Hailo-8 NPUs, running 16 local models through Ollama.
 
-### RoadAuth — Identity & Access Management
-AI-powered IAM with 4 security agents (Sentinel, Auditor, Enforcer, Provisioner). SOC 2, HIPAA, FedRAMP compliance built in. JWT + Paseto tokens, WebAuthn, OAuth2/LDAP/SAML/SCIM 2.0.
+The fleet self-heals. Cron-driven watchdogs monitor every service, restart what dies, and log what broke. Cloudflare tunnels route 48+ domains through the cluster. Docker Swarm orchestrates containers across nodes. Gitea hosts 200+ repositories on a 1TB NVMe.
 
-### Lucidia — AI with Memory
-Conversational AI with persistent memory and multi-service orchestration. 108 local models via Ollama. Sovereign — runs on your hardware.
-
-### Quantum Framework
-State-vector quantum circuit simulator with VQE, QAOA, Grover's, QFT implementations. Visual circuit designer at circuits.blackroad.io.
-
-## Architecture
-
-```
-┌────────────────────────────────────────────────────┐
-│                   BlackRoad OS                      │
-├──────────────┬──────────────┬──────────────────────┤
-│   apps/      │   backend/   │   services/          │
-│   web UI     │   Python API │   core-api, codex,   │
-│   prism      │   FastAPI    │   analytics, aiops   │
-│   console    │   alembic    │   operator engine    │
-├──────────────┴──────────────┴──────────────────────┤
-│   agents/        │   sdk/         │   kernel/       │
-│   base classes   │   Python SDK   │   TypeScript    │
-│   categories     │   TypeScript   │   core runtime  │
-│   templates      │   SDK          │                 │
-├──────────────────┴────────────────┴─────────────────┤
-│              Infrastructure Layer                    │
-│   deploy/ · infra/ · ops/ · scripts/                │
-│   Docker · Railway · Cloudflare Workers             │
-└─────────────────────────────────────────────────────┘
-```
-
-## Project Structure
-
-```
-├── agents/          # AI agent framework (base, categories, templates)
-├── apps/            # Web applications (prism-console, web client, docs)
-├── backend/         # Python API server (FastAPI, Docker, alembic)
-├── blackroad-os/    # Core OS web interface and Lucidia shell
-├── kernel/          # TypeScript kernel runtime
-├── sdk/             # Python and TypeScript SDKs
-├── services/        # Microservices (core-api, codex, analytics, aiops, operator)
-├── deploy/          # Deployment configurations
-├── infra/           # Infrastructure as code
-├── scripts/         # Automation and deployment scripts
-├── tools/           # Health checks and utilities
-├── server.mjs       # Main Node.js server
-├── package.json     # Node.js project configuration
-└── requirements.txt # Python dependencies
-```
-
-## Quickstart
-
-```bash
-git clone https://github.com/blackboxprogramming/BlackRoad-Operating-System.git
-cd BlackRoad-Operating-System
-
-# Node.js server
-npm install
-npm start
-
-# Python backend
-cd backend
-pip install -r requirements.txt
-python run.py
-
-# Health check
-npm run check:health
-```
-
-## Services
-
-| Service | Description |
-|---------|-------------|
-| `core-api` | Central API gateway |
-| `codex` | AI code generation service |
-| `analytics` | Usage and performance analytics |
-| `aiops` | AI operations and monitoring |
-| `operator` | Fleet management and orchestration |
-| `public-api` | External-facing API |
+This is infrastructure that runs in a closet and serves production traffic.
 
 ## Infrastructure
 
-- **5 Raspberry Pi 5 nodes** — WireGuard mesh network
-- **52 TOPS AI acceleration** — 2x Hailo-8 accelerators
-- **108 local models** — Ollama bridge on sovereign hardware
-- **18 Cloudflare tunnels** — Edge routing for 48+ domains
-- **Docker Swarm** — Container orchestration across fleet
+| Node | Role | Hardware |
+|------|------|----------|
+| **Alice** | Gateway, DNS, ingress | Pi 400, Pi-hole, PostgreSQL, Qdrant, 65+ tunnel routes |
+| **Cecilia** | AI inference, TTS | Pi 5, Hailo-8 (26 TOPS), 16 Ollama models, MinIO |
+| **Octavia** | Git, orchestration | Pi 5, Hailo-8 (26 TOPS), 1TB NVMe, Gitea, Docker Swarm leader |
+| **Aria** | Container management | Pi 5, Portainer, Headscale |
+| **Lucidia** | Apps, CI/CD | Pi 5, GitHub Actions runner, FastAPI, 334 web apps |
 
-## Related Repositories
+**Network:** WireGuard mesh (10.8.0.x) with Anastasia (DigitalOcean) as hub. RoadNet WiFi overlay across all nodes.
 
-| Repo | Description |
-|------|-------------|
-| [lucidia](https://github.com/blackboxprogramming/lucidia) | AI with persistent memory |
-| [lucidia-cli](https://github.com/blackboxprogramming/lucidia-cli) | Sovereign coding CLI |
-| [quantum-math-lab](https://github.com/blackboxprogramming/quantum-math-lab) | Quantum circuit simulator |
-| [blackroad-api-sdks](https://github.com/blackboxprogramming/blackroad-api-sdks) | JS, Python, Go, Ruby SDKs |
-| [blackroad-scripts](https://github.com/blackboxprogramming/blackroad-scripts) | 400+ automation scripts |
-| [context-bridge](https://github.com/blackboxprogramming/context-bridge) | Persistent memory layer |
+## Stack
+
+| Component | What it does |
+|-----------|-------------|
+| **Hailo-8** | 52 TOPS combined neural network inference (2x 26 TOPS) |
+| **Ollama** | 16 local LLMs including 4 custom CECE models |
+| **WireGuard** | Encrypted mesh VPN across all nodes + cloud |
+| **Pi-hole** | Fleet-wide DNS filtering and custom zones |
+| **Docker Swarm** | Container orchestration across the cluster |
+| **Gitea** | Self-hosted Git with 207 repositories |
+| **NATS** | Lightweight messaging between services |
+| **RoadC** | Custom programming language with Python-style indentation |
+| **Cloudflare** | 18 tunnels, 48+ domains, D1/KV/R2 storage |
+
+## Read More
+
+Articles on building and running this infrastructure:
+
+- [Self-Healing Infrastructure in Production](https://blackroad.io/blog/self-healing-infrastructure) — How the fleet detects, diagnoses, and fixes issues without human intervention
+- [Building with Local AI Models](https://blackroad.io/blog/building-with-local-ai) — Running 16 Ollama models on sovereign hardware with Hailo-8 acceleration
+- [Why We Chose Cloudflare + Raspberry Pi](https://blackroad.io/blog/why-we-chose-cloudflare-railway) — Edge architecture decisions for a self-hosted platform
+- [PS-SHA: Quantum-Resistant Memory](https://blackroad.io/blog/ps-sha-infinity) — Cryptographic hash function for persistent memory integrity
+- [Lessons from Scaling Autonomous Systems](https://blackroad.io/blog/building-30k-agents) — What broke and what held when pushing distributed agents to production
 
 ## Links
 
-- [blackroad.io](https://blackroad.io)
-- [docs.blackroad.io](https://docs.blackroad.io)
-- [circuits.blackroad.io](https://circuits.blackroad.io)
-- [simulator.blackroad.io](https://simulator.blackroad.io)
+- **[blackroad.io](https://blackroad.io)** — Main site
+- **[blackroad.io/blog](https://blackroad.io/blog)** — Technical blog
+- **[git.blackroad.io](https://git.blackroad.io)** — Self-hosted Gitea
 
 ## License
 
