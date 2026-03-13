@@ -1,1 +1,10 @@
-{"node": "alice", "timestamp": "2026-03-13T19:55:25Z", "status": "online"}
+{
+  "node": "alice",
+  "timestamp": "2026-03-13T23:12:02Z",
+  "status": "online",
+  "load": "0.88 0.95 1.06",
+  "memory": "393/3794MB",
+  "disk": "85%",
+  "temp_c": "38.0",
+  "uptime": "up 2 days, 2 hours, 53 minutes"
+}
