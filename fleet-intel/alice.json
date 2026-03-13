@@ -1,0 +1,12 @@
+{
+  "from": "alice",
+  "timestamp": "2026-03-13T15:55:05.762466Z",
+  "brain": {
+    "total_memories": 0,
+    "total_observations": 12,
+    "total_insights": 0,
+    "db_size_kb": 24
+  },
+  "recent_insights": [],
+  "top_memories": []
+}
