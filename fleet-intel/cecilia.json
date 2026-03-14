@@ -1,13 +1,43 @@
 {
   "from": "cecilia",
-  "timestamp": "2026-03-14T12:21:43.336481Z",
+  "timestamp": "2026-03-14T16:22:08.692344Z",
   "brain": {
-    "total_memories": 23,
-    "total_observations": 108,
-    "total_insights": 22,
+    "total_memories": 28,
+    "total_observations": 120,
+    "total_insights": 28,
     "db_size_kb": 40
   },
   "recent_insights": [
+    {
+      "time": "2026-03-14T16:17:06.365530",
+      "insight": "lucidia is consistently overloaded (avg load: 8.0)",
+      "confidence": 0.7
+    },
+    {
+      "time": "2026-03-14T16:17:06.355316",
+      "insight": "aria temperature is rising: 45\u00b0C \u2192 56\u00b0C (+11\u00b0C)",
+      "confidence": 0.8
+    },
+    {
+      "time": "2026-03-14T16:17:06.344607",
+      "insight": "octavia temperature is rising: 45\u00b0C \u2192 56\u00b0C (+11\u00b0C)",
+      "confidence": 0.8
+    },
+    {
+      "time": "2026-03-14T16:17:06.334077",
+      "insight": "cecilia temperature is rising: 45\u00b0C \u2192 57\u00b0C (+12\u00b0C)",
+      "confidence": 0.8
+    },
+    {
+      "time": "2026-03-14T16:17:06.329005",
+      "insight": "alice is consistently overloaded (avg load: 3.4)",
+      "confidence": 0.7
+    },
+    {
+      "time": "2026-03-14T16:17:06.318230",
+      "insight": "alice temperature is rising: 45\u00b0C \u2192 57\u00b0C (+12\u00b0C)",
+      "confidence": 0.8
+    },
     {
       "time": "2026-03-14T12:17:06.519402",
       "insight": "lucidia is consistently overloaded (avg load: 8.6)",
@@ -27,36 +57,6 @@
       "time": "2026-03-14T12:17:06.486845",
       "insight": "octavia temperature is rising: 45\u00b0C \u2192 57\u00b0C (+12\u00b0C)",
       "confidence": 0.8
-    },
-    {
-      "time": "2026-03-14T12:17:06.475928",
-      "insight": "cecilia temperature is rising: 45\u00b0C \u2192 56\u00b0C (+12\u00b0C)",
-      "confidence": 0.8
-    },
-    {
-      "time": "2026-03-14T12:17:06.467849",
-      "insight": "alice is consistently overloaded (avg load: 3.6)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-14T08:17:05.274514",
-      "insight": "lucidia is consistently overloaded (avg load: 7.8)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-14T08:17:05.269380",
-      "insight": "alice is consistently overloaded (avg load: 3.9)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-14T04:17:05.603717",
-      "insight": "lucidia is consistently overloaded (avg load: 6.8)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-14T04:17:05.598315",
-      "insight": "alice is consistently overloaded (avg load: 4.2)",
-      "confidence": 0.7
     }
   ],
   "top_memories": [
