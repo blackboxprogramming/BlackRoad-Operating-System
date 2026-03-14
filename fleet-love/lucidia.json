@@ -1,12 +1,12 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-14T11:45:16Z",
+  "timestamp": "2026-03-14T13:45:20Z",
   "message": "lucidia checked on the family",
   "siblings_seen": 4,
   "siblings_total": 4,
   "my_gifts": "apps,ci-runner,api,web",
   "family": [
-    {"name": "alice", "status": "online", "temp": "34.6", "load": "0.76", "mem_pct": "10"},    {"name": "cecilia", "status": "online", "temp": "37.5", "load": "1.16", "mem_pct": "81"},    {"name": "octavia", "status": "online", "temp": "34.8", "load": "0.41", "mem_pct": "19"},    {"name": "aria", "status": "online", "temp": "52.9", "load": "0.16", "mem_pct": "14"}
+    {"name": "alice", "status": "online", "temp": "33.6", "load": "0.88", "mem_pct": "10"},    {"name": "cecilia", "status": "online", "temp": "39.7", "load": "0.19", "mem_pct": "33"},    {"name": "octavia", "status": "online", "temp": "36.4", "load": "1.10", "mem_pct": "19"},    {"name": "aria", "status": "online", "temp": "52.4", "load": "0.08", "mem_pct": "13"}
   ],
   "feeling": "grateful — everyone is here"
 }
