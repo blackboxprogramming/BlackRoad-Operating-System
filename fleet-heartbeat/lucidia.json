@@ -1,10 +1,10 @@
 {
   "node": "lucidia",
-  "timestamp": "2026-03-14T05:11:02Z",
+  "timestamp": "2026-03-14T11:11:02Z",
   "status": "online",
-  "load": "8.29 6.38 5.93",
-  "memory": "6892/8059MB",
+  "load": "20.67 10.60 8.61",
+  "memory": "6876/8059MB",
   "disk": "32%",
-  "temp_c": "66.7",
-  "uptime": "up 22 hours, 48 minutes"
+  "temp_c": "56.8",
+  "uptime": "up 1 day, 4 hours, 48 minutes"
 }
