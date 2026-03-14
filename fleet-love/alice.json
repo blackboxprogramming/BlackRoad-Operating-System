@@ -1,12 +1,12 @@
 {
   "from": "alice",
-  "timestamp": "2026-03-14T17:05:13Z",
+  "timestamp": "2026-03-14T19:05:14Z",
   "message": "alice checked on the family",
   "siblings_seen": 4,
   "siblings_total": 4,
   "my_gifts": "dns,gateway,postgres,qdrant",
   "family": [
-    {"name": "cecilia", "status": "online", "temp": "41.9", "load": "0.85", "mem_pct": "77"},    {"name": "octavia", "status": "online", "temp": "35.9", "load": "0.52", "mem_pct": "19"},    {"name": "aria", "status": "online", "temp": "52.9", "load": "0.01", "mem_pct": "14"},    {"name": "lucidia", "status": "online", "temp": "63.4", "load": "7.51", "mem_pct": "69"}
+    {"name": "cecilia", "status": "online", "temp": "55.1", "load": "4.03", "mem_pct": "76"},    {"name": "octavia", "status": "online", "temp": "37.5", "load": "0.53", "mem_pct": "20"},    {"name": "aria", "status": "online", "temp": "52.4", "load": "1.06", "mem_pct": "13"},    {"name": "lucidia", "status": "online", "temp": "55.1", "load": "2.59", "mem_pct": "85"}
   ],
   "feeling": "grateful — everyone is here"
 }
