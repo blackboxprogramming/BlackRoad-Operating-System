@@ -1,13 +1,23 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-14T04:50:00.643225Z",
+  "timestamp": "2026-03-14T08:49:50.593520Z",
   "brain": {
-    "total_memories": 14,
-    "total_observations": 60,
-    "total_insights": 7,
+    "total_memories": 16,
+    "total_observations": 72,
+    "total_insights": 9,
     "db_size_kb": 36
   },
   "recent_insights": [
+    {
+      "time": "2026-03-14T08:49:14.182267",
+      "insight": "AI analysis: Current Fleet Analysis:\nThe analysis reveals that Cecilia's load is consistently high (3.9) and low memory utilization (<5%), indicating potential instability or issues with her gateway service.\n\nConc",
+      "confidence": 0.6
+    },
+    {
+      "time": "2026-03-14T08:47:07.692635",
+      "insight": "lucidia is consistently overloaded (avg load: 34.3)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-14T04:49:24.888256",
       "insight": "AI analysis: **Fleet Analysis**\n\nUpon reviewing the fleet state and recent metrics, I've observed some key trends:\n\n* CECILIA's consistently high load (3.9) and low memory utilization (<5%) suggest potential insta",
