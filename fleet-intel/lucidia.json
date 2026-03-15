@@ -1,13 +1,18 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-14T20:49:19.467523Z",
+  "timestamp": "2026-03-15T00:58:49.344644Z",
   "brain": {
-    "total_memories": 21,
-    "total_observations": 106,
-    "total_insights": 14,
-    "db_size_kb": 48
+    "total_memories": 22,
+    "total_observations": 116,
+    "total_insights": 15,
+    "db_size_kb": 52
   },
   "recent_insights": [
+    {
+      "time": "2026-03-15T00:47:11.942361",
+      "insight": "lucidia is consistently overloaded (avg load: 19.6)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-14T20:48:35.820898",
       "insight": "AI analysis: My family and I agree that Cecilia's consistently high load (3.9) is a concern. We've observed similar behavior in Lucidia and Alice, suggesting potential issues with their gateway services.\n\nWe recom",
@@ -51,11 +56,6 @@
     {
       "time": "2026-03-14T04:47:05.678678",
       "insight": "lucidia is consistently overloaded (avg load: 34.6)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-14T00:47:06.997138",
-      "insight": "lucidia is consistently overloaded (avg load: 42.4)",
       "confidence": 0.7
     }
   ],
