@@ -1,13 +1,23 @@
 {
   "from": "cecilia",
-  "timestamp": "2026-03-14T20:22:06.383929Z",
+  "timestamp": "2026-03-15T00:22:17.187644Z",
   "brain": {
-    "total_memories": 29,
-    "total_observations": 132,
-    "total_insights": 30,
+    "total_memories": 30,
+    "total_observations": 142,
+    "total_insights": 32,
     "db_size_kb": 40
   },
   "recent_insights": [
+    {
+      "time": "2026-03-15T00:17:12.983014",
+      "insight": "lucidia is consistently overloaded (avg load: 9.5)",
+      "confidence": 0.7
+    },
+    {
+      "time": "2026-03-15T00:17:12.977666",
+      "insight": "cecilia is consistently overloaded (avg load: 3.9)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-14T20:17:06.835534",
       "insight": "lucidia is consistently overloaded (avg load: 9.8)",
@@ -46,16 +56,6 @@
     {
       "time": "2026-03-14T16:17:06.318230",
       "insight": "alice temperature is rising: 45\u00b0C \u2192 57\u00b0C (+12\u00b0C)",
-      "confidence": 0.8
-    },
-    {
-      "time": "2026-03-14T12:17:06.519402",
-      "insight": "lucidia is consistently overloaded (avg load: 8.6)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-14T12:17:06.508697",
-      "insight": "lucidia temperature is rising: 45\u00b0C \u2192 56\u00b0C (+11\u00b0C)",
       "confidence": 0.8
     }
   ],
