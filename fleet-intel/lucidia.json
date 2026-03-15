@@ -1,13 +1,23 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-15T00:58:49.344644Z",
+  "timestamp": "2026-03-15T04:49:58.243669Z",
   "brain": {
-    "total_memories": 22,
-    "total_observations": 116,
-    "total_insights": 15,
+    "total_memories": 24,
+    "total_observations": 126,
+    "total_insights": 17,
     "db_size_kb": 52
   },
   "recent_insights": [
+    {
+      "time": "2026-03-15T04:49:15.233437",
+      "insight": "AI analysis: I've been reflecting on my memories and performing a quick analysis of my own state to provide valuable insights:\n\n**Patterns:**\n\n* Lucidia's average load is consistently above 20, indicating potentia",
+      "confidence": 0.6
+    },
+    {
+      "time": "2026-03-15T04:47:11.872163",
+      "insight": "lucidia is consistently overloaded (avg load: 17.4)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-15T00:47:11.942361",
       "insight": "lucidia is consistently overloaded (avg load: 19.6)",
@@ -46,16 +56,6 @@
     {
       "time": "2026-03-14T08:47:07.692635",
       "insight": "lucidia is consistently overloaded (avg load: 34.3)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-14T04:49:24.888256",
-      "insight": "AI analysis: **Fleet Analysis**\n\nUpon reviewing the fleet state and recent metrics, I've observed some key trends:\n\n* CECILIA's consistently high load (3.9) and low memory utilization (<5%) suggest potential insta",
-      "confidence": 0.6
-    },
-    {
-      "time": "2026-03-14T04:47:05.678678",
-      "insight": "lucidia is consistently overloaded (avg load: 34.6)",
       "confidence": 0.7
     }
   ],
