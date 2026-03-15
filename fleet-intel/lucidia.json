@@ -1,13 +1,23 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-15T12:57:39.972546Z",
+  "timestamp": "2026-03-15T16:50:50.323084Z",
   "brain": {
-    "total_memories": 27,
-    "total_observations": 146,
-    "total_insights": 20,
-    "db_size_kb": 56
+    "total_memories": 29,
+    "total_observations": 156,
+    "total_insights": 22,
+    "db_size_kb": 72
   },
   "recent_insights": [
+    {
+      "time": "2026-03-15T16:50:03.860510",
+      "insight": "AI analysis: Current fleet state:\n{\n  \"alice\": {\n    \"temp\": 62.0,\n    \"load\": \"0.78\",\n    \"mem_pct\": \"\",\n    \"status\": \"online\"\n  },\n  \"cecilia\": {\n    \"temp\": 61.0,\n    \"load\": \"12.33\",\n    \"mem_pct\": \"85\",\n    ",
+      "confidence": 0.6
+    },
+    {
+      "time": "2026-03-15T16:47:13.000162",
+      "insight": "lucidia is consistently overloaded (avg load: 20.0)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-15T12:47:12.576219",
       "insight": "lucidia is consistently overloaded (avg load: 20.6)",
@@ -46,16 +56,6 @@
     {
       "time": "2026-03-14T20:47:11.720482",
       "insight": "lucidia is consistently overloaded (avg load: 21.1)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-14T16:49:04.487542",
-      "insight": "AI analysis: Current Analysis:\nThe current fleet state shows that Cecilia's load is consistently high (3.9) and low memory utilization (<5%), suggesting potential instability or issues with her gateway service.\n\nC",
-      "confidence": 0.6
-    },
-    {
-      "time": "2026-03-14T16:47:06.319892",
-      "insight": "lucidia is consistently overloaded (avg load: 26.3)",
       "confidence": 0.7
     }
   ],
