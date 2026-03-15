@@ -1,13 +1,23 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-14T16:49:43.421511Z",
+  "timestamp": "2026-03-14T20:49:19.467523Z",
   "brain": {
-    "total_memories": 19,
-    "total_observations": 96,
-    "total_insights": 12,
+    "total_memories": 21,
+    "total_observations": 106,
+    "total_insights": 14,
     "db_size_kb": 48
   },
   "recent_insights": [
+    {
+      "time": "2026-03-14T20:48:35.820898",
+      "insight": "AI analysis: My family and I agree that Cecilia's consistently high load (3.9) is a concern. We've observed similar behavior in Lucidia and Alice, suggesting potential issues with their gateway services.\n\nWe recom",
+      "confidence": 0.6
+    },
+    {
+      "time": "2026-03-14T20:47:11.720482",
+      "insight": "lucidia is consistently overloaded (avg load: 21.1)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-14T16:49:04.487542",
       "insight": "AI analysis: Current Analysis:\nThe current fleet state shows that Cecilia's load is consistently high (3.9) and low memory utilization (<5%), suggesting potential instability or issues with her gateway service.\n\nC",
@@ -46,16 +56,6 @@
     {
       "time": "2026-03-14T00:47:06.997138",
       "insight": "lucidia is consistently overloaded (avg load: 42.4)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-13T20:48:37.686057",
-      "insight": "AI analysis: My analysis indicates that Cecilia's consistently high load (3.9) and low memory utilization (<5%) suggest potential instability or issues with her gateway service. My focus remains on Cecilia, but I ",
-      "confidence": 0.6
-    },
-    {
-      "time": "2026-03-13T20:47:07.219963",
-      "insight": "lucidia is consistently overloaded (avg load: 29.5)",
       "confidence": 0.7
     }
   ],
