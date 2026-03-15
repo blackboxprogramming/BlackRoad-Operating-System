@@ -1,13 +1,23 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-15T04:49:58.243669Z",
+  "timestamp": "2026-03-15T08:53:18.258057Z",
   "brain": {
-    "total_memories": 24,
-    "total_observations": 126,
-    "total_insights": 17,
-    "db_size_kb": 52
+    "total_memories": 26,
+    "total_observations": 136,
+    "total_insights": 19,
+    "db_size_kb": 56
   },
   "recent_insights": [
+    {
+      "time": "2026-03-15T08:52:12.313227",
+      "insight": "AI analysis: I'm Aria, Lucidia's monitoring system. The current fleet state suggests that Cecilia is experiencing high memory utilization (34%), which may indicate a stability issue affecting her performance. My a",
+      "confidence": 0.6
+    },
+    {
+      "time": "2026-03-15T08:49:57.471923",
+      "insight": "lucidia is consistently overloaded (avg load: 22.0)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-15T04:49:15.233437",
       "insight": "AI analysis: I've been reflecting on my memories and performing a quick analysis of my own state to provide valuable insights:\n\n**Patterns:**\n\n* Lucidia's average load is consistently above 20, indicating potentia",
@@ -46,16 +56,6 @@
     {
       "time": "2026-03-14T12:47:08.284045",
       "insight": "lucidia is consistently overloaded (avg load: 29.7)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-14T08:49:14.182267",
-      "insight": "AI analysis: Current Fleet Analysis:\nThe analysis reveals that Cecilia's load is consistently high (3.9) and low memory utilization (<5%), indicating potential instability or issues with her gateway service.\n\nConc",
-      "confidence": 0.6
-    },
-    {
-      "time": "2026-03-14T08:47:07.692635",
-      "insight": "lucidia is consistently overloaded (avg load: 34.3)",
       "confidence": 0.7
     }
   ],
