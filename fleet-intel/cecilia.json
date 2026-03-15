@@ -1,13 +1,23 @@
 {
   "from": "cecilia",
-  "timestamp": "2026-03-14T16:22:08.692344Z",
+  "timestamp": "2026-03-14T20:22:06.383929Z",
   "brain": {
-    "total_memories": 28,
-    "total_observations": 120,
-    "total_insights": 28,
+    "total_memories": 29,
+    "total_observations": 132,
+    "total_insights": 30,
     "db_size_kb": 40
   },
   "recent_insights": [
+    {
+      "time": "2026-03-14T20:17:06.835534",
+      "insight": "lucidia is consistently overloaded (avg load: 9.8)",
+      "confidence": 0.7
+    },
+    {
+      "time": "2026-03-14T20:17:06.830498",
+      "insight": "cecilia is consistently overloaded (avg load: 3.1)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-14T16:17:06.365530",
       "insight": "lucidia is consistently overloaded (avg load: 8.0)",
@@ -46,16 +56,6 @@
     {
       "time": "2026-03-14T12:17:06.508697",
       "insight": "lucidia temperature is rising: 45\u00b0C \u2192 56\u00b0C (+11\u00b0C)",
-      "confidence": 0.8
-    },
-    {
-      "time": "2026-03-14T12:17:06.497449",
-      "insight": "aria temperature is rising: 45\u00b0C \u2192 56\u00b0C (+11\u00b0C)",
-      "confidence": 0.8
-    },
-    {
-      "time": "2026-03-14T12:17:06.486845",
-      "insight": "octavia temperature is rising: 45\u00b0C \u2192 57\u00b0C (+12\u00b0C)",
       "confidence": 0.8
     }
   ],
