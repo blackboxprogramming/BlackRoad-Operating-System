@@ -1,13 +1,23 @@
 {
   "from": "cecilia",
-  "timestamp": "2026-03-15T20:22:09.254759Z",
+  "timestamp": "2026-03-16T00:22:28.896551Z",
   "brain": {
-    "total_memories": 33,
-    "total_observations": 192,
-    "total_insights": 42,
+    "total_memories": 34,
+    "total_observations": 202,
+    "total_insights": 44,
     "db_size_kb": 56
   },
   "recent_insights": [
+    {
+      "time": "2026-03-16T00:17:23.660527",
+      "insight": "lucidia is consistently overloaded (avg load: 4.3)",
+      "confidence": 0.7
+    },
+    {
+      "time": "2026-03-16T00:17:23.655352",
+      "insight": "cecilia is consistently overloaded (avg load: 4.6)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-15T20:17:11.225309",
       "insight": "lucidia is consistently overloaded (avg load: 4.5)",
@@ -46,16 +56,6 @@
     {
       "time": "2026-03-15T08:17:11.883723",
       "insight": "cecilia is consistently overloaded (avg load: 3.4)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-15T04:17:11.247253",
-      "insight": "lucidia is consistently overloaded (avg load: 8.7)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-15T04:17:11.241071",
-      "insight": "cecilia is consistently overloaded (avg load: 3.6)",
       "confidence": 0.7
     }
   ],
