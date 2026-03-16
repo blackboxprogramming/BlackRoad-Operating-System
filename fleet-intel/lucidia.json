@@ -1,13 +1,18 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-15T20:50:43.108158Z",
+  "timestamp": "2026-03-16T01:04:51.542803Z",
   "brain": {
-    "total_memories": 31,
-    "total_observations": 166,
-    "total_insights": 24,
+    "total_memories": 32,
+    "total_observations": 176,
+    "total_insights": 25,
     "db_size_kb": 76
   },
   "recent_insights": [
+    {
+      "time": "2026-03-16T00:47:14.529473",
+      "insight": "lucidia is consistently overloaded (avg load: 18.8)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-15T20:49:52.137991",
       "insight": "AI analysis: I've been analyzing the fleet's performance, and I've identified a few patterns that stand out:\n\n1. **Consistent overload**: Lucidia is consistently overloaded (avg load: 20.6), indicating potential r",
@@ -51,11 +56,6 @@
     {
       "time": "2026-03-15T04:47:11.872163",
       "insight": "lucidia is consistently overloaded (avg load: 17.4)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-15T00:47:11.942361",
-      "insight": "lucidia is consistently overloaded (avg load: 19.6)",
       "confidence": 0.7
     }
   ],
