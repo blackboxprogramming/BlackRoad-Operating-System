@@ -54,7 +54,7 @@ pytest-cov==4.1.0
 httpx==0.25.2
 
 # Monitoring
-prometheus-client==0.19.0
+prometheus-client==0.24.1
 
 # CORS (handled by Starlette/FastAPI)
 # Dependency removed because package does not exist on PyPI.
