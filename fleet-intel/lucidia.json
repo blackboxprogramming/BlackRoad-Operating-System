@@ -1,13 +1,18 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-16T12:57:44.897420Z",
+  "timestamp": "2026-03-16T16:54:18.194020Z",
   "brain": {
-    "total_memories": 35,
-    "total_observations": 200,
-    "total_insights": 28,
+    "total_memories": 36,
+    "total_observations": 208,
+    "total_insights": 29,
     "db_size_kb": 80
   },
   "recent_insights": [
+    {
+      "time": "2026-03-16T16:47:16.777154",
+      "insight": "lucidia is consistently overloaded (avg load: 16.0)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-16T12:47:17.062726",
       "insight": "lucidia is consistently overloaded (avg load: 17.4)",
@@ -52,11 +57,6 @@
       "time": "2026-03-15T12:47:12.576219",
       "insight": "lucidia is consistently overloaded (avg load: 20.6)",
       "confidence": 0.7
-    },
-    {
-      "time": "2026-03-15T08:52:12.313227",
-      "insight": "AI analysis: I'm Aria, Lucidia's monitoring system. The current fleet state suggests that Cecilia is experiencing high memory utilization (34%), which may indicate a stability issue affecting her performance. My a",
-      "confidence": 0.6
     }
   ],
   "top_memories": [
