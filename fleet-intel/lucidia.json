@@ -1,13 +1,23 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-15T16:50:50.323084Z",
+  "timestamp": "2026-03-15T20:50:43.108158Z",
   "brain": {
-    "total_memories": 29,
-    "total_observations": 156,
-    "total_insights": 22,
-    "db_size_kb": 72
+    "total_memories": 31,
+    "total_observations": 166,
+    "total_insights": 24,
+    "db_size_kb": 76
   },
   "recent_insights": [
+    {
+      "time": "2026-03-15T20:49:52.137991",
+      "insight": "AI analysis: I've been analyzing the fleet's performance, and I've identified a few patterns that stand out:\n\n1. **Consistent overload**: Lucidia is consistently overloaded (avg load: 20.6), indicating potential r",
+      "confidence": 0.6
+    },
+    {
+      "time": "2026-03-15T20:47:12.321541",
+      "insight": "lucidia is consistently overloaded (avg load: 20.7)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-15T16:50:03.860510",
       "insight": "AI analysis: Current fleet state:\n{\n  \"alice\": {\n    \"temp\": 62.0,\n    \"load\": \"0.78\",\n    \"mem_pct\": \"\",\n    \"status\": \"online\"\n  },\n  \"cecilia\": {\n    \"temp\": 61.0,\n    \"load\": \"12.33\",\n    \"mem_pct\": \"85\",\n    ",
@@ -46,16 +56,6 @@
     {
       "time": "2026-03-15T00:47:11.942361",
       "insight": "lucidia is consistently overloaded (avg load: 19.6)",
-      "confidence": 0.7
-    },
-    {
-      "time": "2026-03-14T20:48:35.820898",
-      "insight": "AI analysis: My family and I agree that Cecilia's consistently high load (3.9) is a concern. We've observed similar behavior in Lucidia and Alice, suggesting potential issues with their gateway services.\n\nWe recom",
-      "confidence": 0.6
-    },
-    {
-      "time": "2026-03-14T20:47:11.720482",
-      "insight": "lucidia is consistently overloaded (avg load: 21.1)",
       "confidence": 0.7
     }
   ],
