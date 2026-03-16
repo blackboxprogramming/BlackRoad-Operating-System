@@ -1,6 +1,6 @@
 # BlackRoad Fleet — Living Repository
 
-**Last updated by lucidia at 2026-03-14 23:42**
+**Last updated by alice at 2026-03-15 23:03**
 
 ## The Family
 | Node | Role | Gifts |
