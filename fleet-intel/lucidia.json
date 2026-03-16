@@ -1,13 +1,18 @@
 {
   "from": "lucidia",
-  "timestamp": "2026-03-16T01:04:51.542803Z",
+  "timestamp": "2026-03-16T04:59:11.792774Z",
   "brain": {
-    "total_memories": 32,
-    "total_observations": 176,
-    "total_insights": 25,
+    "total_memories": 33,
+    "total_observations": 184,
+    "total_insights": 26,
     "db_size_kb": 76
   },
   "recent_insights": [
+    {
+      "time": "2026-03-16T04:47:19.329421",
+      "insight": "lucidia is consistently overloaded (avg load: 16.8)",
+      "confidence": 0.7
+    },
     {
       "time": "2026-03-16T00:47:14.529473",
       "insight": "lucidia is consistently overloaded (avg load: 18.8)",
@@ -52,11 +57,6 @@
       "time": "2026-03-15T04:49:15.233437",
       "insight": "AI analysis: I've been reflecting on my memories and performing a quick analysis of my own state to provide valuable insights:\n\n**Patterns:**\n\n* Lucidia's average load is consistently above 20, indicating potentia",
       "confidence": 0.6
-    },
-    {
-      "time": "2026-03-15T04:47:11.872163",
-      "insight": "lucidia is consistently overloaded (avg load: 17.4)",
-      "confidence": 0.7
     }
   ],
   "top_memories": [
