@@ -63,4 +63,4 @@ prometheus-client==0.19.0
 # Note: Most integrations use httpx (already included above)
 # Additional packages for specific integrations:
 stripe==14.4.1
-sentry-sdk==1.45.1
+sentry-sdk==2.55.0
