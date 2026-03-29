@@ -43,8 +43,8 @@ httpx==0.25.2
 aiohttp==3.13.3
 
 # Crypto/Blockchain
-cryptography==46.0.5
-ecdsa==0.19.1
+cryptography==46.0.6
+ecdsa==0.19.2
 hashlib-additional==1.1
 
 # Testing
